@@ -3,7 +3,6 @@ import axios from "axios";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 
-// --- PRODUCTION CONFIGURATION ---
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
 const LandingPage = () => (
@@ -26,7 +25,6 @@ const LandingPage = () => (
 const Vault = () => {
   const [items, setItems] = useState([]);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -34,33 +32,31 @@ const Vault = () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products`);
       setItems(res.data);
-    } catch (err) { console.error("Vault Offline", err); }
+    } catch (err) { console.error("Sync Error", err); }
   };
 
   const addItem = async () => {
-    if (!name || !description) return;
+    if (!name) return;
     try {
-      await axios.post(`${API_BASE_URL}/api/products`, { name, description });
-      setName(""); setDescription(""); fetchItems();
-    } catch (err) { console.error("Security Breach", err); }
+      await axios.post(`${API_BASE_URL}/api/products`, { name });
+      setName(""); 
+      fetchItems();
+    } catch (err) { console.error("Vault Locked", err); }
   };
 
   return (
     <div className="main-container vault-page">
-      <div className="top-nav">
-        <Link to="/" className="back-link gold-text">← TERMINAL</Link>
-      </div>
+      <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       <h2 className="gold-text section-title">ASSET INVENTORY</h2>
       <div className="input-section gold-border">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ITEM NAME" className="dark-input" />
-        <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="VALUATION/DETAILS" className="dark-input" />
-        <button onClick={addItem} className="gold-btn">SECURE ASSET</button>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ENTER ASSET NAME" className="dark-input" />
+        <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
       <div className="asset-grid">
-        {items.map((item) => (
-          <div key={item.id} className="asset-card gold-border">
+        {items.map((item, index) => (
+          <div key={index} className="asset-card gold-border">
             <h3 className="gold-text">{item.name}</h3>
-            <p className="asset-desc">{item.description}</p>
+            <p className="asset-desc">SECURED IN VAULT</p>
           </div>
         ))}
       </div>
@@ -78,25 +74,16 @@ const Advisor = () => {
     try {
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
-    } catch (err) { setResponse("Intelligence sync failed..."); }
+    } catch (err) { setResponse("Intelligence Offline."); }
     setLoading(false);
   };
 
   return (
     <div className="main-container advisor-page">
-      <div className="top-nav">
-        <Link to="/" className="back-link gold-text">← TERMINAL</Link>
-      </div>
+      <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       <h2 className="gold-text section-title">CFO INTELLIGENCE</h2>
-      <div className="ai-input-wrapper">
-        <textarea 
-          value={query} onChange={(e) => setQuery(e.target.value)} 
-          placeholder="REQUEST FINANCIAL ANALYSIS..." className="dark-input ai-textarea"
-        />
-        <button onClick={askAdvisor} disabled={loading} className="gold-btn full-width">
-          {loading ? "DECRYPTING..." : "RUN ANALYSIS"}
-        </button>
-      </div>
+      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="QUERY DATA..." className="dark-input" />
+      <button onClick={askAdvisor} className="gold-btn full-width">{loading ? "PROCESSING..." : "RUN ANALYSIS"}</button>
       {response && <div className="ai-report gold-border gold-text">{response}</div>}
     </div>
   );
