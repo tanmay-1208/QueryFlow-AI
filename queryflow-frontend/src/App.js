@@ -1,140 +1,122 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
-import axios from 'axios';
-import Papa from 'papaparse';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import "./App.css";
 
-// --- PAGE 1: LANDING (Marketing & Info) ---
+// --- CONFIGURATION ---
+const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
+
+// --- COMPONENTS ---
+
 const LandingPage = () => (
-  <div className="page-fade">
-    <section className="hero">
-      <label className="gold-text">INTRODUCING QUERYFLOW AI</label>
-      <h1>The Virtual CFO for <br/>Modern Enterprises.</h1>
-      <p>Bridging the gap between raw data and financial intelligence. Manage inventory, track velocity, and audit your wealth in one moody vault.</p>
-      <Link to="/login" className="cta-btn">ENTER THE VAULT</Link>
-    </section>
+  <div className="landing-container">
+    <nav className="navbar">
+      <div className="logo">QueryFlow AI</div>
+      <div className="nav-links">
+        <Link to="/vault" className="nav-item">Vault</Link>
+        <Link to="/advisor" className="nav-item">CFO Suite</Link>
+      </div>
+    </nav>
+    <header className="hero">
+      <h1>The Virtual CA for Your Lifestyle</h1>
+      <p>Secure your assets. Analyze your growth. Automate your financial legacy.</p>
+      <Link to="/vault" className="cta-button">Open Your Vault</Link>
+    </header>
   </div>
 );
 
-// --- PAGE 2: LOGIN (Auth Gate) ---
-const LoginPage = () => (
-  <div className="page-fade auth-container">
-    <div className="auth-card">
-      <label>SECURITY CHECK</label>
-      <h2>Authorized Access Only</h2>
-      <input type="password" placeholder="ENTER ACCESS KEY" />
-      <Link to="/vault" className="cta-btn">AUTHENTICATE</Link>
-    </div>
-  </div>
-);
+const Vault = () => {
+  const [items, setItems] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
-// --- PAGE 3: VAULT (The Operations Page) ---
-const VaultPage = ({ results, loadAll, handleSell, handleRestock, handleDelete, handleFileUpload, newItem, setNewItem, secureItem }) => (
-  <div className="page-fade">
-    <section className="entry-section">
-      <form onSubmit={(e) => { e.preventDefault(); secureItem(newItem).then(loadAll); }} className="add-form">
-        <input placeholder="NAME" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} />
-        <input placeholder="PRICE" type="number" value={newItem.price} onChange={e => setNewItem({...newItem, price: e.target.value})} />
-        <input placeholder="STOCK" type="number" value={newItem.stock} onChange={e => setNewItem({...newItem, stock: e.target.value})} />
-        <button type="submit">SECURE</button>
-        <label htmlFor="csv" className="import-label">CSV</label>
-        <input id="csv" type="file" onChange={handleFileUpload} style={{display:'none'}} />
-      </form>
-    </section>
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
-    <div className="results-grid">
-      {results.map((item, idx) => (
-        <div key={idx} className="product-card">
-          <button className="delete-btn" onClick={() => handleDelete(item.name)}>×</button>
-          <div className={`status-badge ${item.stock < 5 ? 'low-stock' : 'in-vault'}`}>
-            {item.stock < 5 ? 'REPLENISH' : 'SECURED'}
-          </div>
-          <h2>{item.name}</h2>
-          <p className="price">₹{Number(item.price).toLocaleString('en-IN')}</p>
-          <div className="card-footer">
-            <span className="stock-count">{item.stock} UNITS | {item.sold_count || 0} SOLD</span>
-          </div>
-          <div className="card-controls">
-            <button className="sell-btn" onClick={() => handleSell(item.name)} disabled={item.stock === 0}>SELL</button>
-            <button className="restock-btn" onClick={() => handleRestock(item.name)}>+ STOCK</button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+  const fetchItems = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/products`);
+      setItems(res.data);
+    } catch (err) {
+      console.error("Error fetching vault items:", err);
+    }
+  };
 
-// --- PAGE 4: CFO SUITE (CA Analysis Page) ---
-const CFOSuite = ({ results }) => {
-  const totalValue = results.reduce((sum, i) => sum + (i.price * i.stock), 0);
-  const totalRevenue = results.reduce((sum, i) => sum + (i.price * (i.sold_count || 0)), 0);
-  const highValueAsset = [...results].sort((a,b) => (b.price*b.stock) - (a.price*a.stock))[0];
+  const addItem = async () => {
+    if (!name || !description) return;
+    try {
+      await axios.post(`${API_BASE_URL}/api/products`, { name, description });
+      setName("");
+      setDescription("");
+      fetchItems();
+    } catch (err) {
+      console.error("Error securing item:", err);
+    }
+  };
 
   return (
-    <div className="page-fade">
-      <div className="cfo-grid">
-        <div className="audit-card highlight">
-          <label>NET LIQUIDITY</label>
-          <h2>₹{totalRevenue.toLocaleString('en-IN')}</h2>
-          <p className="note">Total capital recovered via sales.</p>
-        </div>
-        <div className="audit-card">
-          <label>ASSET CONCENTRATION</label>
-          <h2>{highValueAsset ? ((highValueAsset.price * highValueAsset.stock / totalValue) * 100).toFixed(1) : 0}%</h2>
-          <p className="note">Wealth locked in {highValueAsset?.name || 'N/A'}.</p>
-        </div>
-        <div className="audit-card">
-          <label>HEALTH SCORE</label>
-          <h2 style={{color: 'var(--success)'}}>
-            {results.length > 0 ? (100 - (results.filter(i => i.stock < 5).length / results.length * 100)).toFixed(0) : 0}%
-          </h2>
-          <p className="note">Based on stock replenishment efficiency.</p>
-        </div>
+    <div className="vault-container">
+      <Link to="/" className="back-link">← Back to Terminal</Link>
+      <h2>Digital Asset Vault</h2>
+      <div className="input-group">
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Asset Name (e.g. Rolex)" />
+        <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Value/Details" />
+        <button onClick={addItem}>Secure Asset</button>
+      </div>
+      <div className="asset-grid">
+        {items.map((item) => (
+          <div key={item.id} className="asset-card">
+            <h3>{item.name}</h3>
+            <p>{item.description}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-// --- MAIN APP COMPONENT ---
-function App() {
-  const [results, setResults] = useState([]);
-  const [newItem, setNewItem] = useState({ name: '', price: '', stock: '' });
+const Advisor = () => {
+  const [query, setQuery] = useState("");
+  const [response, setResponse] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => { loadAll(); }, []);
-
-  const loadAll = async () => {
+  const askAdvisor = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:8080/api/ask?query=list all products ordered by id desc`);
-      setResults(res.data || []);
-    } catch (err) { console.error("Vault offline"); }
+      const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
+      setResponse(res.data);
+    } catch (err) {
+      setResponse("Connection lost. Retrying backend...");
+    }
+    setLoading(false);
   };
-
-  const secureItem = async (item) => {
-    await axios.post('http://localhost:8080/api/add', item);
-  };
-
-  const handleSell = async (n) => { await axios.post(`http://localhost:8080/api/sell/${n}`); loadAll(); };
-  const handleRestock = async (n) => { await axios.post(`http://localhost:8080/api/restock/${n}`); loadAll(); };
-  const handleDelete = async (n) => { if(window.confirm('Release?')) { await axios.delete(`http://localhost:8080/api/delete/${n}`); loadAll(); }};
 
   return (
-    <Router>
-      <div className="app-container">
-        <nav className="main-nav">
-          <div className="nav-logo">QUERYFLOW <span className="accent">AI</span></div>
-          <div className="nav-links">
-            <NavLink to="/">INFO</NavLink>
-            <NavLink to="/vault">VAULT</NavLink>
-            <NavLink to="/advisor">CFO SUITE</NavLink>
-            <NavLink to="/login" className="login-link">ACCESS</NavLink>
-          </div>
-        </nav>
+    <div className="advisor-container">
+      <Link to="/" className="back-link">← Back to Terminal</Link>
+      <h2>AI CFO Suite</h2>
+      <textarea 
+        value={query} 
+        onChange={(e) => setQuery(e.target.value)} 
+        placeholder="Ask about your financial status or tax liability..."
+      />
+      <button onClick={askAdvisor} disabled={loading}>
+        {loading ? "Analyzing..." : "Run Intelligence Report"}
+      </button>
+      {response && <div className="ai-response-box">{response}</div>}
+    </div>
+  );
+};
 
+function App() {
+  return (
+    <Router>
+      <div className="App">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/vault" element={<VaultPage results={results} loadAll={loadAll} handleSell={handleSell} handleRestock={handleRestock} handleDelete={handleDelete} newItem={newItem} setNewItem={setNewItem} secureItem={secureItem} />} />
-          <Route path="/advisor" element={<CFOSuite results={results} />} />
+          <Route path="/vault" element={<Vault />} />
+          <Route path="/advisor" element={<Advisor />} />
         </Routes>
       </div>
     </Router>
