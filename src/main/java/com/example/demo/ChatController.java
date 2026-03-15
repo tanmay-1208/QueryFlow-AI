@@ -13,55 +13,55 @@ import java.util.Map;
 public class ChatController {
 
     private final ChatModel chatModel;
-    private final _06_SchemaService schemaService;
-    private final _08_ExecutionService executionService;
     private final JdbcTemplate jdbcTemplate;
 
-    public ChatController(ChatModel chatModel, _06_SchemaService schemaService, 
-                          _08_ExecutionService executionService, JdbcTemplate jdbcTemplate) {
+    public ChatController(ChatModel chatModel, JdbcTemplate jdbcTemplate) {
         this.chatModel = chatModel;
-        this.schemaService = schemaService;
-        this.executionService = executionService;
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // AI Query Engine
     @GetMapping("/ask")
     public List<Map<String, Object>> ask(@RequestParam String query) {
-        String schema = schemaService.getSchemaDescription();
-        String promptText = "Return ONLY one raw SQL query. Schema: " + schema + 
+        String schema = "Table: products (id, name, price, stock, sold_count)";
+        String promptText = "Return ONLY raw SQL. Schema: " + schema + 
                             ". User: " + query + 
-                            ". RULES: 1. Use ILIKE. 2. SELECT name, price, stock. 3. WHERE before ORDER BY.";
+                            ". Rules: Use ILIKE for names. SELECT name, price, stock, sold_count.";
 
         String generatedSql = chatModel.call(new Prompt(promptText)).getResult().getOutput().getContent().trim();
-        generatedSql = generatedSql.replace("```sql", "").replace("```", "").trim();
-        if (generatedSql.contains(";")) {
-            generatedSql = generatedSql.split(";")[0].trim() + ";";
-        }
-        return executionService.runQuery(generatedSql);
+        generatedSql = generatedSql.replace("```sql", "").replace("```", "").split(";")[0].trim() + ";";
+        
+        return jdbcTemplate.queryForList(generatedSql);
     }
 
-    // Add Single/Bulk Item
     @PostMapping("/add")
     public String addItem(@RequestBody Map<String, Object> item) {
-        try {
-            String sql = "INSERT INTO products (name, price, stock) VALUES (?, ?, ?)";
-            String name = String.valueOf(item.get("name"));
-            double price = Double.parseDouble(String.valueOf(item.get("price")));
-            int stock = Integer.parseInt(String.valueOf(item.get("stock")));
-
-            jdbcTemplate.update(sql, name, price, stock);
-            return "Secured";
-        } catch (Exception e) {
-            throw new RuntimeException("Vault Error: " + e.getMessage());
-        }
+        String sql = "INSERT INTO products (name, price, stock, sold_count) VALUES (?, ?, ?, 0)";
+        jdbcTemplate.update(sql, 
+            String.valueOf(item.get("name")), 
+            Double.parseDouble(String.valueOf(item.get("price"))), 
+            Integer.parseInt(String.valueOf(item.get("stock")))
+        );
+        return "Secured";
     }
 
-    // Delete Item
+    @PostMapping("/sell/{name}")
+    public String sellItem(@PathVariable String name) {
+        String sql = "UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE name = ? AND stock > 0";
+        int rows = jdbcTemplate.update(sql, name);
+        return rows > 0 ? "Transaction Secured" : "Out of Stock";
+    }
+
+    // NEW: RESTOCK LOGIC
+    @PostMapping("/restock/{name}")
+    public String restockItem(@PathVariable String name) {
+        String sql = "UPDATE products SET stock = stock + 1 WHERE name = ?";
+        int updated = jdbcTemplate.update(sql, name);
+        return updated > 0 ? "Vault Replenished" : "Item Not Found";
+    }
+
     @DeleteMapping("/delete/{name}")
     public String deleteItem(@PathVariable String name) {
-        String sql = "DELETE FROM products WHERE name = ?";
-        jdbcTemplate.update(sql, name);
+        jdbcTemplate.update("DELETE FROM products WHERE name = ?", name);
         return "Released";
     }
 }
