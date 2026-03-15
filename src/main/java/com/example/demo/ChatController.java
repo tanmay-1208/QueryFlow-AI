@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -9,8 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-// Ensure this matches your EXACT Vercel URL (check if there's a dash or extra numbers)
-@CrossOrigin(origins = {"https://query-flow-ai.vercel.app", "http://localhost:3000"}, allowedHeaders = "*") 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 public class ChatController {
 
     private final ChatModel chatModel;
@@ -21,29 +19,24 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // --- ADD THIS: The "Get All Assets" route for the Vault ---
+    // --- GET ALL ASSETS ---
     @GetMapping("/products")
-    public List<Map<String, Object>> getAllProducts() {
+    public List<Map<String, Object>> getProducts() {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
     }
 
-    // --- FIX THIS: Match the App.js route name ---
+    // --- SECURE NEW ASSET ---
     @PostMapping("/products")
     public String addItem(@RequestBody Map<String, Object> item) {
-        String sql = "INSERT INTO products (name, description, price, stock, sold_count) VALUES (?, ?, ?, ?, 0)";
-        jdbcTemplate.update(sql, 
-            item.get("name"), 
-            item.get("description"), // Ensure your DB has a description column!
-            item.get("price") != null ? Double.parseDouble(String.valueOf(item.get("price"))) : 0.0,
-            item.get("stock") != null ? Integer.parseInt(String.valueOf(item.get("stock"))) : 1
-        );
+        // Note: Using 'name' for both name and description if your DB table is simple
+        String sql = "INSERT INTO products (name, price, stock, sold_count) VALUES (?, 0, 1, 0)";
+        jdbcTemplate.update(sql, String.valueOf(item.get("name")));
         return "Secured";
     }
 
-    // --- THE AI ADVISOR ROUTE ---
+    // --- AI ADVISOR ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
-        String userMessage = payload.get("message");
-        return chatModel.call(userMessage);
+        return chatModel.call(payload.get("message"));
     }
 }
