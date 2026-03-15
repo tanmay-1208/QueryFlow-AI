@@ -1,320 +1,138 @@
-/* --- THE VIRTUAL CFO DESIGN SYSTEM --- */
+/* App.css - The "Virtual CA" Black & Gold Moody Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+
 :root {
-  --gold: #c5a059;
-  --bg: #0a0a0a;
-  --card: #111111;
-  --border: #222222;
-  --text: #ffffff;
-  --text-dim: #777777;
-  --success: #4dff88;
-  --danger: #ff4d4d;
-  --nav-height: 80px;
+  --black: #000000;
+  --gold: #d4af37; /* Classic Gold */
+  --dark-gray: #111111;
+  --border-color: #222222;
+  --text-muted: #888888;
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin: 0;
-  -webkit-font-smoothing: antialiased;
+  background-color: var(--black);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
+.main-container {
+  min-height: 100vh;
+  background-color: var(--black);
   padding: 0 40px;
 }
 
-/* --- GLOBAL NAVIGATION --- */
-.main-nav {
+.gold-text {
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.gold-border {
+  border: 1px solid var(--gold);
+}
+
+.gold-bg {
+  background-color: var(--gold);
+  color: black;
+}
+
+/* Navbar */
+.navbar {
   display: flex;
   justify-content: space-between;
+  padding: 40px 20px;
   align-items: center;
-  height: var(--nav-height);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 50px;
 }
 
-.nav-logo {
-  font-size: 1.1rem;
-  letter-spacing: 6px;
-  font-weight: 200;
-  text-transform: uppercase;
-}
+.logo { font-weight: 900; font-size: 1.2rem; }
 
-.accent {
-  color: var(--gold);
-  font-weight: 700;
-}
-
-.nav-links {
-  display: flex;
-  gap: 35px;
-}
-
-.nav-links a {
+.nav-links .nav-item {
+  margin-left: 25px;
   text-decoration: none;
-  color: var(--text-dim);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  transition: color 0.3s ease;
-}
-
-.nav-links a:hover, 
-.nav-links a.active {
-  color: var(--gold);
-}
-
-.login-link {
-  border: 1px solid var(--gold);
-  padding: 8px 20px;
-  border-radius: 2px;
-}
-
-/* --- PAGE ANIMATIONS --- */
-.page-fade {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- LANDING PAGE (INFO) --- */
-.hero {
-  padding: 120px 0;
-  text-align: center;
-  max-width: 850px;
-  margin: 0 auto;
-}
-
-.hero label {
-  font-size: 0.7rem;
-  letter-spacing: 4px;
-  font-weight: 800;
-  margin-bottom: 20px;
-  display: block;
-}
-
-.hero h1 {
-  font-size: 3.8rem;
-  font-weight: 200;
-  line-height: 1.1;
-  margin: 0 0 30px 0;
-}
-
-.hero p {
-  color: var(--text-dim);
-  font-size: 1.15rem;
-  line-height: 1.7;
-  margin-bottom: 50px;
-}
-
-.cta-btn {
-  background: var(--gold);
-  color: #000;
-  padding: 18px 45px;
-  text-decoration: none;
-  font-weight: 900;
+  color: var(--text-muted);
   font-size: 0.8rem;
-  letter-spacing: 2px;
-  display: inline-block;
   transition: 0.3s;
 }
 
-.cta-btn:hover {
-  background: #d4b47a;
-  transform: scale(1.02);
-}
+.nav-links .nav-item:hover { color: var(--gold); }
 
-/* --- LOGIN PAGE (AUTH) --- */
-.auth-container {
+/* Hero Section */
+.hero {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding-top: 80px;
-}
-
-.auth-card {
-  background: var(--card);
-  padding: 60px;
-  border: 1px solid var(--border);
+  justify-content: center;
+  height: 70vh;
   text-align: center;
-  width: 100%;
-  max-width: 420px;
 }
 
-.auth-card label {
-  font-size: 0.6rem;
-  letter-spacing: 3px;
-  color: var(--text-dim);
+.header-title { font-size: 4rem; margin: 0; font-weight: 900; }
+.subtitle { color: var(--text-muted); margin: 20px 0 40px; }
+
+.cta-button {
+  padding: 15px 40px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: 0.3s;
 }
 
-.auth-card h2 {
-  font-weight: 300;
-  margin: 15px 0 35px 0;
+.cta-button:hover { background-color: white; color: black; }
+
+/* Vault & Advisor Styling */
+.vault-page, .advisor-page { padding-top: 100px; }
+.section-title { margin-bottom: 50px; font-size: 1.5rem; text-align: center; }
+
+.input-section {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  margin-bottom: 60px;
+  background: var(--dark-gray);
 }
 
-.auth-card input {
-  width: 100%;
-  background: #000;
-  border: 1px solid var(--border);
+.dark-input {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #333;
   color: white;
   padding: 15px;
-  margin-bottom: 25px;
-  outline: none;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-/* --- CFO SUITE (CA ANALYSIS) --- */
-.cfo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  margin-top: 20px;
-}
-
-.audit-card {
-  background: var(--card);
-  padding: 45px;
-  border: 1px solid var(--border);
-  position: relative;
-}
-
-.audit-card.highlight {
-  border-top: 3px solid var(--gold);
-}
-
-.audit-card label {
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  letter-spacing: 3px;
-  display: block;
-}
-
-.audit-card h2 {
-  font-size: 2.4rem;
-  margin: 20px 0;
-  font-weight: 800;
-}
-
-.note {
-  font-size: 0.6rem;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* --- VAULT PAGE (OPERATIONS) --- */
-.entry-section { margin-bottom: 40px; }
-
-.add-form {
-  display: flex;
-  gap: 12px;
-}
-
-.add-form input {
-  flex: 1;
-  background: #000;
-  border: 1px solid var(--border);
-  color: white;
-  padding: 14px;
   outline: none;
 }
 
-.add-form button {
+.gold-btn {
   background: var(--gold);
   color: black;
   border: none;
   padding: 0 30px;
-  font-weight: 800;
+  font-weight: bold;
   cursor: pointer;
 }
 
-.import-label {
-  background: transparent;
-  color: var(--gold);
-  border: 1px solid var(--gold);
-  padding: 14px 25px;
-  cursor: pointer;
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-.results-grid {
+/* Asset Grid */
+.asset-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
   padding-bottom: 100px;
 }
 
-.product-card {
-  background: var(--card);
+.asset-card {
   padding: 30px;
-  border: 1px solid var(--border);
-  position: relative;
-  transition: 0.3s;
+  background: #050505;
+  transition: 0.4s;
 }
 
-.product-card:hover { border-color: var(--gold); }
+.asset-card:hover { transform: translateY(-10px); background: #0a0a0a; }
+.asset-desc { color: var(--text-muted); font-size: 0.9rem; margin-top: 10px; }
 
-.status-badge {
-  font-size: 0.5rem;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 900;
-  letter-spacing: 1px;
+/* AI Report */
+.ai-report {
+  margin-top: 40px;
+  padding: 30px;
+  background: #050505;
+  line-height: 1.8;
+  font-style: italic;
 }
-
-.low-stock { color: var(--danger); border: 1px solid var(--danger); }
-.in-vault { color: var(--success); border: 1px solid var(--success); }
-
-.price {
-  font-size: 1.6rem;
-  color: var(--gold);
-  font-weight: 700;
-  margin: 15px 0;
-}
-
-.card-controls {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.sell-btn {
-  flex: 2;
-  background: var(--gold);
-  border: none;
-  font-weight: 900;
-  padding: 12px;
-  cursor: pointer;
-}
-
-.sell-btn:disabled { background: #222; color: #444; }
-
-.restock-btn {
-  flex: 1;
-  background: transparent;
-  color: var(--success);
-  border: 1px solid var(--success);
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.delete-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-
-.gold-text { color: var(--gold); }
