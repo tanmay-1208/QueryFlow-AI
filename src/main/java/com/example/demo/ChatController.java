@@ -9,7 +9,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") 
+// Ensure this matches your EXACT Vercel URL (check if there's a dash or extra numbers)
+@CrossOrigin(origins = {"https://query-flow-ai.vercel.app", "http://localhost:3000"}, allowedHeaders = "*") 
 public class ChatController {
 
     private final ChatModel chatModel;
@@ -20,48 +21,29 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @GetMapping("/ask")
-    public List<Map<String, Object>> ask(@RequestParam String query) {
-        String schema = "Table: products (id, name, price, stock, sold_count)";
-        String promptText = "Return ONLY raw SQL. Schema: " + schema + 
-                            ". User: " + query + 
-                            ". Rules: Use ILIKE for names. SELECT name, price, stock, sold_count.";
-
-        String generatedSql = chatModel.call(new Prompt(promptText)).getResult().getOutput().getContent().trim();
-        generatedSql = generatedSql.replace("```sql", "").replace("```", "").split(";")[0].trim() + ";";
-        
-        return jdbcTemplate.queryForList(generatedSql);
+    // --- ADD THIS: The "Get All Assets" route for the Vault ---
+    @GetMapping("/products")
+    public List<Map<String, Object>> getAllProducts() {
+        return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
     }
 
-    @PostMapping("/add")
+    // --- FIX THIS: Match the App.js route name ---
+    @PostMapping("/products")
     public String addItem(@RequestBody Map<String, Object> item) {
-        String sql = "INSERT INTO products (name, price, stock, sold_count) VALUES (?, ?, ?, 0)";
+        String sql = "INSERT INTO products (name, description, price, stock, sold_count) VALUES (?, ?, ?, ?, 0)";
         jdbcTemplate.update(sql, 
-            String.valueOf(item.get("name")), 
-            Double.parseDouble(String.valueOf(item.get("price"))), 
-            Integer.parseInt(String.valueOf(item.get("stock")))
+            item.get("name"), 
+            item.get("description"), // Ensure your DB has a description column!
+            item.get("price") != null ? Double.parseDouble(String.valueOf(item.get("price"))) : 0.0,
+            item.get("stock") != null ? Integer.parseInt(String.valueOf(item.get("stock"))) : 1
         );
         return "Secured";
     }
 
-    @PostMapping("/sell/{name}")
-    public String sellItem(@PathVariable String name) {
-        String sql = "UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE name = ? AND stock > 0";
-        int rows = jdbcTemplate.update(sql, name);
-        return rows > 0 ? "Transaction Secured" : "Out of Stock";
-    }
-
-    // NEW: RESTOCK LOGIC
-    @PostMapping("/restock/{name}")
-    public String restockItem(@PathVariable String name) {
-        String sql = "UPDATE products SET stock = stock + 1 WHERE name = ?";
-        int updated = jdbcTemplate.update(sql, name);
-        return updated > 0 ? "Vault Replenished" : "Item Not Found";
-    }
-
-    @DeleteMapping("/delete/{name}")
-    public String deleteItem(@PathVariable String name) {
-        jdbcTemplate.update("DELETE FROM products WHERE name = ?", name);
-        return "Released";
+    // --- THE AI ADVISOR ROUTE ---
+    @PostMapping("/chat")
+    public String chat(@RequestBody Map<String, String> payload) {
+        String userMessage = payload.get("message");
+        return chatModel.call(userMessage);
     }
 }
