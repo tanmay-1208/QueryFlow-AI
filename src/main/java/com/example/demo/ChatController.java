@@ -25,32 +25,23 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // --- AI SEARCH WITH STRICT SYNTAX RULES ---
+    // AI Query Engine
     @GetMapping("/ask")
     public List<Map<String, Object>> ask(@RequestParam String query) {
         String schema = schemaService.getSchemaDescription();
-        
-        String promptText = "Return ONLY one raw SQL query. Schema: " + schema + ". User: " + query + 
-                            ". RULES: " +
-                            "1. Use ILIKE for case-insensitive search. " +
-                            "2. ALWAYS include 'name', 'price', and 'stock' columns. " +
-                            "3. STRICT SQL ORDER: SELECT -> FROM -> WHERE -> ORDER BY. " +
-                            "4. Never put ORDER BY before WHERE. " +
-                            "5. Return only the SQL, no markdown backticks.";
+        String promptText = "Return ONLY one raw SQL query. Schema: " + schema + 
+                            ". User: " + query + 
+                            ". RULES: 1. Use ILIKE. 2. SELECT name, price, stock. 3. WHERE before ORDER BY.";
 
         String generatedSql = chatModel.call(new Prompt(promptText)).getResult().getOutput().getContent().trim();
-        
-        // Final sanitization
         generatedSql = generatedSql.replace("```sql", "").replace("```", "").trim();
         if (generatedSql.contains(";")) {
             generatedSql = generatedSql.split(";")[0].trim() + ";";
         }
-
-        System.out.println("Executing Vault Query: " + generatedSql);
         return executionService.runQuery(generatedSql);
     }
 
-    // --- ADD ASSET WITH DATA TYPE SAFETY ---
+    // Add Single/Bulk Item
     @PostMapping("/add")
     public String addItem(@RequestBody Map<String, Object> item) {
         try {
@@ -60,23 +51,17 @@ public class ChatController {
             int stock = Integer.parseInt(String.valueOf(item.get("stock")));
 
             jdbcTemplate.update(sql, name, price, stock);
-            return "Asset Secured.";
+            return "Secured";
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Add Error: " + e.getMessage());
+            throw new RuntimeException("Vault Error: " + e.getMessage());
         }
     }
 
-    // --- DELETE ASSET ---
+    // Delete Item
     @DeleteMapping("/delete/{name}")
     public String deleteItem(@PathVariable String name) {
-        try {
-            String sql = "DELETE FROM products WHERE name = ?";
-            jdbcTemplate.update(sql, name);
-            return "Asset Released.";
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Delete Error: " + e.getMessage());
-        }
+        String sql = "DELETE FROM products WHERE name = ?";
+        jdbcTemplate.update(sql, name);
+        return "Released";
     }
 }
