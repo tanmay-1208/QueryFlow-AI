@@ -5,15 +5,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProductService {
+public class _04_ProductService {
+    
     @Autowired
-    private ProductRepository repository;
+    private _03_ProductRepository repository;
 
-    public Product saveProduct(Product product) {
+    public _02_Product saveProduct(_02_Product product) {
         return repository.save(product);
     }
 
-    public List<Product> getAllProducts() {
+    public List<_02_Product> getAllProducts() {
         return repository.findAll();
     }
 }

@@ -4,6 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
-    // No code needed here! Spring handles the basics.
+public interface _03_ProductRepository extends JpaRepository<_02_Product, Long> {
 }
