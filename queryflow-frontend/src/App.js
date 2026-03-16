@@ -32,14 +32,14 @@ const Vault = () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products`);
       setItems(res.data);
-    } catch (err) { console.error("Sync Error", err); }
+    } catch (err) { console.error("Vault Sync Error", err); }
   };
 
   const handleAction = async (type, id) => {
     try {
       await axios.post(`${API_BASE_URL}/api/products/${type}/${id}`);
       fetchItems();
-    } catch (err) { console.error(`${type} failed`, err); }
+    } catch (err) { console.error(`${type} action failed`, err); }
   };
 
   const deleteItem = async (id) => {
@@ -62,14 +62,12 @@ const Vault = () => {
     <div className="main-container vault-page">
       <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       <h2 className="gold-text section-title">ASSET INVENTORY</h2>
-      
       <div className="input-section gold-border">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
         <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="STOCK" className="dark-input" />
         <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
-
       <div className="asset-grid">
         {items.map((item) => (
           <div key={item.id} className={`asset-card gold-border ${item.stock <= 0 ? 'out-of-stock-card' : ''}`}>
@@ -78,7 +76,6 @@ const Vault = () => {
             <p className={item.stock <= 0 ? 'red-text' : 'stock-text'}>
               {item.stock <= 0 ? "⚠️ OUT OF STOCK" : `INVENTORY: ${item.stock}`}
             </p>
-            
             <div className="card-actions">
               <button onClick={() => handleAction('sell', item.id)} disabled={item.stock <= 0} className="action-btn">SELL</button>
               <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
@@ -97,11 +94,17 @@ const Advisor = () => {
   const [loading, setLoading] = useState(false);
 
   const askAdvisor = async () => {
+    if (!query) return;
     setLoading(true);
+    setResponse(""); // Clear old response
     try {
+      // POSTING TO /api/chat
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
-    } catch (err) { setResponse("Intelligence sync failed..."); }
+    } catch (err) {
+      console.error("AI Sync Error:", err);
+      setResponse("Intelligence sync failed. Check Render Logs.");
+    }
     setLoading(false);
   };
 
