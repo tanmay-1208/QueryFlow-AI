@@ -42,6 +42,13 @@ const Vault = () => {
     } catch (err) { console.error(`${type} failed`, err); }
   };
 
+  const deleteItem = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/api/products/${id}`);
+      fetchItems();
+    } catch (err) { console.error("Release failed", err); }
+  };
+
   const addItem = async () => {
     if (!form.name || !form.price || !form.stock) return;
     try {
@@ -76,6 +83,7 @@ const Vault = () => {
               <button onClick={() => handleAction('sell', item.id)} disabled={item.stock <= 0} className="action-btn">SELL</button>
               <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
             </div>
+            <button onClick={() => deleteItem(item.id)} className="delete-btn">RELEASE FROM VAULT</button>
           </div>
         ))}
       </div>

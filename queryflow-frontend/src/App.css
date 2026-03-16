@@ -55,4 +55,19 @@ body {
 .action-btn.restock { border-color: var(--gold); color: var(--gold); }
 .action-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
+/* Delete/Release Button Styling */
+.delete-btn {
+  width: 100%;
+  background: transparent;
+  color: #551111;
+  border: 1px solid #331111;
+  padding: 8px;
+  margin-top: 10px;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.delete-btn:hover { color: #ff4444; border-color: #ff4444; background: #1a0000; }
+
 .ai-report { margin-top: 30px; padding: 20px; background: #050505; line-height: 1.6; }
