@@ -1,12 +1,11 @@
-/* App.css - The "Virtual CA" Black & Gold Moody Theme */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
 
 :root {
   --black: #000000;
-  --gold: #d4af37; /* Classic Gold */
-  --dark-gray: #111111;
-  --border-color: #222222;
-  --text-muted: #888888;
+  --gold: #d4af37;
+  --dark-gray: #0a0a0a;
+  --border: #1a1a1a;
+  --error: #ff4444;
 }
 
 body {
@@ -14,125 +13,46 @@ body {
   background-color: var(--black);
   color: white;
   font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
 }
 
-.main-container {
-  min-height: 100vh;
-  background-color: var(--black);
-  padding: 0 40px;
-}
-
-.gold-text {
-  color: var(--gold);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.gold-border {
-  border: 1px solid var(--gold);
-}
-
-.gold-bg {
-  background-color: var(--gold);
-  color: black;
-}
+.main-container { min-height: 100vh; padding: 0 40px; }
+.gold-text { color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+.gold-border { border: 1px solid var(--gold); }
+.gold-bg { background-color: var(--gold); color: black; }
 
 /* Navbar */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 40px 20px;
-  align-items: center;
-}
-
+.navbar { display: flex; justify-content: space-between; padding: 40px 20px; align-items: center; }
 .logo { font-weight: 900; font-size: 1.2rem; }
-
-.nav-links .nav-item {
-  margin-left: 25px;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  transition: 0.3s;
-}
-
+.nav-links .nav-item { margin-left: 25px; text-decoration: none; color: #666; font-size: 0.8rem; transition: 0.3s; }
 .nav-links .nav-item:hover { color: var(--gold); }
 
-/* Hero Section */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 70vh;
-  text-align: center;
-}
-
+/* Hero */
+.hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; }
 .header-title { font-size: 4rem; margin: 0; font-weight: 900; }
-.subtitle { color: var(--text-muted); margin: 20px 0 40px; }
+.subtitle { color: #666; margin: 20px 0 40px; }
+.cta-button { padding: 15px 40px; text-decoration: none; font-weight: bold; font-size: 0.8rem; border-radius: 2px; }
 
-.cta-button {
-  padding: 15px 40px;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 0.9rem;
-  transition: 0.3s;
-}
+/* Inputs */
+.vault-page { padding-top: 80px; }
+.section-title { text-align: center; margin-bottom: 40px; }
+.input-section { display: flex; gap: 10px; padding: 20px; margin-bottom: 60px; background: var(--dark-gray); }
+.dark-input { flex: 1; background: transparent; border: 1px solid var(--border); color: white; padding: 12px; outline: none; }
+.gold-btn { background: var(--gold); color: black; border: none; padding: 0 30px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
 
-.cta-button:hover { background-color: white; color: black; }
+/* Grid & Cards */
+.asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 50px; }
+.asset-card { padding: 25px; background: #050505; transition: 0.3s; position: relative; }
+.asset-card:hover { border-color: white; }
+.price-tag { font-size: 0.8rem; margin: 10px 0 5px; opacity: 0.8; }
+.stock-text { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+.red-text { font-size: 0.75rem; color: var(--error); font-weight: bold; }
+.out-of-stock-card { border-color: var(--error) !important; background: #110000; }
 
-/* Vault & Advisor Styling */
-.vault-page, .advisor-page { padding-top: 100px; }
-.section-title { margin-bottom: 50px; font-size: 1.5rem; text-align: center; }
+/* Action Buttons */
+.card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px; }
+.action-btn { background: transparent; border: 1px solid #333; color: white; padding: 8px; font-size: 0.6rem; cursor: pointer; transition: 0.2s; }
+.action-btn:hover:not(:disabled) { background: #222; }
+.action-btn.restock { border-color: var(--gold); color: var(--gold); }
+.action-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-.input-section {
-  display: flex;
-  gap: 10px;
-  padding: 20px;
-  margin-bottom: 60px;
-  background: var(--dark-gray);
-}
-
-.dark-input {
-  flex: 1;
-  background: transparent;
-  border: 1px solid #333;
-  color: white;
-  padding: 15px;
-  outline: none;
-}
-
-.gold-btn {
-  background: var(--gold);
-  color: black;
-  border: none;
-  padding: 0 30px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Asset Grid */
-.asset-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  padding-bottom: 100px;
-}
-
-.asset-card {
-  padding: 30px;
-  background: #050505;
-  transition: 0.4s;
-}
-
-.asset-card:hover { transform: translateY(-10px); background: #0a0a0a; }
-.asset-desc { color: var(--text-muted); font-size: 0.9rem; margin-top: 10px; }
-
-/* AI Report */
-.ai-report {
-  margin-top: 40px;
-  padding: 30px;
-  background: #050505;
-  line-height: 1.8;
-  font-style: italic;
-}
+.ai-report { margin-top: 30px; padding: 20px; background: #050505; line-height: 1.6; }

@@ -24,7 +24,7 @@ const LandingPage = () => (
 
 const Vault = () => {
   const [items, setItems] = useState([]);
-  const [name, setName] = useState("");
+  const [form, setForm] = useState({ name: "", price: "", stock: "" });
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -35,11 +35,18 @@ const Vault = () => {
     } catch (err) { console.error("Sync Error", err); }
   };
 
-  const addItem = async () => {
-    if (!name) return;
+  const handleAction = async (type, id) => {
     try {
-      await axios.post(`${API_BASE_URL}/api/products`, { name });
-      setName(""); 
+      await axios.post(`${API_BASE_URL}/api/products/${type}/${id}`);
+      fetchItems();
+    } catch (err) { console.error(`${type} failed`, err); }
+  };
+
+  const addItem = async () => {
+    if (!form.name || !form.price || !form.stock) return;
+    try {
+      await axios.post(`${API_BASE_URL}/api/products`, form);
+      setForm({ name: "", price: "", stock: "" });
       fetchItems();
     } catch (err) { console.error("Vault Locked", err); }
   };
@@ -48,15 +55,27 @@ const Vault = () => {
     <div className="main-container vault-page">
       <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       <h2 className="gold-text section-title">ASSET INVENTORY</h2>
+      
       <div className="input-section gold-border">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ENTER ASSET NAME" className="dark-input" />
+        <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
+        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
+        <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="STOCK" className="dark-input" />
         <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
+
       <div className="asset-grid">
-        {items.map((item, index) => (
-          <div key={index} className="asset-card gold-border">
+        {items.map((item) => (
+          <div key={item.id} className={`asset-card gold-border ${item.stock <= 0 ? 'out-of-stock-card' : ''}`}>
             <h3 className="gold-text">{item.name}</h3>
-            <p className="asset-desc">SECURED IN VAULT</p>
+            <p className="price-tag">VALUATION: ${item.price}</p>
+            <p className={item.stock <= 0 ? 'red-text' : 'stock-text'}>
+              {item.stock <= 0 ? "⚠️ OUT OF STOCK" : `INVENTORY: ${item.stock}`}
+            </p>
+            
+            <div className="card-actions">
+              <button onClick={() => handleAction('sell', item.id)} disabled={item.stock <= 0} className="action-btn">SELL</button>
+              <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
+            </div>
           </div>
         ))}
       </div>
@@ -74,7 +93,7 @@ const Advisor = () => {
     try {
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
-    } catch (err) { setResponse("Intelligence Offline."); }
+    } catch (err) { setResponse("Intelligence sync failed..."); }
     setLoading(false);
   };
 
@@ -82,8 +101,10 @@ const Advisor = () => {
     <div className="main-container advisor-page">
       <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       <h2 className="gold-text section-title">CFO INTELLIGENCE</h2>
-      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="QUERY DATA..." className="dark-input" />
-      <button onClick={askAdvisor} className="gold-btn full-width">{loading ? "PROCESSING..." : "RUN ANALYSIS"}</button>
+      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="REQUEST ANALYSIS..." className="dark-input ai-textarea" />
+      <button onClick={askAdvisor} disabled={loading} className="gold-btn full-width">
+        {loading ? "DECRYPTING..." : "RUN ANALYSIS"}
+      </button>
       {response && <div className="ai-report gold-border gold-text">{response}</div>}
     </div>
   );
