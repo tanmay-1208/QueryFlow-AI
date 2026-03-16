@@ -8,8 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-// The "*" allows your Vercel frontend to talk to this Render backend without security blocks
-@CrossOrigin(origins = "*", allowedHeaders = "*") 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ChatController {
 
     private final ChatModel chatModel;
@@ -20,13 +19,12 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // 1. VAULT: Get all items
+    // --- VAULT ROUTES ---
     @GetMapping("/products")
     public List<Map<String, Object>> getProducts() {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
     }
 
-    // 2. VAULT: Add new luxury asset
     @PostMapping("/products")
     public String addItem(@RequestBody Map<String, Object> item) {
         String sql = "INSERT INTO products (name, price, stock, sold_count) VALUES (?, ?, ?, 0)";
@@ -38,33 +36,36 @@ public class ChatController {
         return "Secured";
     }
 
-    // 3. VAULT: Sell an item (Decrease stock)
     @PostMapping("/products/sell/{id}")
     public void sellItem(@PathVariable Long id) {
         jdbcTemplate.update("UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE id = ? AND stock > 0", id);
     }
 
-    // 4. VAULT: Restock an item (Increase stock)
     @PostMapping("/products/restock/{id}")
     public void restockItem(@PathVariable Long id) {
         jdbcTemplate.update("UPDATE products SET stock = stock + 1 WHERE id = ?", id);
     }
 
-    // 5. VAULT: Permanent release (Delete)
     @DeleteMapping("/products/{id}")
     public void deleteItem(@PathVariable Long id) {
         jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
     }
 
-    // 6. CFO INTELLIGENCE: The AI Advisor logic
+    // --- AI ADVISOR ROUTE ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
+        String message = payload.get("message");
+        
+        // DEBUG: This will show up in your Render Logs!
+        System.out.println("AI Request Received: " + message);
+        
         try {
-            String userMessage = payload.get("message");
-            // This connects to the Groq Llama-3 model via Spring AI
-            return chatModel.call(userMessage);
+            String aiResponse = chatModel.call(message);
+            System.out.println("AI Success: " + aiResponse);
+            return aiResponse;
         } catch (Exception e) {
-            return "Intelligence Error: " + e.getMessage();
+            System.err.println("AI Error Details: " + e.getMessage());
+            return "AI Error: " + e.getMessage();
         }
     }
 }
