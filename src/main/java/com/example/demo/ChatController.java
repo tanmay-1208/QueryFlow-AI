@@ -19,7 +19,7 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // --- VAULT INVENTORY MANAGEMENT ---
+    // --- VAULT INVENTORY ---
     @GetMapping("/products")
     public List<Map<String, Object>> getProducts() {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
@@ -30,57 +30,41 @@ public class ChatController {
         jdbcTemplate.update("UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE id = ? AND stock > 0", id);
     }
 
-    @PostMapping("/products/restock/{id}")
-    public void restockItem(@PathVariable Long id) {
-        jdbcTemplate.update("UPDATE products SET stock = stock + 1 WHERE id = ?", id);
-    }
-
-    @DeleteMapping("/products/{id}")
-    public void deleteItem(@PathVariable Long id) {
-        jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
-    }
-
-    // --- AI CFO ADVISOR (FINANCIAL LOGIC MODE) ---
+    // --- AI CFO ADVISOR (ADVANCED MARGIN ANALYSIS) ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
         
         try {
-            // 1. Fetch live data from Supabase
+            // 1. Fetch live data (including the new COST column)
             List<Map<String, Object>> products = jdbcTemplate.queryForList(
-                "SELECT name, price, stock, sold_count FROM products"
+                "SELECT name, price, cost, stock, sold_count FROM products"
             );
 
-            // 2. Build the context string
-            StringBuilder vaultContext = new StringBuilder("User Vault Data:\n");
-            if (products.isEmpty()) {
-                vaultContext.append("- No items in vault.");
-            } else {
-                for (Map<String, Object> p : products) {
-                    vaultContext.append(String.format("- Item: %s | Price: %s | Stock: %s | Sold: %s\n", 
-                        p.get("name"), p.get("price"), p.get("stock"), p.get("sold_count")));
-                }
+            // 2. Build context
+            StringBuilder vaultContext = new StringBuilder("Financial Data:\n");
+            for (Map<String, Object> p : products) {
+                vaultContext.append(String.format("- %s | Price: %s | Cost: %s | Sold: %s\n", 
+                    p.get("name"), p.get("price"), p.get("cost"), p.get("sold_count")));
             }
 
-            // 3. The Instruction (Teaches the AI how to calculate "How much I made")
+            // 3. The "CFO Brain" Prompt
             String finalPrompt = String.format(
-                "You are a Senior CFO Advisor. Analyze the following vault data:\n\n%s\n\n" +
+                "You are a Senior CFO Advisor. Analyze this vault data:\n\n%s\n\n" +
                 "Question: %s\n\n" +
-                "STRICT ACCOUNTING RULES:\n" +
-                "1. Total Revenue/Earnings = The sum of (Price * Sold_Count) for every item listed.\n" +
-                "2. If an item has a Sold_Count of 3 and Price of 100, that is 300 in revenue.\n" +
-                "3. Provide a direct, one-sentence answer with the total amount.\n" +
-                "4. Do NOT show your math or calculations.\n" +
-                "5. Just give the final financial result clearly.",
+                "STRICT CFO RULES:\n" +
+                "1. Total Profit = Sum of ((Price - Cost) * Sold_Count) for all items.\n" +
+                "2. Gross Margin % = (Total Profit / Total Revenue) * 100.\n" +
+                "3. Revenue = Sum of (Price * Sold_Count).\n" +
+                "4. Give a direct, one-sentence answer. Be professional.\n" +
+                "5. Do NOT show math. Just the final result.",
                 vaultContext.toString(),
                 userMessage
             );
 
-            System.out.println(">>> AI PROCESSING FINANCIAL QUERY FOR " + products.size() + " ITEMS.");
             return chatModel.call(finalPrompt);
 
         } catch (Exception e) {
-            System.err.println(">>> AI ERROR: " + e.getMessage());
             return "Advisor Error: " + e.getMessage();
         }
     }
