@@ -17,3 +17,5 @@ target/
 .DS_Store
 queryflow-frontend/node_modules/
 .env
+
+application.properties
