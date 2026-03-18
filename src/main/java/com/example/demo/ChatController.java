@@ -40,45 +40,47 @@ public class ChatController {
         jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
     }
 
-    // --- AI CFO ADVISOR (CONCISE MODE) ---
+    // --- AI CFO ADVISOR (FINANCIAL LOGIC MODE) ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
         
         try {
-            // 1. Fetch live data
+            // 1. Fetch live data from Supabase
             List<Map<String, Object>> products = jdbcTemplate.queryForList(
                 "SELECT name, price, stock, sold_count FROM products"
             );
 
-            // 2. Build context
-            StringBuilder vaultContext = new StringBuilder();
+            // 2. Build the context string
+            StringBuilder vaultContext = new StringBuilder("User Vault Data:\n");
             if (products.isEmpty()) {
-                vaultContext.append("Vault is empty.");
+                vaultContext.append("- No items in vault.");
             } else {
                 for (Map<String, Object> p : products) {
-                    vaultContext.append(String.format("- %s (Price: %s, Stock: %s, Sold: %s)\n", 
+                    vaultContext.append(String.format("- Item: %s | Price: %s | Stock: %s | Sold: %s\n", 
                         p.get("name"), p.get("price"), p.get("stock"), p.get("sold_count")));
                 }
             }
 
-            // 3. The Strict Prompt (Prevents long explanations)
+            // 3. The Instruction (Teaches the AI how to calculate "How much I made")
             String finalPrompt = String.format(
-                "You are a professional CFO Intelligence AI. Answer the question using ONLY this data:\n\n%s\n\n" +
+                "You are a Senior CFO Advisor. Analyze the following vault data:\n\n%s\n\n" +
                 "Question: %s\n\n" +
-                "STRICT RULES:\n" +
-                "1. Give a direct, one-sentence answer.\n" +
-                "2. Do NOT show your calculations or math.\n" +
-                "3. Do NOT explain how you got the answer.\n" +
-                "4. Just provide the final result clearly.",
+                "STRICT ACCOUNTING RULES:\n" +
+                "1. Total Revenue/Earnings = The sum of (Price * Sold_Count) for every item listed.\n" +
+                "2. If an item has a Sold_Count of 3 and Price of 100, that is 300 in revenue.\n" +
+                "3. Provide a direct, one-sentence answer with the total amount.\n" +
+                "4. Do NOT show your math or calculations.\n" +
+                "5. Just give the final financial result clearly.",
                 vaultContext.toString(),
                 userMessage
             );
 
-            System.out.println(">>> AI PROCESSING CONCISE QUERY");
+            System.out.println(">>> AI PROCESSING FINANCIAL QUERY FOR " + products.size() + " ITEMS.");
             return chatModel.call(finalPrompt);
 
         } catch (Exception e) {
+            System.err.println(">>> AI ERROR: " + e.getMessage());
             return "Advisor Error: " + e.getMessage();
         }
     }
