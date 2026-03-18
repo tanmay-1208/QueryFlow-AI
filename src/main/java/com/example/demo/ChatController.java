@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -19,7 +20,7 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // --- VAULT INVENTORY ROUTES ---
+    // --- VAULT INVENTORY MANAGEMENT ---
     @GetMapping("/products")
     public List<Map<String, Object>> getProducts() {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
@@ -40,21 +41,43 @@ public class ChatController {
         jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
     }
 
-    // --- AI ADVISOR ROUTE (THE BRAIN) ---
+    // --- AI CFO ADVISOR (WITH DATA CONTEXT) ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
-        String message = payload.get("message");
+        String userMessage = payload.get("message");
         
-        // Log to Render console so we know the request arrived
-        System.out.println(">>> AI REQUEST RECEIVED: " + message);
-        
+        System.out.println(">>> AI ANALYSIS REQUEST: " + userMessage);
+
         try {
-            // Using the ChatModel (which is mapped to Groq via OpenAI starter)
-            String aiResponse = chatModel.call(message);
-            System.out.println(">>> AI RESPONSE SUCCESSFUL");
-            return aiResponse;
+            // 1. Fetch live data from Supabase
+            List<Map<String, Object>> products = jdbcTemplate.queryForList(
+                "SELECT name, price, stock, sold_count FROM products"
+            );
+
+            // 2. Format the data into a string the AI can read
+            String inventoryContext = products.stream()
+                .map(p -> String.format("Item: %s | Price: %s | Stock: %s | Sold: %s", 
+                    p.get("name"), p.get("price"), p.get("stock"), p.get("sold_count")))
+                .collect(Collectors.joining("\n"));
+
+            // 3. Construct the "Augmented" Prompt
+            String fullPrompt = String.format(
+                "You are the QueryFlow AI CFO Advisor. Your job is to analyze the user's personal vault data.\n\n" +
+                "CURRENT VAULT DATA:\n%s\n\n" +
+                "USER QUESTION: %s\n\n" +
+                "INSTRUCTION: Use ONLY the vault data above to answer. If the data is empty, say 'Your vault is currently empty.' " +
+                "Be concise, professional, and highlight the most expensive or best-selling items if asked.",
+                inventoryContext.isEmpty() ? "No products found." : inventoryContext,
+                userMessage
+            );
+
+            // 4. Send the data-enriched prompt to Groq
+            String response = chatModel.call(fullPrompt);
+            System.out.println(">>> AI ANALYSIS SUCCESSFUL");
+            return response;
+
         } catch (Exception e) {
-            System.err.println(">>> AI ERROR: " + e.getMessage());
+            System.err.println(">>> AI ANALYSIS ERROR: " + e.getMessage());
             return "Advisor Error: " + e.getMessage();
         }
     }
