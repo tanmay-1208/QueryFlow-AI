@@ -19,21 +19,10 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // --- VAULT ROUTES ---
+    // --- VAULT INVENTORY ROUTES ---
     @GetMapping("/products")
     public List<Map<String, Object>> getProducts() {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
-    }
-
-    @PostMapping("/products")
-    public String addItem(@RequestBody Map<String, Object> item) {
-        String sql = "INSERT INTO products (name, price, stock, sold_count) VALUES (?, ?, ?, 0)";
-        jdbcTemplate.update(sql, 
-            item.get("name"), 
-            Double.parseDouble(String.valueOf(item.get("price"))), 
-            Integer.parseInt(String.valueOf(item.get("stock")))
-        );
-        return "Secured";
     }
 
     @PostMapping("/products/sell/{id}")
@@ -51,21 +40,22 @@ public class ChatController {
         jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
     }
 
-    // --- AI ADVISOR ROUTE ---
+    // --- AI ADVISOR ROUTE (THE BRAIN) ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String message = payload.get("message");
         
-        // DEBUG: This will show up in your Render Logs!
-        System.out.println("AI Request Received: " + message);
+        // Log to Render console so we know the request arrived
+        System.out.println(">>> AI REQUEST RECEIVED: " + message);
         
         try {
+            // Using the ChatModel (which is mapped to Groq via OpenAI starter)
             String aiResponse = chatModel.call(message);
-            System.out.println("AI Success: " + aiResponse);
+            System.out.println(">>> AI RESPONSE SUCCESSFUL");
             return aiResponse;
         } catch (Exception e) {
-            System.err.println("AI Error Details: " + e.getMessage());
-            return "AI Error: " + e.getMessage();
+            System.err.println(">>> AI ERROR: " + e.getMessage());
+            return "Advisor Error: " + e.getMessage();
         }
     }
 }
