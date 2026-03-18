@@ -40,49 +40,46 @@ public class ChatController {
         jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
     }
 
-    // --- AI CFO ADVISOR (WITH DATA-INJECTION) ---
+    // --- AI CFO ADVISOR (CONCISE MODE) ---
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
         
         try {
-            // 1. Fetch live data from your Supabase 'products' table
+            // 1. Fetch live data
             List<Map<String, Object>> products = jdbcTemplate.queryForList(
                 "SELECT name, price, stock, sold_count FROM products"
             );
 
-            // 2. Build the context string manually to ensure it's readable
-            StringBuilder vaultContext = new StringBuilder("The following is the current inventory in the user's vault:\n");
-            
+            // 2. Build context
+            StringBuilder vaultContext = new StringBuilder();
             if (products.isEmpty()) {
-                vaultContext.append("- No items are currently stored in the vault.");
+                vaultContext.append("Vault is empty.");
             } else {
                 for (Map<String, Object> p : products) {
-                    vaultContext.append(String.format("- Item: %s | Price: %s | Stock: %s | Sold: %s\n", 
+                    vaultContext.append(String.format("- %s (Price: %s, Stock: %s, Sold: %s)\n", 
                         p.get("name"), p.get("price"), p.get("stock"), p.get("sold_count")));
                 }
             }
 
-            // 3. Construct the "Augmented" Prompt for Llama 3.1
+            // 3. The Strict Prompt (Prevents long explanations)
             String finalPrompt = String.format(
-                "You are the QueryFlow AI CFO Advisor. Use the vault data provided below to answer the user's question.\n\n" +
-                "VAULT DATA:\n%s\n\n" +
-                "USER QUESTION: %s\n\n" +
-                "INSTRUCTION: Be professional and concise. If the user asks for the highest stock or most expensive item, " +
-                "identify it specifically from the VAULT DATA above.",
+                "You are a professional CFO Intelligence AI. Answer the question using ONLY this data:\n\n%s\n\n" +
+                "Question: %s\n\n" +
+                "STRICT RULES:\n" +
+                "1. Give a direct, one-sentence answer.\n" +
+                "2. Do NOT show your calculations or math.\n" +
+                "3. Do NOT explain how you got the answer.\n" +
+                "4. Just provide the final result clearly.",
                 vaultContext.toString(),
                 userMessage
             );
 
-            // Log for Render debugging
-            System.out.println(">>> AI PROCESSING QUERY FOR VAULT WITH " + products.size() + " ITEMS.");
-
-            // 4. Send the data-enriched prompt to the AI
+            System.out.println(">>> AI PROCESSING CONCISE QUERY");
             return chatModel.call(finalPrompt);
 
         } catch (Exception e) {
-            System.err.println(">>> AI ERROR: " + e.getMessage());
-            return "Advisor System Error: " + e.getMessage();
+            return "Advisor Error: " + e.getMessage();
         }
     }
 }
