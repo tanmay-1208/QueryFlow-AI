@@ -24,7 +24,6 @@ const LandingPage = () => (
 
 const Vault = () => {
   const [items, setItems] = useState([]);
-  // UPDATED: Added 'cost' to the form state
   const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "" });
 
   useEffect(() => { fetchItems(); }, []);
@@ -33,34 +32,35 @@ const Vault = () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products`);
       setItems(res.data);
-    } catch (err) { console.error("Vault Sync Error", err); }
+    } catch (err) { console.error("Sync Error", err); }
+  };
+
+  const addItem = async () => {
+    if (!form.name) return alert("Please enter an Asset Name");
+    try {
+      await axios.post(`${API_BASE_URL}/api/products`, {
+        name: form.name,
+        price: parseFloat(form.price) || 0,
+        cost: parseFloat(form.cost) || 0,
+        stock: parseInt(form.stock) || 0
+      });
+      setForm({ name: "", price: "", cost: "", stock: "" });
+      fetchItems();
+    } catch (err) { console.error("Add failed", err); }
   };
 
   const handleAction = async (type, id) => {
     try {
       await axios.post(`${API_BASE_URL}/api/products/${type}/${id}`);
       fetchItems();
-    } catch (err) { console.error(`${type} action failed`, err); }
+    } catch (err) { console.error(err); }
   };
 
   const deleteItem = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/api/products/${id}`);
       fetchItems();
-    } catch (err) { console.error("Release failed", err); }
-  };
-
-  const addItem = async () => {
-    // UPDATED: Check for form.cost as well
-    if (!form.name || !form.price || !form.cost || !form.stock) {
-        alert("Please fill all fields, including Cost Price.");
-        return;
-    }
-    try {
-      await axios.post(`${API_BASE_URL}/api/products`, form);
-      setForm({ name: "", price: "", cost: "", stock: "" }); // Reset cost
-      fetchItems();
-    } catch (err) { console.error("Vault Locked", err); }
+    } catch (err) { console.error(err); }
   };
 
   return (
@@ -69,27 +69,23 @@ const Vault = () => {
       <h2 className="gold-text section-title">ASSET INVENTORY</h2>
       <div className="input-section gold-border">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
-        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="SALE PRICE" className="dark-input" />
-        {/* NEW: Cost Input Field */}
+        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
         <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST PRICE" className="dark-input" />
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="STOCK" className="dark-input" />
         <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
       <div className="asset-grid">
         {items.map((item) => (
-          <div key={item.id} className={`asset-card gold-border ${item.stock <= 0 ? 'out-of-stock-card' : ''}`}>
+          <div key={item.id} className="asset-card gold-border">
             <h3 className="gold-text">{item.name}</h3>
-            <p className="price-tag">VALUATION: ${item.price}</p>
-            {/* NEW: Display Cost on the card */}
-            <p className="cost-tag" style={{fontSize: '0.8rem', opacity: 0.7}}>COST: ${item.cost}</p>
-            <p className={item.stock <= 0 ? 'red-text' : 'stock-text'}>
-              {item.stock <= 0 ? "⚠️ OUT OF STOCK" : `INVENTORY: ${item.stock}`}
-            </p>
+            <p>VALUATION: ${item.price}</p>
+            <p style={{opacity: 0.6}}>COST: ${item.cost}</p>
+            <p>INVENTORY: {item.stock}</p>
             <div className="card-actions">
-              <button onClick={() => handleAction('sell', item.id)} disabled={item.stock <= 0} className="action-btn">SELL</button>
+              <button onClick={() => handleAction('sell', item.id)} className="action-btn">SELL</button>
               <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
             </div>
-            <button onClick={() => deleteItem(item.id)} className="delete-btn">RELEASE FROM VAULT</button>
+            <button onClick={() => deleteItem(item.id)} className="delete-btn">RELEASE</button>
           </div>
         ))}
       </div>
@@ -105,14 +101,10 @@ const Advisor = () => {
   const askAdvisor = async () => {
     if (!query) return;
     setLoading(true);
-    setResponse(""); 
     try {
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
-    } catch (err) {
-      console.error("AI Sync Error:", err);
-      setResponse("Intelligence sync failed. Check Render Logs.");
-    }
+    } catch (err) { setResponse("Sync failed."); }
     setLoading(false);
   };
 
