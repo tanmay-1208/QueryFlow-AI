@@ -4,6 +4,32 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, us
 import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
+const GOOGLE_CLIENT_ID = "355056127518-9jjnnp9q7mkeum589k53dseuvdsrdpnf.apps.googleusercontent.com";
+
+// --- GOOGLE AUTH COMPONENT ---
+const GoogleBtn = ({ onLogin }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    /* global google */
+    if (window.google) {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: (response) => {
+          console.log("Google Auth Success");
+          onLogin(true);
+          navigate("/vault");
+        }
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("googleBtn"),
+        { theme: "outline", size: "large", width: "320" }
+      );
+    }
+  }, [onLogin, navigate]);
+
+  return <div id="googleBtn" className="google-flex-center"></div>;
+};
 
 // --- 1. LANDING PAGE (PUBLIC) ---
 const LandingPage = () => (
@@ -12,38 +38,33 @@ const LandingPage = () => (
       <div className="logo-text">QueryFlow <span className="blue-accent">SME</span></div>
       <div className="auth-btns">
         <Link to="/login" className="login-link">Login</Link>
-        <Link to="/login" className="cta-button-small">Get Started</Link>
+        <Link to="/signup" className="cta-button-small">Get Started</Link>
       </div>
     </nav>
     <div className="hero-section">
       <h1 className="hero-title">Your Business Intelligence <br/> <span className="blue-accent">Simplified.</span></h1>
       <p className="hero-subtitle">The all-in-one CFO Suite for modern SMEs. Manage inventory, track real-time margins, and consult your AI Financial Analyst.</p>
       <div className="hero-actions">
-        <Link to="/login" className="cta-button">Access My Vault</Link>
-        <button className="secondary-button" onClick={() => alert("Demo coming soon!")}>Watch Overview</button>
+        <Link to="/signup" className="cta-button">Start Free Trial</Link>
+        <Link to="/login" className="secondary-button">Access Vault</Link>
       </div>
-    </div>
-    <div className="features-strip">
-      <div className="feature">⚡ Real-time Inventory</div>
-      <div className="feature">📊 Margin Analytics</div>
-      <div className="feature">🤖 AI CFO Advisor</div>
     </div>
   </div>
 );
 
-// --- 2. AUTH GATEWAY (LOGIN) ---
+// --- 2. LOGIN COMPONENT ---
 const Login = ({ onLogin }) => {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleManualLogin = (e) => {
     e.preventDefault();
     if (user === "tanmay" && pass === "queryflow2026") {
       onLogin(true);
       navigate("/vault");
     } else {
-      alert("Invalid Security Credentials");
+      alert("Invalid Credentials");
     }
   };
 
@@ -51,38 +72,37 @@ const Login = ({ onLogin }) => {
     <div className="login-screen">
       <div className="login-card">
         <h2>Secure Login</h2>
-        <p className="login-subtitle">Enter your credentials to access the terminal</p>
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label>Username</label>
-            <input type="text" placeholder="tanmay" className="biz-input full-width" onChange={(e)=>setUser(e.target.value)} />
-          </div>
-          <div className="input-group">
-            <label>Password</label>
-            <input type="password" placeholder="••••••••" className="biz-input full-width" onChange={(e)=>setPass(e.target.value)} />
-          </div>
-          <button type="submit" className="add-stock-btn login-btn">UNLOCK VAULT</button>
+        <p className="login-subtitle">Enter credentials to unlock your terminal</p>
+        <form onSubmit={handleManualLogin}>
+          <input type="text" placeholder="Username" className="biz-input full-width" onChange={(e)=>setUser(e.target.value)} />
+          <input type="password" placeholder="Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPass(e.target.value)} />
+          <button type="submit" className="add-stock-btn login-btn">UNLOCK TERMINAL</button>
         </form>
-        <p className="signup-text">New Client? <span className="blue-accent">Create an Account</span></p>
+        <div className="divider"><span>OR</span></div>
+        <GoogleBtn onLogin={onLogin} />
+        <p className="signup-text">New Client? <Link to="/signup" className="blue-accent">Create an Account</Link></p>
       </div>
     </div>
   );
 };
 
-// --- 3. PRIVATE NAVIGATION ---
-const PrivateNav = ({ onLogout }) => (
-  <nav className="navbar">
-    <div className="logo-group">
-      <Link to="/vault" style={{textDecoration: 'none'}}>
-        <div className="logo-text">QueryFlow <span className="blue-accent">Vault</span></div>
-      </Link>
+// --- 3. SIGNUP COMPONENT ---
+const Signup = ({ onLogin }) => (
+  <div className="login-screen">
+    <div className="login-card">
+      <h2>Register Business</h2>
+      <p className="login-subtitle">Join the QueryFlow SME Network</p>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <input type="text" placeholder="Business Name" className="biz-input full-width" />
+        <input type="email" placeholder="Business Email" className="biz-input full-width" style={{marginTop:'10px'}} />
+        <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} />
+        <button type="submit" className="add-stock-btn login-btn">CREATE ACCOUNT</button>
+      </form>
+      <div className="divider"><span>OR</span></div>
+      <GoogleBtn onLogin={onLogin} />
+      <p className="signup-text">Already a member? <Link to="/login" className="blue-accent">Login here</Link></p>
     </div>
-    <div className="nav-links">
-      <Link to="/vault" className="nav-item">Inventory</Link>
-      <Link to="/advisor" className="nav-item">CFO Suite</Link>
-      <button onClick={onLogout} className="logout-btn">Logout</button>
-    </div>
-  </nav>
+  </div>
 );
 
 // --- 4. THE VAULT (INVENTORY) ---
@@ -107,11 +127,6 @@ const Vault = () => {
   const netAfterTax = totalPotentialProfit - estimatedTax;
 
   const filteredItems = items.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));
-  const topPerformer = items.length > 0 ? [...items].sort((a, b) => {
-    const marginA = ((a?.price || 0) - (a?.cost || 0)) / (a?.price || 1);
-    const marginB = ((b?.price || 0) - (b?.cost || 0)) / (b?.price || 1);
-    return marginB - marginA;
-  })[0] : null;
 
   const addItem = async () => {
     if (!form.name || !form.price) return alert("Required: Name & Price");
@@ -168,8 +183,7 @@ const Vault = () => {
           const isLowStock = (item?.stock || 0) <= 5;
 
           return (
-            <div key={item.id} className={`inventory-card ${topPerformer?.id === item.id ? 'highlight-margin' : ''} ${isLowStock ? 'low-stock-warning' : ''}`}>
-              {topPerformer?.id === item.id && <div className="margin-badge">Best Margin</div>}
+            <div key={item.id} className={`inventory-card ${isLowStock ? 'low-stock-warning' : ''}`}>
               {isLowStock && <div className="alert-badge">REORDER</div>}
               <h4 className="item-title">{item.name}</h4>
               <div className="item-financials"><span>Price: <b>${item?.price || 0}</b></span><span>Cost: <b>${item?.cost || 0}</b></span></div>
@@ -238,6 +252,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={!isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/vault" />} />
+          <Route path="/signup" element={!isAuthenticated ? <Signup onLogin={handleLogin} /> : <Navigate to="/vault" />} />
           <Route path="/vault" element={isAuthenticated ? <Vault /> : <Navigate to="/login" />} />
           <Route path="/advisor" element={isAuthenticated ? <Advisor /> : <Navigate to="/login" />} />
         </Routes>
@@ -248,8 +263,17 @@ function App() {
 
 const NavManager = ({ isAuthenticated, onLogout }) => {
   const location = useLocation();
-  if (!isAuthenticated || location.pathname === "/" || location.pathname === "/login") return null;
-  return <PrivateNav onLogout={onLogout} />;
+  if (!isAuthenticated || location.pathname === "/" || location.pathname === "/login" || location.pathname === "/signup") return null;
+  return (
+    <nav className="navbar">
+      <div className="logo-group"><Link to="/vault" style={{textDecoration: 'none'}}><div className="logo-text">QueryFlow <span className="blue-accent">Vault</span></div></Link></div>
+      <div className="nav-links">
+        <Link to="/vault" className="nav-item">Inventory</Link>
+        <Link to="/advisor" className="nav-item">CFO Suite</Link>
+        <button onClick={onLogout} className="logout-btn">Logout</button>
+      </div>
+    </nav>
+  );
 };
 
 export default App;
