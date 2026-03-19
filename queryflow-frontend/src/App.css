@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');
 
 :root {
   --primary: #2563eb;
@@ -52,15 +53,28 @@ body, html, #root, .App-wrapper {
 
 /* CARDS */
 .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.inventory-card { background: var(--white); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
+.inventory-card { background: var(--white); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 .highlight-margin { border: 2px solid var(--primary); }
 .margin-badge { position: absolute; top: 10px; right: 10px; background: #dbeafe; color: var(--primary); font-size: 0.6rem; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
-.item-financials { display: flex; justify-content: space-between; margin: 10px 0; }
-.item-meta { font-size: 0.8rem; color: var(--gray); margin-bottom: 15px; }
+.item-title { margin: 0 0 10px; font-size: 1.2rem; font-weight: 800; }
+.item-financials { display: flex; justify-content: space-between; margin: 10px 0; font-size: 0.9rem; }
+.item-meta { font-size: 0.8rem; color: var(--gray); margin-bottom: 15px; font-weight: 600; }
+
+/* UNIT ECONOMICS BOX */
+.unit-economics {
+  display: flex; background: #f8fafc; padding: 12px; border-radius: 6px;
+  margin: 15px 0; border: 1px dashed var(--border); justify-content: space-between;
+}
+.eco-item { display: flex; flex-direction: column; text-align: center; flex: 1; }
+.eco-label { font-size: 0.55rem; text-transform: uppercase; color: var(--gray); font-weight: 800; margin-bottom: 2px; }
+.eco-value { font-size: 0.9rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
 .item-actions { display: flex; gap: 10px; }
-.item-actions button { flex: 1; padding: 8px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border); font-weight: 600; }
+.item-actions button { flex: 1; padding: 10px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border); font-weight: 700; font-size: 0.75rem; background: #f1f5f9; }
+.log-sale-btn:hover { background: #dcfce7; color: #166534; border-color: #166534; }
+.restock-btn:hover { background: #dbeafe; color: #1e40af; border-color: #1e40af; }
 
 /* ADVISOR */
 .advisor-textarea { width: 100%; min-height: 150px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; margin-bottom: 10px; }
-.advisor-response { margin-top: 20px; padding: 25px; background: #eff6ff; border-radius: 8px; border-left: 5px solid var(--primary); line-height: 1.6; }
+.advisor-response { margin-top: 20px; padding: 25px; background: #f0f9ff; border-radius: 8px; border-left: 5px solid var(--primary); line-height: 1.6; }
 .full-width { width: 100%; padding: 15px; }

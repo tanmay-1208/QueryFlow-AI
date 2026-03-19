@@ -106,21 +106,42 @@ const Vault = () => {
       </div>
 
       <div className="inventory-grid">
-        {items.map((item) => (
-          <div key={item.id} className={`inventory-card ${topPerformer?.id === item.id ? 'highlight-margin' : ''}`}>
-            {topPerformer?.id === item.id && <div className="margin-badge">Best Margin</div>}
-            <h4 className="item-title">{item.name}</h4>
-            <div className="item-financials">
-              <span>Price: <b>${item.price}</b></span>
-              <span>Cost: <b>${item.cost}</b></span>
+        {items.map((item) => {
+          const unitProfit = item.price - (item.cost || 0);
+          const marginPercent = ((unitProfit / (item.price || 1)) * 100).toFixed(1);
+
+          return (
+            <div key={item.id} className={`inventory-card ${topPerformer?.id === item.id ? 'highlight-margin' : ''}`}>
+              {topPerformer?.id === item.id && <div className="margin-badge">Best Margin</div>}
+              
+              <h4 className="item-title">{item.name}</h4>
+              
+              <div className="item-financials">
+                <span>Price: <b>${item.price}</b></span>
+                <span>Cost: <b>${item.cost}</b></span>
+              </div>
+
+              {/* NEW: UNIT ECONOMICS SECTION */}
+              <div className="unit-economics">
+                <div className="eco-item">
+                  <span className="eco-label">Profit / Unit</span>
+                  <span className="eco-value text-green">+${unitProfit.toLocaleString()}</span>
+                </div>
+                <div className="eco-item">
+                  <span className="eco-label">Margin %</span>
+                  <span className="eco-value">{marginPercent}%</span>
+                </div>
+              </div>
+
+              <div className="item-meta">Stock: {item.stock} | Sold: {item.sold_count || 0}</div>
+              
+              <div className="item-actions">
+                <button onClick={() => handleAction('sell', item.id)} className="log-sale-btn">Log Sale</button>
+                <button onClick={() => handleAction('restock', item.id)} className="restock-btn">Restock</button>
+              </div>
             </div>
-            <div className="item-meta">Stock: {item.stock} | Sold: {item.sold_count || 0}</div>
-            <div className="item-actions">
-              <button onClick={() => handleAction('sell', item.id)} className="log-sale-btn">Log Sale</button>
-              <button onClick={() => handleAction('restock', item.id)} className="restock-btn">Restock</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
