@@ -24,7 +24,6 @@ public class ChatController {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
     }
 
-    // BULLETPROOF ADD METHOD
     @PostMapping("/products")
     public void addProduct(@RequestBody Map<String, Object> p) {
         try {
@@ -37,9 +36,8 @@ public class ChatController {
                 "INSERT INTO products (name, price, cost, stock, sold_count) VALUES (?, ?, ?, ?, 0)",
                 name, price, cost, stock
             );
-            System.out.println(">>> SUCCESS: Added " + name);
         } catch (Exception e) {
-            System.err.println(">>> BACKEND ERROR: " + e.getMessage());
+            System.err.println(">>> ADD ERROR: " + e.getMessage());
         }
     }
 
@@ -63,7 +61,7 @@ public class ChatController {
         String userMessage = payload.get("message");
         try {
             List<Map<String, Object>> products = jdbcTemplate.queryForList("SELECT name, price, cost, stock, sold_count FROM products");
-            StringBuilder context = new StringBuilder("Financial Data:\n");
+            StringBuilder context = new StringBuilder("Financial Data (All amounts in USD):\n");
             for (Map<String, Object> p : products) {
                 context.append("- ").append(String.valueOf(p.get("name")))
                        .append(" | Price: ").append(String.valueOf(p.get("price")))
@@ -72,10 +70,13 @@ public class ChatController {
             }
 
             String finalPrompt = String.format(
-                "You are a Senior CFO Advisor. Analyze this data:\n%s\n" +
+                "You are a Senior CFO & Tax Advisor. Use this data:\n%s\n" +
                 "Question: %s\n" +
-                "STRICT RULES: Calculate Gross Margin as ((Price - Cost) * Sold) / (Price * Sold). " +
-                "Give a direct one-sentence answer. No math shown.",
+                "STRICT ACCOUNTING RULES:\n" +
+                "1. Revenue = Sum of (Price * Sold).\n" +
+                "2. Tax Liability = Revenue * 0.18 (18%% GST/Luxury Tax).\n" +
+                "3. Net Profit = ((Price - Cost) * Sold) - Tax Liability.\n" +
+                "4. Provide a direct, one-sentence answer. Be highly professional. No math shown.",
                 context.toString(), userMessage
             );
             return chatModel.call(finalPrompt);
