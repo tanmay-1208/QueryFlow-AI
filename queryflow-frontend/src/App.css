@@ -5,41 +5,44 @@
 * { box-sizing: border-box; }
 body, html, #root, .App-wrapper { margin: 0; padding: 0; background-color: var(--bg) !important; color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
+/* LOGIN SCREEN */
+.login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #e2e8f0; }
+.login-card { background: white; padding: 50px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); width: 100%; max-width: 420px; text-align: center; border: 1px solid var(--border); }
+.login-subtitle { color: var(--gray); font-size: 0.9rem; margin-top: -10px; margin-bottom: 30px; }
+.login-form { text-align: left; }
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--gray); margin-bottom: 5px; }
+.login-btn { width: 100%; padding: 14px; margin-top: 10px; font-size: 0.9rem; letter-spacing: 1px; }
+.login-footer { margin-top: 30px; font-size: 0.7rem; color: #94a3b8; }
+
+/* NAVBAR */
 .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); }
 .logo-text { font-size: 1.4rem; font-weight: 800; }
 .blue-accent { color: var(--primary); }
-.nav-links .nav-item { text-decoration: none; color: var(--gray); margin-left: 2rem; font-weight: 600; transition: 0.2s; }
-.nav-item:hover { color: var(--primary); }
+.nav-links { display: flex; align-items: center; }
+.nav-links .nav-item { text-decoration: none; color: var(--gray); margin-left: 2rem; font-weight: 600; }
+.logout-btn { margin-left: 2rem; background: transparent; border: 1px solid #fca5a5; color: var(--red); padding: 6px 15px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.75rem; }
+.logout-btn:hover { background: #fef2f2; }
 
-.hero-content { padding: 100px 20px; text-align: center; }
-.hero-title { font-size: 3.5rem; font-weight: 800; }
-.cta-button { background: var(--primary); color: white; padding: 15px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-top: 30px; }
-
+/* DASHBOARD */
 .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 .stats-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
 .stat-card { background: var(--white); padding: 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--gray); font-weight: 800; }
+.stat-label { font-size: 0.7rem; font-weight: 800; color: var(--gray); }
 .stat-value { margin: 5px 0 0; font-size: 1.6rem; font-weight: 800; }
 
 .inventory-controls { display: flex; gap: 10px; background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 30px; border: 1px solid var(--border); }
 .biz-input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+.full-width { width: 100%; }
 .add-stock-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-/* SEARCH BAR */
-.search-bar-container { margin-bottom: 30px; display: flex; justify-content: center; }
-.search-input { width: 100%; max-width: 600px; padding: 12px 25px; border: 2px solid var(--border); border-radius: 99px; outline: none; transition: 0.3s; background: white; font-size: 1rem; }
-.search-input:focus { border-color: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1); }
 
 /* CARDS */
 .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.inventory-card { background: var(--white); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: 0.3s; }
-.inventory-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.inventory-card { background: var(--white); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 .low-stock-warning { border-left: 5px solid var(--red) !important; }
 .alert-badge { position: absolute; top: 10px; left: 10px; background: #fef2f2; color: var(--red); font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; font-weight: 800; border: 1px solid var(--red); }
-.margin-badge { position: absolute; top: 10px; right: 10px; background: #dbeafe; color: var(--primary); font-size: 0.6rem; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
 
 .unit-economics { display: flex; background: #f8fafc; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed var(--border); justify-content: space-between; }
-.eco-label { font-size: 0.55rem; text-transform: uppercase; color: var(--gray); font-weight: 800; }
 .eco-value { font-size: 0.9rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
 
 .item-actions { display: flex; gap: 5px; }
