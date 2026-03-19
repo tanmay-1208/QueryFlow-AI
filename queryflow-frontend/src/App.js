@@ -24,7 +24,8 @@ const LandingPage = () => (
 
 const Vault = () => {
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState({ name: "", price: "", stock: "" });
+  // UPDATED: Added 'cost' to the form state
+  const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "" });
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -50,10 +51,14 @@ const Vault = () => {
   };
 
   const addItem = async () => {
-    if (!form.name || !form.price || !form.stock) return;
+    // UPDATED: Check for form.cost as well
+    if (!form.name || !form.price || !form.cost || !form.stock) {
+        alert("Please fill all fields, including Cost Price.");
+        return;
+    }
     try {
       await axios.post(`${API_BASE_URL}/api/products`, form);
-      setForm({ name: "", price: "", stock: "" });
+      setForm({ name: "", price: "", cost: "", stock: "" }); // Reset cost
       fetchItems();
     } catch (err) { console.error("Vault Locked", err); }
   };
@@ -64,7 +69,9 @@ const Vault = () => {
       <h2 className="gold-text section-title">ASSET INVENTORY</h2>
       <div className="input-section gold-border">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
-        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
+        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="SALE PRICE" className="dark-input" />
+        {/* NEW: Cost Input Field */}
+        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST PRICE" className="dark-input" />
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="STOCK" className="dark-input" />
         <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
@@ -73,6 +80,8 @@ const Vault = () => {
           <div key={item.id} className={`asset-card gold-border ${item.stock <= 0 ? 'out-of-stock-card' : ''}`}>
             <h3 className="gold-text">{item.name}</h3>
             <p className="price-tag">VALUATION: ${item.price}</p>
+            {/* NEW: Display Cost on the card */}
+            <p className="cost-tag" style={{fontSize: '0.8rem', opacity: 0.7}}>COST: ${item.cost}</p>
             <p className={item.stock <= 0 ? 'red-text' : 'stock-text'}>
               {item.stock <= 0 ? "⚠️ OUT OF STOCK" : `INVENTORY: ${item.stock}`}
             </p>
@@ -96,9 +105,8 @@ const Advisor = () => {
   const askAdvisor = async () => {
     if (!query) return;
     setLoading(true);
-    setResponse(""); // Clear old response
+    setResponse(""); 
     try {
-      // POSTING TO /api/chat
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
     } catch (err) {
