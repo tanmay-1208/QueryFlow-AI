@@ -35,6 +35,7 @@ const LandingPage = () => (
 
 const Vault = () => {
   const [items, setItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // NEW: Search state
   const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "" });
 
   useEffect(() => { fetchItems(); }, []);
@@ -49,12 +50,17 @@ const Vault = () => {
     }
   };
 
-  // SAFETY CHECKS FOR TOTALS
+  // --- CALCULATION LOGIC ---
   const taxRate = 0.18;
   const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
   const totalPotentialProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
   const estimatedTax = totalValuation * taxRate;
   const netAfterTax = totalPotentialProfit - estimatedTax;
+
+  // NEW: Filtering Logic
+  const filteredItems = items.filter(item => 
+    item.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const topPerformer = items.length > 0 ? [...items].sort((a, b) => {
     const marginA = ((a?.price || 0) - (a?.cost || 0)) / (a?.price || 1);
@@ -120,8 +126,19 @@ const Vault = () => {
         <button onClick={addItem} className="add-stock-btn">Add SKU</button>
       </div>
 
+      {/* NEW: Search Bar UI */}
+      <div className="search-section">
+        <input 
+          type="text" 
+          placeholder="🔍 Search inventory by name..." 
+          className="search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <div className="inventory-grid">
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           const unitProfit = (item?.price || 0) - (item?.cost || 0);
           const marginPercent = ((unitProfit / (item?.price || 1)) * 100).toFixed(1);
           const isLowStock = (item?.stock || 0) <= 5;
