@@ -35,12 +35,19 @@ const Vault = () => {
     } catch (err) { console.error("Sync Error", err); }
   };
 
-  // --- TAX & VALUATION LOGIC ---
-  const taxRate = 0.18; // 18% GST Estimate
+  // --- CALCULATION LOGIC ---
+  const taxRate = 0.18;
   const totalValuation = items.reduce((acc, item) => acc + (item.price * item.stock), 0);
   const totalPotentialProfit = items.reduce((acc, item) => acc + ((item.price - item.cost) * item.stock), 0);
   const estimatedTax = totalValuation * taxRate;
   const netAfterTax = totalPotentialProfit - estimatedTax;
+
+  // --- TOP PERFORMER LOGIC ---
+  const topPerformer = items.length > 0 ? [...items].sort((a, b) => {
+    const marginA = (a.price - a.cost) / (a.price || 1);
+    const marginB = (b.price - b.cost) / (b.price || 1);
+    return marginB - marginA;
+  })[0] : null;
 
   const addItem = async () => {
     if (!form.name || !form.price || !form.cost) return alert("Fill all fields");
@@ -74,7 +81,6 @@ const Vault = () => {
     <div className="main-container vault-page">
       <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       
-      {/* UPDATED FINANCIAL SUMMARY BAR */}
       <div className="financial-summary gold-border">
         <div className="summary-item">
           <p className="label">GROSS VALUATION</p>
@@ -104,11 +110,12 @@ const Vault = () => {
 
       <div className="asset-grid">
         {items.map((item) => (
-          <div key={item.id} className="asset-card gold-border">
+          <div key={item.id} className={`asset-card gold-border ${topPerformer?.id === item.id ? 'top-asset' : ''}`}>
+            {topPerformer?.id === item.id && <div className="top-badge">TOP MARGIN</div>}
             <h3 className="gold-text">{item.name}</h3>
             <p className="price-tag">PRICE: ${item.price}</p>
             <p className="cost-tag">COST: ${item.cost}</p>
-            <p>INVENTORY: {item.stock} | SOLD: {item.sold_count}</p>
+            <p>STOCK: {item.stock} | SOLD: {item.sold_count}</p>
             <div className="card-actions">
               <button onClick={() => handleAction('sell', item.id)} className="action-btn">SELL</button>
               <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
