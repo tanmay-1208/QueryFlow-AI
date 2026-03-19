@@ -35,18 +35,20 @@ const Vault = () => {
     } catch (err) { console.error("Sync Error", err); }
   };
 
-  // --- CALCULATION LOGIC ---
+  // --- TAX & VALUATION LOGIC ---
+  const taxRate = 0.18; // 18% GST Estimate
   const totalValuation = items.reduce((acc, item) => acc + (item.price * item.stock), 0);
   const totalPotentialProfit = items.reduce((acc, item) => acc + ((item.price - item.cost) * item.stock), 0);
-  const totalItemsSold = items.reduce((acc, item) => acc + (item.sold_count || 0), 0);
+  const estimatedTax = totalValuation * taxRate;
+  const netAfterTax = totalPotentialProfit - estimatedTax;
 
   const addItem = async () => {
-    if (!form.name) return alert("Please enter an Asset Name");
+    if (!form.name || !form.price || !form.cost) return alert("Fill all fields");
     try {
       await axios.post(`${API_BASE_URL}/api/products`, {
         name: form.name,
-        price: parseFloat(form.price) || 0,
-        cost: parseFloat(form.cost) || 0,
+        price: parseFloat(form.price),
+        cost: parseFloat(form.cost),
         stock: parseInt(form.stock) || 0
       });
       setForm({ name: "", price: "", cost: "", stock: "" });
@@ -72,26 +74,30 @@ const Vault = () => {
     <div className="main-container vault-page">
       <Link to="/" className="back-link gold-text">← TERMINAL</Link>
       
-      {/* FINANCIAL SUMMARY SECTION */}
+      {/* UPDATED FINANCIAL SUMMARY BAR */}
       <div className="financial-summary gold-border">
         <div className="summary-item">
-          <p className="label">TOTAL VAULT VALUE</p>
+          <p className="label">GROSS VALUATION</p>
           <p className="value gold-text">${totalValuation.toLocaleString()}</p>
         </div>
         <div className="summary-item">
-          <p className="label">EST. NET PROFIT</p>
-          <p className="value gold-text">${totalPotentialProfit.toLocaleString()}</p>
+          <p className="label">EST. TAX (18%)</p>
+          <p className="value" style={{color: '#ff4444'}}>-${estimatedTax.toLocaleString()}</p>
         </div>
         <div className="summary-item">
-          <p className="label">ASSETS SECURED</p>
-          <p className="value gold-text">{items.length} Units</p>
+          <p className="label">NET AFTER TAX</p>
+          <p className="value" style={{color: '#00ff88'}}>${netAfterTax.toLocaleString()}</p>
+        </div>
+        <div className="summary-item">
+          <p className="label">UNITS</p>
+          <p className="value gold-text">{items.length}</p>
         </div>
       </div>
 
       <div className="input-section gold-border">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
-        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
-        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST" className="dark-input" />
+        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="SALE PRICE" className="dark-input" />
+        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST PRICE" className="dark-input" />
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="STOCK" className="dark-input" />
         <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
@@ -100,9 +106,9 @@ const Vault = () => {
         {items.map((item) => (
           <div key={item.id} className="asset-card gold-border">
             <h3 className="gold-text">{item.name}</h3>
-            <p className="price-tag">VALUATION: ${item.price}</p>
-            <p className="cost-tag" style={{opacity: 0.6}}>COST: ${item.cost}</p>
-            <p>STOCK: {item.stock} | SOLD: {item.sold_count}</p>
+            <p className="price-tag">PRICE: ${item.price}</p>
+            <p className="cost-tag">COST: ${item.cost}</p>
+            <p>INVENTORY: {item.stock} | SOLD: {item.sold_count}</p>
             <div className="card-actions">
               <button onClick={() => handleAction('sell', item.id)} className="action-btn">SELL</button>
               <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
