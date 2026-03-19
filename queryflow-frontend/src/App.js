@@ -11,29 +11,25 @@ const Navigation = () => {
   return (
     <nav className="navbar">
       <div className="logo-group">
-        <Link to="/" style={{textDecoration: 'none'}}><div className="logo gold-text">QUERYFLOW AI</div></Link>
-        <div className="tagline-sub">EXECUTIVE TERMINAL</div>
+        <Link to="/" style={{textDecoration: 'none'}}><div className="logo">QueryFlow <span className="blue-text">Business</span></div></Link>
       </div>
       <div className="nav-links">
-        <Link to="/vault" className={`nav-item ${location.pathname === '/vault' ? 'active' : ''}`}>Vault</Link>
-        <Link to="/advisor" className={`nav-item ${location.pathname === '/advisor' ? 'active' : ''}`}>CFO Suite</Link>
+        <Link to="/vault" className={`nav-item ${location.pathname === '/vault' ? 'active' : ''}`}>Inventory</Link>
+        <Link to="/advisor" className={`nav-item ${location.pathname === '/advisor' ? 'active' : ''}`}>Financial Advisor</Link>
       </div>
     </nav>
   );
 };
 
 const LandingPage = () => (
-  <div className="hero-wrapper">
+  <div className="landing-wrapper">
     <div className="hero">
-      <div className="status-indicator"><span className="dot"></span> SECURE CONNECTION ACTIVE</div>
-      <h1 className="header-title">THE VIRTUAL CA</h1>
+      <h1 className="hero-title">Smart Inventory for <span className="blue-text">SMEs</span></h1>
       <p className="hero-subtitle">
-        Luxury Asset Security & Financial Intelligence. 
-        High-fidelity tracking for elite portfolios.
+        Automate your stock tracking, calculate real-time margins, and get AI-driven financial insights for your growing business.
       </p>
       <div className="hero-actions">
-        <Link to="/vault" className="cta-button gold-bg">INITIALIZE VAULT</Link>
-        <Link to="/advisor" className="secondary-btn">AI ANALYSIS</Link>
+        <Link to="/vault" className="cta-button">Manage Inventory</Link>
       </div>
     </div>
   </div>
@@ -65,7 +61,7 @@ const Vault = () => {
   })[0] : null;
 
   const addItem = async () => {
-    if (!form.name || !form.price || !form.cost) return alert("Fill all fields");
+    if (!form.name || !form.price || !form.cost) return alert("All fields required");
     try {
       await axios.post(`${API_BASE_URL}/api/products`, {
         name: form.name,
@@ -86,48 +82,49 @@ const Vault = () => {
   };
 
   return (
-    <div className="main-container vault-page">
-      <div className="financial-summary gold-border">
-        <div className="summary-item">
-          <p className="label">GROSS VALUATION</p>
-          <p className="value gold-text">${totalValuation.toLocaleString()}</p>
+    <div className="main-container">
+      <div className="stats-grid">
+        <div className="stat-card">
+          <label>Inventory Value</label>
+          <h3>${totalValuation.toLocaleString()}</h3>
         </div>
-        <div className="summary-item">
-          <p className="label">EST. TAX (18%)</p>
-          <p className="value color-red">-${estimatedTax.toLocaleString()}</p>
+        <div className="stat-card">
+          <label>Est. Tax Liability</label>
+          <h3 className="red-text">-${estimatedTax.toLocaleString()}</h3>
         </div>
-        <div className="summary-item">
-          <p className="label">NET AFTER TAX</p>
-          <p className="value color-green">${netAfterTax.toLocaleString()}</p>
+        <div className="stat-card">
+          <label>Projected Net Profit</label>
+          <h3 className="green-text">${netAfterTax.toLocaleString()}</h3>
         </div>
-        <div className="summary-item">
-          <p className="label">PORTFOLIO SIZE</p>
-          <p className="value gold-text">{items.length} ASSETS</p>
+        <div className="stat-card">
+          <label>SKU Count</label>
+          <h3>{items.length}</h3>
         </div>
       </div>
 
-      <div className="input-section gold-border">
-        <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
-        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
-        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST" className="dark-input" />
-        <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="UNITS" className="dark-input" />
-        <button onClick={addItem} className="gold-btn">SECURE ASSET</button>
+      <div className="biz-input-bar">
+        <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Item Name" />
+        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="Sale Price" />
+        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="Cost Price" />
+        <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="Initial Stock" />
+        <button onClick={addItem} className="biz-btn">Add to Stock</button>
       </div>
 
-      <div className="asset-grid">
+      <div className="biz-grid">
         {items.map((item) => (
-          <div key={item.id} className={`asset-card gold-border ${topPerformer?.id === item.id ? 'top-asset' : ''}`}>
-            {topPerformer?.id === item.id && <div className="top-badge">TOP MARGIN</div>}
-            <h3 className="gold-text">{item.name}</h3>
-            <p className="price-tag">${(item.price || 0).toLocaleString()}</p>
-            <p className="cost-tag">COST: ${item.cost || 0}</p>
-            <div className="stock-info">
-              <span>STOCK: {item.stock}</span>
-              <span>SOLD: {item.sold_count || 0}</span>
+          <div key={item.id} className={`biz-card ${topPerformer?.id === item.id ? 'best-seller' : ''}`}>
+            {topPerformer?.id === item.id && <span className="badge">High Margin</span>}
+            <h4>{item.name}</h4>
+            <div className="biz-card-data">
+              <p>Price: <b>${item.price}</b></p>
+              <p>Cost: <b>${item.cost}</b></p>
             </div>
-            <div className="card-actions">
-              <button onClick={() => handleAction('sell', item.id)} className="action-btn">SELL</button>
-              <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
+            <div className="stock-level">
+              Stock: {item.stock} | Sold: {item.sold_count || 0}
+            </div>
+            <div className="biz-actions">
+              <button onClick={() => handleAction('sell', item.id)}>Log Sale</button>
+              <button onClick={() => handleAction('restock', item.id)} className="restock-btn">Restock</button>
             </div>
           </div>
         ))}
@@ -147,19 +144,19 @@ const Advisor = () => {
     try {
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
-    } catch (err) { setResponse("Intelligence Sync Offline."); }
+    } catch (err) { setResponse("Advisor currently offline."); }
     setLoading(false);
   };
 
   return (
-    <div className="main-container advisor-page">
-      <h2 className="gold-text section-title">CFO INTELLIGENCE</h2>
-      <div className="ai-container">
-        <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="REQUEST FINANCIAL ANALYSIS..." className="dark-input ai-textarea" />
-        <button onClick={askAdvisor} disabled={loading} className="gold-btn full-width">
-          {loading ? "PROCESSING DATA..." : "RUN ANALYSIS"}
+    <div className="main-container">
+      <h2 className="page-title">Business Intelligence Advisor</h2>
+      <div className="advisor-box">
+        <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="e.g., Which items should I liquidate? How is my monthly margin?" />
+        <button onClick={askAdvisor} disabled={loading} className="biz-btn">
+          {loading ? "Analyzing..." : "Get Business Insight"}
         </button>
-        {response && <div className="ai-report gold-border gold-text fade-in">{response}</div>}
+        {response && <div className="report-box">{response}</div>}
       </div>
     </div>
   );
