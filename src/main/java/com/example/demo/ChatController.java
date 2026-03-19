@@ -61,7 +61,7 @@ public class ChatController {
         String userMessage = payload.get("message");
         try {
             List<Map<String, Object>> products = jdbcTemplate.queryForList("SELECT name, price, cost, stock, sold_count FROM products");
-            StringBuilder context = new StringBuilder("Financial Data (All amounts in USD):\n");
+            StringBuilder context = new StringBuilder("Financial Data (USD):\n");
             for (Map<String, Object> p : products) {
                 context.append("- ").append(String.valueOf(p.get("name")))
                        .append(" | Price: ").append(String.valueOf(p.get("price")))
@@ -74,9 +74,10 @@ public class ChatController {
                 "Question: %s\n" +
                 "STRICT ACCOUNTING RULES:\n" +
                 "1. Revenue = Sum of (Price * Sold).\n" +
-                "2. Tax Liability = Revenue * 0.18 (18%% GST/Luxury Tax).\n" +
+                "2. Tax Liability = Revenue * 0.18 (GST).\n" +
                 "3. Net Profit = ((Price - Cost) * Sold) - Tax Liability.\n" +
-                "4. Provide a direct, one-sentence answer. Be highly professional. No math shown.",
+                "4. Identify the 'Top Performer' as the item with the highest (Price-Cost)/Price ratio.\n" +
+                "Provide a direct, one-sentence answer. No math shown.",
                 context.toString(), userMessage
             );
             return chatModel.call(finalPrompt);
