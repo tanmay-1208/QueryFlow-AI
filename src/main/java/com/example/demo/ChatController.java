@@ -19,60 +19,65 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // GET ALL ASSETS
     @GetMapping("/products")
     public List<Map<String, Object>> getProducts() {
         return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
     }
 
-    // SECURE NEW ASSET (WITH COST)
+    // BULLETPROOF ADD METHOD
     @PostMapping("/products")
     public void addProduct(@RequestBody Map<String, Object> p) {
-        jdbcTemplate.update(
-            "INSERT INTO products (name, price, cost, stock, sold_count) VALUES (?, ?, ?, ?, 0)",
-            p.get("name"), p.get("price"), p.get("cost"), p.get("stock")
-        );
+        try {
+            String name = String.valueOf(p.getOrDefault("name", "Unnamed Asset"));
+            double price = Double.parseDouble(String.valueOf(p.getOrDefault("price", "0")));
+            double cost = Double.parseDouble(String.valueOf(p.getOrDefault("cost", "0")));
+            int stock = Integer.parseInt(String.valueOf(p.getOrDefault("stock", "0")));
+
+            jdbcTemplate.update(
+                "INSERT INTO products (name, price, cost, stock, sold_count) VALUES (?, ?, ?, ?, 0)",
+                name, price, cost, stock
+            );
+            System.out.println(">>> SUCCESS: Added " + name);
+        } catch (Exception e) {
+            System.err.println(">>> BACKEND ERROR: " + e.getMessage());
+        }
     }
 
-    // SELL LOGIC
     @PostMapping("/products/sell/{id}")
     public void sellItem(@PathVariable Long id) {
         jdbcTemplate.update("UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE id = ? AND stock > 0", id);
     }
 
-    // DELETE LOGIC
+    @PostMapping("/products/restock/{id}")
+    public void restockItem(@PathVariable Long id) {
+        jdbcTemplate.update("UPDATE products SET stock = stock + 1 WHERE id = ?", id);
+    }
+
     @DeleteMapping("/products/{id}")
     public void deleteItem(@PathVariable Long id) {
         jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
     }
 
-    // AI CFO ADVISOR (ADVANCED FINANCIAL MODE)
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
         try {
-            List<Map<String, Object>> products = jdbcTemplate.queryForList(
-                "SELECT name, price, cost, stock, sold_count FROM products"
-            );
-
+            List<Map<String, Object>> products = jdbcTemplate.queryForList("SELECT name, price, cost, stock, sold_count FROM products");
             StringBuilder context = new StringBuilder("Financial Data:\n");
             for (Map<String, Object> p : products) {
-                context.append("- ").append(p.get("name"))
-                       .append(" | Price: ").append(p.get( "price"))
-                       .append(" | Cost: ").append(p.get("cost"))
-                       .append(" | Sold: ").append(p.get("sold_count")).append("\n");
+                context.append("- ").append(String.valueOf(p.get("name")))
+                       .append(" | Price: ").append(String.valueOf(p.get("price")))
+                       .append(" | Cost: ").append(String.valueOf(p.get("cost")))
+                       .append(" | Sold: ").append(String.valueOf(p.get("sold_count"))).append("\n");
             }
 
             String finalPrompt = String.format(
-                "You are a Senior CFO Advisor. Use this data:\n%s\n" +
+                "You are a Senior CFO Advisor. Analyze this data:\n%s\n" +
                 "Question: %s\n" +
-                "STRICT RULES:\n" +
-                "1. Total Profit = Sum of ((Price - Cost) * Sold).\n" +
-                "2. Gross Margin %% = (Total Profit / (Total Price * Total Sold)) * 100.\n" +
-                "3. Provide a direct, one-sentence answer. No math shown.",
+                "STRICT RULES: Calculate Gross Margin as ((Price - Cost) * Sold) / (Price * Sold). " +
+                "Give a direct one-sentence answer. No math shown.",
                 context.toString(), userMessage
             );
-
             return chatModel.call(finalPrompt);
         } catch (Exception e) {
             return "Advisor Error: " + e.getMessage();
