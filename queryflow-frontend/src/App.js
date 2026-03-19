@@ -11,7 +11,9 @@ const Navigation = () => {
   return (
     <nav className="navbar">
       <div className="logo-group">
-        <Link to="/" style={{textDecoration: 'none'}}><div className="logo">QueryFlow <span className="blue-text">Business</span></div></Link>
+        <Link to="/" style={{textDecoration: 'none'}}>
+            <div className="logo-text">QueryFlow <span className="blue-accent">Business</span></div>
+        </Link>
       </div>
       <div className="nav-links">
         <Link to="/vault" className={`nav-item ${location.pathname === '/vault' ? 'active' : ''}`}>Inventory</Link>
@@ -23,14 +25,12 @@ const Navigation = () => {
 
 const LandingPage = () => (
   <div className="landing-wrapper">
-    <div className="hero">
-      <h1 className="hero-title">Smart Inventory for <span className="blue-text">SMEs</span></h1>
+    <div className="hero-content">
+      <h1 className="hero-title">Inventory Management for <span className="blue-accent">SMEs</span></h1>
       <p className="hero-subtitle">
-        Automate your stock tracking, calculate real-time margins, and get AI-driven financial insights for your growing business.
+        Professional stock tracking and AI-driven financial insights for your growing business.
       </p>
-      <div className="hero-actions">
-        <Link to="/vault" className="cta-button">Manage Inventory</Link>
-      </div>
+      <Link to="/vault" className="cta-button">Access Dashboard</Link>
     </div>
   </div>
 );
@@ -61,7 +61,7 @@ const Vault = () => {
   })[0] : null;
 
   const addItem = async () => {
-    if (!form.name || !form.price || !form.cost) return alert("All fields required");
+    if (!form.name || !form.price || !form.cost) return alert("All fields are required");
     try {
       await axios.post(`${API_BASE_URL}/api/products`, {
         name: form.name,
@@ -82,48 +82,48 @@ const Vault = () => {
   };
 
   return (
-    <div className="main-container">
-      <div className="stats-grid">
+    <div className="dashboard-container">
+      <div className="stats-header">
         <div className="stat-card">
-          <label>Inventory Value</label>
-          <h3>${totalValuation.toLocaleString()}</h3>
+          <span className="stat-label">Stock Valuation</span>
+          <h3 className="stat-value">${totalValuation.toLocaleString()}</h3>
         </div>
         <div className="stat-card">
-          <label>Est. Tax Liability</label>
-          <h3 className="red-text">-${estimatedTax.toLocaleString()}</h3>
+          <span className="stat-label">Tax Liability</span>
+          <h3 className="stat-value text-red">-${estimatedTax.toLocaleString()}</h3>
         </div>
         <div className="stat-card">
-          <label>Projected Net Profit</label>
-          <h3 className="green-text">${netAfterTax.toLocaleString()}</h3>
+          <span className="stat-label">Net Profit</span>
+          <h3 className="stat-value text-green">${netAfterTax.toLocaleString()}</h3>
         </div>
         <div className="stat-card">
-          <label>SKU Count</label>
-          <h3>{items.length}</h3>
+          <span className="stat-label">Total SKUs</span>
+          <h3 className="stat-value">{items.length}</h3>
         </div>
       </div>
 
-      <div className="biz-input-bar">
-        <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Item Name" />
-        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="Sale Price" />
-        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="Cost Price" />
-        <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="Initial Stock" />
-        <button onClick={addItem} className="biz-btn">Add to Stock</button>
+      <div className="inventory-controls">
+        <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Item Name" className="biz-input" />
+        <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="Sale Price" className="biz-input" />
+        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="Cost Price" className="biz-input" />
+        <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="Stock" className="biz-input" />
+        <button onClick={addItem} className="add-stock-btn">Add to Stock</button>
       </div>
 
-      <div className="biz-grid">
+      <div className="inventory-grid">
         {items.map((item) => (
-          <div key={item.id} className={`biz-card ${topPerformer?.id === item.id ? 'best-seller' : ''}`}>
-            {topPerformer?.id === item.id && <span className="badge">High Margin</span>}
-            <h4>{item.name}</h4>
-            <div className="biz-card-data">
+          <div key={item.id} className={`inventory-card ${topPerformer?.id === item.id ? 'highlight-margin' : ''}`}>
+            {topPerformer?.id === item.id && <div className="margin-badge">Best Margin</div>}
+            <h4 className="item-title">{item.name}</h4>
+            <div className="item-financials">
               <p>Price: <b>${item.price}</b></p>
               <p>Cost: <b>${item.cost}</b></p>
             </div>
-            <div className="stock-level">
+            <div className="item-meta">
               Stock: {item.stock} | Sold: {item.sold_count || 0}
             </div>
-            <div className="biz-actions">
-              <button onClick={() => handleAction('sell', item.id)}>Log Sale</button>
+            <div className="item-actions">
+              <button onClick={() => handleAction('sell', item.id)} className="log-sale-btn">Log Sale</button>
               <button onClick={() => handleAction('restock', item.id)} className="restock-btn">Restock</button>
             </div>
           </div>
@@ -144,19 +144,19 @@ const Advisor = () => {
     try {
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
       setResponse(res.data);
-    } catch (err) { setResponse("Advisor currently offline."); }
+    } catch (err) { setResponse("Advisor sync error."); }
     setLoading(false);
   };
 
   return (
-    <div className="main-container">
-      <h2 className="page-title">Business Intelligence Advisor</h2>
-      <div className="advisor-box">
-        <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="e.g., Which items should I liquidate? How is my monthly margin?" />
-        <button onClick={askAdvisor} disabled={loading} className="biz-btn">
-          {loading ? "Analyzing..." : "Get Business Insight"}
+    <div className="dashboard-container">
+      <h2 className="page-header">Business Financial Advisor</h2>
+      <div className="advisor-input-area">
+        <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="How can I optimize my business profit?" className="advisor-textarea" />
+        <button onClick={askAdvisor} disabled={loading} className="add-stock-btn full-width">
+          {loading ? "Analyzing..." : "Analyze Business Data"}
         </button>
-        {response && <div className="report-box">{response}</div>}
+        {response && <div className="advisor-response-box fade-in">{response}</div>}
       </div>
     </div>
   );
@@ -165,7 +165,7 @@ const Advisor = () => {
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="App-wrapper">
         <Navigation />
         <Routes>
           <Route path="/" element={<LandingPage />} />
