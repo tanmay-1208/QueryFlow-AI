@@ -35,6 +35,11 @@ const Vault = () => {
     } catch (err) { console.error("Sync Error", err); }
   };
 
+  // --- CALCULATION LOGIC ---
+  const totalValuation = items.reduce((acc, item) => acc + (item.price * item.stock), 0);
+  const totalPotentialProfit = items.reduce((acc, item) => acc + ((item.price - item.cost) * item.stock), 0);
+  const totalItemsSold = items.reduce((acc, item) => acc + (item.sold_count || 0), 0);
+
   const addItem = async () => {
     if (!form.name) return alert("Please enter an Asset Name");
     try {
@@ -66,21 +71,38 @@ const Vault = () => {
   return (
     <div className="main-container vault-page">
       <Link to="/" className="back-link gold-text">← TERMINAL</Link>
-      <h2 className="gold-text section-title">ASSET INVENTORY</h2>
+      
+      {/* FINANCIAL SUMMARY SECTION */}
+      <div className="financial-summary gold-border">
+        <div className="summary-item">
+          <p className="label">TOTAL VAULT VALUE</p>
+          <p className="value gold-text">${totalValuation.toLocaleString()}</p>
+        </div>
+        <div className="summary-item">
+          <p className="label">EST. NET PROFIT</p>
+          <p className="value gold-text">${totalPotentialProfit.toLocaleString()}</p>
+        </div>
+        <div className="summary-item">
+          <p className="label">ASSETS SECURED</p>
+          <p className="value gold-text">{items.length} Units</p>
+        </div>
+      </div>
+
       <div className="input-section gold-border">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="ASSET NAME" className="dark-input" />
         <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="PRICE" className="dark-input" />
-        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST PRICE" className="dark-input" />
+        <input type="number" value={form.cost} onChange={(e) => setForm({...form, cost: e.target.value})} placeholder="COST" className="dark-input" />
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="STOCK" className="dark-input" />
         <button onClick={addItem} className="gold-btn">SECURE</button>
       </div>
+
       <div className="asset-grid">
         {items.map((item) => (
           <div key={item.id} className="asset-card gold-border">
             <h3 className="gold-text">{item.name}</h3>
-            <p>VALUATION: ${item.price}</p>
-            <p style={{opacity: 0.6}}>COST: ${item.cost}</p>
-            <p>INVENTORY: {item.stock}</p>
+            <p className="price-tag">VALUATION: ${item.price}</p>
+            <p className="cost-tag" style={{opacity: 0.6}}>COST: ${item.cost}</p>
+            <p>STOCK: {item.stock} | SOLD: {item.sold_count}</p>
             <div className="card-actions">
               <button onClick={() => handleAction('sell', item.id)} className="action-btn">SELL</button>
               <button onClick={() => handleAction('restock', item.id)} className="action-btn restock">RESTOCK</button>
