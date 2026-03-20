@@ -16,8 +16,12 @@ const GoogleBtn = ({ onLogin }) => {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: (response) => {
-          console.log("Google Auth Success");
-          onLogin(true);
+          // Decode the JWT to get the user's unique ID/Email
+          const userObject = JSON.parse(atob(response.credential.split('.')[1]));
+          console.log("Authenticated as:", userObject.email);
+          
+          // Pass the user email as the unique identifier
+          onLogin(true, userObject.email); 
           navigate("/vault");
         }
       });
@@ -31,7 +35,7 @@ const GoogleBtn = ({ onLogin }) => {
   return <div id="googleBtn" className="google-flex-center"></div>;
 };
 
-// --- 1. LANDING PAGE (PUBLIC) ---
+// --- 1. LANDING PAGE ---
 const LandingPage = () => (
   <div className="landing-page">
     <nav className="public-nav">
@@ -61,7 +65,7 @@ const Login = ({ onLogin }) => {
   const handleManualLogin = (e) => {
     e.preventDefault();
     if (user === "tanmay" && pass === "queryflow2026") {
-      onLogin(true);
+      onLogin(true, "tanmay-admin"); // Manual users also get an ID
       navigate("/vault");
     } else {
       alert("Invalid Credentials");
@@ -80,60 +84,47 @@ const Login = ({ onLogin }) => {
         </form>
         <div className="divider"><span>OR</span></div>
         <GoogleBtn onLogin={onLogin} />
-        <p className="signup-text">New Client? <Link to="/signup" className="blue-accent">Create an Account</Link></p>
       </div>
     </div>
   );
 };
 
-// --- 3. SIGNUP COMPONENT ---
+// --- 3. SIGNUP (PLACEHOLDER) ---
 const Signup = ({ onLogin }) => (
   <div className="login-screen">
     <div className="login-card">
       <h2>Register Business</h2>
-      <p className="login-subtitle">Join the QueryFlow SME Network</p>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <input type="text" placeholder="Business Name" className="biz-input full-width" />
-        <input type="email" placeholder="Business Email" className="biz-input full-width" style={{marginTop:'10px'}} />
-        <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} />
-        <button type="submit" className="add-stock-btn login-btn">CREATE ACCOUNT</button>
-      </form>
-      <div className="divider"><span>OR</span></div>
       <GoogleBtn onLogin={onLogin} />
-      <p className="signup-text">Already a member? <Link to="/login" className="blue-accent">Login here</Link></p>
     </div>
   </div>
 );
 
-// --- 4. THE VAULT (INVENTORY) ---
-const Vault = () => {
+// --- 4. THE VAULT (MULTI-TENANT VERSION) ---
+const Vault = ({ userId }) => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [form, setForm] = useState({ name: "", price: "", cost: "", stock: "" });
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => { fetchItems(); }, [userId]);
 
   const fetchItems = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/products`);
+      // NEW: Pass the userId to the Java Backend
+      const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch (err) { setItems([]); }
   };
 
-  const taxRate = 0.18;
-  const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
-  const totalPotentialProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
-  const estimatedTax = totalValuation * taxRate;
-  const netAfterTax = totalPotentialProfit - estimatedTax;
-
-  const filteredItems = items.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));
-
   const addItem = async () => {
     if (!form.name || !form.price) return alert("Required: Name & Price");
     try {
+      // NEW: Include user_id in the post body
       await axios.post(`${API_BASE_URL}/api/products`, {
-        name: form.name, price: parseFloat(form.price) || 0,
-        cost: parseFloat(form.cost) || 0, stock: parseInt(form.stock) || 0
+        name: form.name, 
+        price: parseFloat(form.price) || 0,
+        cost: parseFloat(form.cost) || 0, 
+        stock: parseInt(form.stock) || 0,
+        user_id: userId 
       });
       setForm({ name: "", price: "", cost: "", stock: "" });
       fetchItems();
@@ -142,7 +133,8 @@ const Vault = () => {
 
   const handleAction = async (type, id) => {
     try {
-      await axios.post(`${API_BASE_URL}/api/products/${type}/${id}`);
+      // NEW: Pass userId for security check in Java
+      await axios.post(`${API_BASE_URL}/api/products/${type}/${id}?userId=${userId}`);
       fetchItems();
     } catch (err) { console.error(err); }
   };
@@ -150,10 +142,19 @@ const Vault = () => {
   const deleteItem = async (id) => {
     if(!window.confirm("Delete this SKU?")) return;
     try {
-      await axios.delete(`${API_BASE_URL}/api/products/${id}`);
+      // NEW: Pass userId to ensure user owns the item they are deleting
+      await axios.delete(`${API_BASE_URL}/api/products/${id}?userId=${userId}`);
       fetchItems();
     } catch (err) { console.error(err); }
   };
+
+  // ... (Keep your existing math logic for valuation/profit)
+  const taxRate = 0.18;
+  const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
+  const totalPotentialProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
+  const estimatedTax = totalValuation * taxRate;
+  const netAfterTax = totalPotentialProfit - estimatedTax;
+  const filteredItems = items.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="dashboard-container">
@@ -163,7 +164,6 @@ const Vault = () => {
         <div className="stat-card"><label className="stat-label">NET PROFIT</label><h3 className="stat-value text-green">${netAfterTax.toLocaleString()}</h3></div>
         <div className="stat-card"><label className="stat-label">TOTAL SKUs</label><h3 className="stat-value">{items.length}</h3></div>
       </div>
-
       <div className="inventory-controls">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Item Name" className="biz-input" />
         <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="Price" className="biz-input" />
@@ -171,17 +171,14 @@ const Vault = () => {
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="Qty" className="biz-input" />
         <button onClick={addItem} className="add-stock-btn">Add SKU</button>
       </div>
-
       <div className="search-section">
         <input type="text" placeholder="🔍 Search Inventory..." className="search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
-
       <div className="inventory-grid">
         {filteredItems.map((item) => {
           const unitProfit = (item?.price || 0) - (item?.cost || 0);
           const marginPercent = ((unitProfit / (item?.price || 1)) * 100).toFixed(1);
           const isLowStock = (item?.stock || 0) <= 5;
-
           return (
             <div key={item.id} className={`inventory-card ${isLowStock ? 'low-stock-warning' : ''}`}>
               {isLowStock && <div className="alert-badge">REORDER</div>}
@@ -205,8 +202,8 @@ const Vault = () => {
   );
 };
 
-// --- 5. THE ADVISOR (CFO SUITE) ---
-const Advisor = () => {
+// --- 5. THE ADVISOR (PRIVATE DATA ONLY) ---
+const Advisor = ({ userId }) => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
@@ -215,7 +212,11 @@ const Advisor = () => {
     if (!query) return;
     setLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query });
+      // NEW: Pass the userId so the AI only analyzes THIS user's products
+      const res = await axios.post(`${API_BASE_URL}/api/chat`, { 
+        message: query,
+        userId: userId 
+      });
       setResponse(res.data);
     } catch (err) { setResponse("Advisor error."); }
     setLoading(false);
@@ -231,18 +232,23 @@ const Advisor = () => {
   );
 };
 
-// --- MAIN APP (SaaS ROUTING) ---
+// --- MAIN APP ---
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
+  const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
 
-  const handleLogin = (status) => {
+  const handleLogin = (status, id) => {
     setIsAuthenticated(status);
+    setUserId(id);
     localStorage.setItem("isLoggedIn", status);
+    localStorage.setItem("userId", id);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setUserId("");
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userId");
   };
 
   return (
@@ -253,8 +259,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={!isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to="/vault" />} />
           <Route path="/signup" element={!isAuthenticated ? <Signup onLogin={handleLogin} /> : <Navigate to="/vault" />} />
-          <Route path="/vault" element={isAuthenticated ? <Vault /> : <Navigate to="/login" />} />
-          <Route path="/advisor" element={isAuthenticated ? <Advisor /> : <Navigate to="/login" />} />
+          <Route path="/vault" element={isAuthenticated ? <Vault userId={userId} /> : <Navigate to="/login" />} />
+          <Route path="/advisor" element={isAuthenticated ? <Advisor userId={userId} /> : <Navigate to="/login" />} />
         </Routes>
       </div>
     </Router>
