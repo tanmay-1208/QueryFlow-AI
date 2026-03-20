@@ -19,11 +19,16 @@ public class ChatController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 1. Fetch only items belonging to the specific user
     @GetMapping("/products")
-    public List<Map<String, Object>> getProducts() {
-        return jdbcTemplate.queryForList("SELECT * FROM products ORDER BY id DESC");
+    public List<Map<String, Object>> getProducts(@RequestParam String userId) {
+        return jdbcTemplate.queryForList(
+            "SELECT * FROM products WHERE user_id = ? ORDER BY id DESC", 
+            userId
+        );
     }
 
+    // 2. Add product with a User ID tag
     @PostMapping("/products")
     public void addProduct(@RequestBody Map<String, Object> p) {
         try {
@@ -31,53 +36,68 @@ public class ChatController {
             double price = Double.parseDouble(String.valueOf(p.getOrDefault("price", "0")));
             double cost = Double.parseDouble(String.valueOf(p.getOrDefault("cost", "0")));
             int stock = Integer.parseInt(String.valueOf(p.getOrDefault("stock", "0")));
+            String userId = String.valueOf(p.get("user_id")); // Get the ID from React
 
             jdbcTemplate.update(
-                "INSERT INTO products (name, price, cost, stock, sold_count) VALUES (?, ?, ?, ?, 0)",
-                name, price, cost, stock
+                "INSERT INTO products (name, price, cost, stock, sold_count, user_id) VALUES (?, ?, ?, ?, 0, ?)",
+                name, price, cost, stock, userId
             );
         } catch (Exception e) {
             System.err.println(">>> ADD ERROR: " + e.getMessage());
         }
     }
 
+    // 3. Security Check: Only update if the item belongs to the user
     @PostMapping("/products/sell/{id}")
-    public void sellItem(@PathVariable Long id) {
-        jdbcTemplate.update("UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE id = ? AND stock > 0", id);
+    public void sellItem(@PathVariable Long id, @RequestParam String userId) {
+        jdbcTemplate.update(
+            "UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE id = ? AND user_id = ? AND stock > 0", 
+            id, userId
+        );
     }
 
     @PostMapping("/products/restock/{id}")
-    public void restockItem(@PathVariable Long id) {
-        jdbcTemplate.update("UPDATE products SET stock = stock + 1 WHERE id = ?", id);
+    public void restockItem(@PathVariable Long id, @RequestParam String userId) {
+        jdbcTemplate.update(
+            "UPDATE products SET stock = stock + 1 WHERE id = ? AND user_id = ?", 
+            id, userId
+        );
     }
 
     @DeleteMapping("/products/{id}")
-    public void deleteItem(@PathVariable Long id) {
-        jdbcTemplate.update("DELETE FROM products WHERE id = ?", id);
+    public void deleteItem(@PathVariable Long id, @RequestParam String userId) {
+        jdbcTemplate.update("DELETE FROM products WHERE id = ? AND user_id = ?", id, userId);
     }
 
+    // 4. AI Advisor: Only analyzes the current user's data
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
+        String userId = payload.get("userId"); // Ensure React sends this
+
         try {
-            List<Map<String, Object>> products = jdbcTemplate.queryForList("SELECT name, price, cost, stock, sold_count FROM products");
+            // AI only gets context for the logged-in user
+            List<Map<String, Object>> products = jdbcTemplate.queryForList(
+                "SELECT name, price, cost, stock, sold_count FROM products WHERE user_id = ?", 
+                userId
+            );
+
             StringBuilder context = new StringBuilder("Financial Data (USD):\n");
             for (Map<String, Object> p : products) {
-                context.append("- ").append(String.valueOf(p.get("name")))
-                       .append(" | Price: ").append(String.valueOf(p.get("price")))
-                       .append(" | Cost: ").append(String.valueOf(p.get("cost")))
-                       .append(" | Sold: ").append(String.valueOf(p.get("sold_count"))).append("\n");
+                context.append("- ").append(p.get("name"))
+                       .append(" | Price: ").append(p.get("price"))
+                       .append(" | Cost: ").append(p.get("cost"))
+                       .append(" | Sold: ").append(p.get("sold_count")).append("\n");
             }
 
             String finalPrompt = String.format(
-                "You are a Senior CFO & Tax Advisor. Use this data:\n%s\n" +
+                "You are a Senior CFO & Tax Advisor. Use ONLY this user's data:\n%s\n" +
                 "Question: %s\n" +
                 "STRICT ACCOUNTING RULES:\n" +
                 "1. Revenue = Sum of (Price * Sold).\n" +
                 "2. Tax Liability = Revenue * 0.18 (GST).\n" +
                 "3. Net Profit = ((Price - Cost) * Sold) - Tax Liability.\n" +
-                "4. Identify the 'Top Performer' as the item with the highest (Price-Cost)/Price ratio.\n" +
-                "Provide a direct, one-sentence answer. No math shown.",
+                "Provide a direct, one-sentence answer.",
                 context.toString(), userMessage
             );
             return chatModel.call(finalPrompt);
