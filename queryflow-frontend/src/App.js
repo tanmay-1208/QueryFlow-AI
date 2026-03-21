@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, useNavigate } from "react-router-dom";
+import { supabase } from "./supabaseClient"; // IMPORT YOUR REAL CLIENT
 import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
@@ -15,10 +16,17 @@ const GoogleBtn = ({ onLogin }) => {
     if (window.google) {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
-        callback: (response) => {
-          const userObject = JSON.parse(atob(response.credential.split('.')[1]));
-          onLogin(true, userObject.email); 
-          navigate("/vault");
+        callback: async (response) => {
+          // Real Google Auth with Supabase
+          const { data, error } = await supabase.auth.signInWithIdToken({
+            provider: 'google',
+            token: response.credential,
+          });
+          
+          if (!error && data.user) {
+            onLogin(true, data.user.email); 
+            navigate("/vault");
+          }
         }
       });
       google.accounts.id.renderButton(
@@ -52,19 +60,75 @@ const LandingPage = () => (
   </div>
 );
 
-// --- 2. LOGIN COMPONENT ---
+// --- 2. LOGIN COMPONENT (REAL AUTH) ---
 const Login = ({ onLogin }) => {
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleManualLogin = (e) => {
+  const handleManualLogin = async (e) => {
     e.preventDefault();
-    if (user === "tanmay" && pass === "queryflow2026") {
-      onLogin(true, "tanmay-admin");
-      navigate("/vault");
+    setLoading(true);
+
+    // REAL SUPABASE AUTH CALL
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      alert(`Security Check Failed: ${error.message}`);
+      setLoading(false);
     } else {
-      alert("Invalid Credentials");
+      onLogin(true, data.user.email);
+      navigate("/vault");
+    }
+  };
+
+  return (
+    <div className="login-screen">
+      <Link to="/" className="back-home-link">← Terminal Home</Link>
+      <div className={`login-card ${loading ? 'shimmer-effect' : ''}`}>
+        <div className="security-badge">SECURE NODE: 042</div>
+        <h2>{loading ? "Verifying..." : "Secure Sign In"}</h2>
+        <form onSubmit={handleManualLogin}>
+          <input type="email" placeholder="Business Email" className="biz-input full-width" onChange={(e)=>setEmail(e.target.value)} required />
+          <input type="password" placeholder="Terminal Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPassword(e.target.value)} required />
+          <button type="submit" disabled={loading} className="add-stock-btn login-btn">
+            {loading ? "AUTHENTICATING..." : "VERIFY IDENTITY"}
+          </button>
+        </form>
+        <div className="divider"><span>ENCRYPTED GATEWAY</span></div>
+        <GoogleBtn onLogin={onLogin} />
+      </div>
+    </div>
+  );
+};
+
+// --- 3. SIGNUP COMPONENT (REAL REGISTRATION) ---
+const Signup = ({ onLogin }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleManualSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      alert(`Registration Error: ${error.message}`);
+      setLoading(false);
+    } else {
+      alert("Registration Successful! Redirecting to your vault...");
+      onLogin(true, data.user.email);
+      navigate("/vault");
     }
   };
 
@@ -72,58 +136,17 @@ const Login = ({ onLogin }) => {
     <div className="login-screen">
       <Link to="/" className="back-home-link">← Back to Home</Link>
       <div className="login-card">
-        <h2>Secure Login</h2>
-        <p className="login-subtitle">Enter credentials to unlock your terminal</p>
-        <form onSubmit={handleManualLogin}>
-          <input type="text" placeholder="Username" className="biz-input full-width" onChange={(e)=>setUser(e.target.value)} required />
-          <input type="password" placeholder="Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPass(e.target.value)} required />
-          <button type="submit" className="add-stock-btn login-btn">UNLOCK TERMINAL</button>
-        </form>
-        <div className="divider"><span>OR</span></div>
-        <GoogleBtn onLogin={onLogin} />
-        <p className="signup-text">New Client? <Link to="/signup" className="blue-accent">Create an Account</Link></p>
-      </div>
-    </div>
-  );
-};
-
-// --- 3. SIGNUP COMPONENT (UPDATED: NOW FUNCTIONAL) ---
-const Signup = ({ onLogin }) => {
-  const [email, setEmail] = useState("");
-  const navigate = useNavigate();
-
-  const handleManualSignup = (e) => {
-    e.preventDefault();
-    if (!email.includes("@")) return alert("Please enter a valid email");
-    
-    // Uses the email as the Tenant ID for Multi-Tenancy
-    onLogin(true, email); 
-    navigate("/vault");
-  };
-
-  return (
-    <div className="login-screen">
-      <Link to="/" className="back-home-link">← Back to Home</Link>
-      <div className="login-card">
         <h2>Register Business</h2>
-        <p className="login-subtitle">Join the QueryFlow SME Network</p>
         <form onSubmit={handleManualSignup}>
           <input type="text" placeholder="Business Name" className="biz-input full-width" required />
-          <input 
-            type="email" 
-            placeholder="Business Email" 
-            className="biz-input full-width" 
-            style={{marginTop:'10px'}} 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required 
-          />
-          <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} required />
-          <button type="submit" className="add-stock-btn login-btn">CREATE ACCOUNT</button>
+          <input type="email" placeholder="Business Email" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setEmail(e.target.value)} required />
+          <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPassword(e.target.value)} required />
+          <button type="submit" disabled={loading} className="add-stock-btn login-btn">
+            {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+          </button>
         </form>
         <div className="divider"><span>OR</span></div>
         <GoogleBtn onLogin={onLogin} />
-        <p className="signup-text">Already a member? <Link to="/login" className="blue-accent">Login here</Link></p>
       </div>
     </div>
   );
@@ -147,13 +170,7 @@ const Vault = ({ userId }) => {
   const addItem = async () => {
     if (!form.name || !form.price) return alert("Required: Name & Price");
     try {
-      await axios.post(`${API_BASE_URL}/api/products`, {
-        ...form,
-        price: parseFloat(form.price) || 0,
-        cost: parseFloat(form.cost) || 0,
-        stock: parseInt(form.stock) || 0,
-        user_id: userId 
-      });
+      await axios.post(`${API_BASE_URL}/api/products`, { ...form, user_id: userId });
       setForm({ name: "", price: "", cost: "", stock: "" });
       fetchItems();
     } catch (err) { console.error(err); }
@@ -202,12 +219,10 @@ const Vault = ({ userId }) => {
       <div className="inventory-grid">
         {filteredItems.map((item) => (
           <div key={item.id} className={`inventory-card ${(item?.stock || 0) <= 5 ? 'low-stock-warning' : ''}`}>
-            {(item?.stock || 0) <= 5 && <div className="alert-badge">REORDER</div>}
             <h4 className="item-title">{item.name}</h4>
             <div className="item-financials"><span>Price: <b>${item?.price}</b></span><span>Cost: <b>${item?.cost}</b></span></div>
             <div className="unit-economics">
-              <div className="eco-item"><span className="eco-label">Profit</span><span className="eco-value text-green">+${(item.price - item.cost).toLocaleString()}</span></div>
-              <div className="eco-item"><span className="eco-label">Margin</span><span className="eco-value">{(((item.price - item.cost) / (item.price || 1)) * 100).toFixed(1)}%</span></div>
+               <div className="eco-item"><span className="eco-label">Profit</span><span className="eco-value text-green">+${(item.price - item.cost).toLocaleString()}</span></div>
             </div>
             <div className="item-meta">Stock: {item?.stock} | Sold: {item?.sold_count}</div>
             <div className="item-actions">
@@ -260,7 +275,8 @@ function App() {
     localStorage.setItem("userId", id);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
     setUserId("");
     localStorage.removeItem("isLoggedIn");
