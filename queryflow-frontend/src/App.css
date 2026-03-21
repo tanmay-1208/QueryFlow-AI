@@ -1,48 +1,291 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+/* --- 1. GLOBAL VARIABLES & RESET --- */
+:root {
+  --blue-accent: #007bff;
+  --blue-hover: #0056b3;
+  --dark-bg: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #ffffff;
+  --text-dim: #b3b3b3;
+  --border-color: #333;
+  --success-green: #28a745;
+  --error-red: #dc3545;
+}
 
-:root { --primary: #2563eb; --bg: #f8fafc; --white: #ffffff; --text: #0f172a; --gray: #64748b; --border: #cbd5e1; --red: #dc2626; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
 
-* { box-sizing: border-box; }
-body, html, #root, .App-wrapper { margin: 0; padding: 0; background-color: var(--bg) !important; color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-main);
+  line-height: 1.6;
+}
 
-/* LANDING PAGE & HERO */
-.landing-page { min-height: 100vh; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); }
-.public-nav { display: flex; justify-content: space-between; padding: 1.5rem 5rem; align-items: center; }
-.hero-section { text-align: center; padding: 100px 20px; max-width: 900px; margin: 0 auto; }
-.hero-title { font-size: 3.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
-.hero-subtitle { font-size: 1.2rem; color: var(--gray); margin-bottom: 40px; line-height: 1.6; }
-.hero-actions { display: flex; gap: 20px; justify-content: center; }
+/* --- 2. AUTH NAVIGATION (THE ESCAPE LINK) --- */
+.back-home-link {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  text-decoration: none;
+  color: var(--blue-accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
 
-.cta-button { background: var(--primary); color: white; padding: 18px 45px; text-decoration: none; border-radius: 8px; font-weight: 800; }
-.secondary-button { background: white; border: 2px solid var(--border); padding: 18px 40px; border-radius: 8px; font-weight: 800; color: var(--text); text-decoration: none; }
+.back-home-link:hover {
+  color: var(--text-main);
+  transform: translateX(-5px);
+}
 
-/* LOGIN/SIGNUP CARDS */
-.login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #e2e8f0; }
-.login-card { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-.divider { display: flex; align-items: center; text-align: center; margin: 20px 0; color: #94a3b8; font-size: 0.7rem; font-weight: 800; }
-.divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
-.divider:not(:empty)::before { margin-right: .5em; }
-.divider:not(:empty)::after { margin-left: .5em; }
-.google-flex-center { display: flex; justify-content: center; margin-bottom: 15px; }
+/* --- 3. LANDING PAGE STYLES --- */
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-/* DASHBOARD */
-.navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); }
-.dashboard-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-.stats-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-.stat-card { background: var(--white); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
-.inventory-controls { display: flex; gap: 10px; background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border); }
-.biz-input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
-.full-width { width: 100%; }
-.logout-btn { margin-left: 20px; background: #fef2f2; border: 1px solid #fca5a5; color: var(--red); padding: 5px 15px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+.public-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 5%;
+}
 
-/* CARDS */
-.inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.inventory-card { background: var(--white); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
-.low-stock-warning { border-left: 5px solid var(--red) !important; }
-.alert-badge { position: absolute; top: 10px; left: 10px; background: #fef2f2; color: var(--red); font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; font-weight: 800; border: 1px solid var(--red); }
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
 
-.unit-economics { display: flex; background: #f8fafc; padding: 10px; border-radius: 6px; margin: 15px 0; border: 1px dashed var(--border); justify-content: space-between; }
-.item-actions { display: flex; gap: 5px; }
-.item-actions button { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid var(--border); font-weight: 700; background: #f1f5f9; cursor: pointer; }
+.blue-accent { color: var(--blue-accent); }
 
-.blue-accent { color: var(--primary); }
+.hero-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 10%;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  max-width: 700px;
+  margin-bottom: 2.5rem;
+}
+
+/* --- 4. AUTH SCREENS (LOGIN/SIGNUP) --- */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+}
+
+.login-card {
+  background: var(--card-bg);
+  padding: 3rem;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.login-subtitle {
+  color: var(--text-dim);
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.biz-input {
+  background: #000;
+  border: 1px solid var(--border-color);
+  color: white;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.biz-input:focus { border-color: var(--blue-accent); }
+
+.full-width { width: 100%; margin-bottom: 15px; }
+
+.divider {
+  margin: 2rem 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+  margin: 0 10px;
+}
+
+.google-flex-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* --- 5. DASHBOARD & NAVBAR --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  background: #000;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-links { display: flex; gap: 20px; align-items: center; }
+
+.nav-item {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-item:hover { color: var(--blue-accent); }
+
+/* --- 6. STATS HEADER --- */
+.dashboard-container { padding: 2rem 5%; }
+
+.stats-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.stat-label { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; }
+.stat-value { font-size: 1.5rem; margin-top: 5px; }
+.text-green { color: var(--success-green); }
+.text-red { color: var(--error-red); }
+
+/* --- 7. INVENTORY GRID --- */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.inventory-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.inventory-card:hover { transform: translateY(-5px); }
+
+.low-stock-warning { border-left: 4px solid var(--error-red); }
+
+.alert-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--error-red);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* --- 8. BUTTONS --- */
+.cta-button, .add-stock-btn {
+  background: var(--blue-accent);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cta-button:hover, .add-stock-btn:hover { background: var(--blue-hover); }
+
+.del-btn { color: var(--error-red); background: transparent; border: 1px solid #444; }
+.del-btn:hover { background: #301010; }
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+.item-actions button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #252525;
+  color: white;
+  cursor: pointer;
+}
+
+/* --- 9. ADVISOR SECTION --- */
+.advisor-textarea {
+  width: 100%;
+  height: 150px;
+  background: #000;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: white;
+  padding: 1.5rem;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  resize: none;
+}
+
+.advisor-response {
+  margin-top: 30px;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1e1e1e 0%, #111 100%);
+  border-left: 4px solid var(--blue-accent);
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+/* --- Animations --- */
+.fade-in { animation: fadeIn 0.5s ease-in; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

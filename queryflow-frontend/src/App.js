@@ -16,11 +16,8 @@ const GoogleBtn = ({ onLogin }) => {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: (response) => {
-          // Decode the JWT to get the user's unique ID/Email
           const userObject = JSON.parse(atob(response.credential.split('.')[1]));
           console.log("Authenticated as:", userObject.email);
-          
-          // Pass the user email as the unique identifier
           onLogin(true, userObject.email); 
           navigate("/vault");
         }
@@ -65,7 +62,7 @@ const Login = ({ onLogin }) => {
   const handleManualLogin = (e) => {
     e.preventDefault();
     if (user === "tanmay" && pass === "queryflow2026") {
-      onLogin(true, "tanmay-admin"); // Manual users also get an ID
+      onLogin(true, "tanmay-admin");
       navigate("/vault");
     } else {
       alert("Invalid Credentials");
@@ -74,6 +71,9 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="login-screen">
+      {/* NEW: Navigation Portal to get back to Landing Page */}
+      <Link to="/" className="back-home-link">← Back to Home</Link>
+      
       <div className="login-card">
         <h2>Secure Login</h2>
         <p className="login-subtitle">Enter credentials to unlock your terminal</p>
@@ -84,22 +84,35 @@ const Login = ({ onLogin }) => {
         </form>
         <div className="divider"><span>OR</span></div>
         <GoogleBtn onLogin={onLogin} />
+        <p className="signup-text">New Client? <Link to="/signup" className="blue-accent">Create an Account</Link></p>
       </div>
     </div>
   );
 };
 
-// --- 3. SIGNUP (PLACEHOLDER) ---
+// --- 3. SIGNUP COMPONENT ---
 const Signup = ({ onLogin }) => (
   <div className="login-screen">
+    {/* NEW: Navigation Portal to get back to Landing Page */}
+    <Link to="/" className="back-home-link">← Back to Home</Link>
+
     <div className="login-card">
       <h2>Register Business</h2>
+      <p className="login-subtitle">Join the QueryFlow SME Network</p>
+      <form onSubmit={(e) => e.preventDefault()}>
+        <input type="text" placeholder="Business Name" className="biz-input full-width" />
+        <input type="email" placeholder="Business Email" className="biz-input full-width" style={{marginTop:'10px'}} />
+        <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} />
+        <button type="submit" className="add-stock-btn login-btn">CREATE ACCOUNT</button>
+      </form>
+      <div className="divider"><span>OR</span></div>
       <GoogleBtn onLogin={onLogin} />
+      <p className="signup-text">Already a member? <Link to="/login" className="blue-accent">Login here</Link></p>
     </div>
   </div>
 );
 
-// --- 4. THE VAULT (MULTI-TENANT VERSION) ---
+// --- 4. THE VAULT ---
 const Vault = ({ userId }) => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,7 +122,6 @@ const Vault = ({ userId }) => {
 
   const fetchItems = async () => {
     try {
-      // NEW: Pass the userId to the Java Backend
       const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch (err) { setItems([]); }
@@ -118,7 +130,6 @@ const Vault = ({ userId }) => {
   const addItem = async () => {
     if (!form.name || !form.price) return alert("Required: Name & Price");
     try {
-      // NEW: Include user_id in the post body
       await axios.post(`${API_BASE_URL}/api/products`, {
         name: form.name, 
         price: parseFloat(form.price) || 0,
@@ -133,7 +144,6 @@ const Vault = ({ userId }) => {
 
   const handleAction = async (type, id) => {
     try {
-      // NEW: Pass userId for security check in Java
       await axios.post(`${API_BASE_URL}/api/products/${type}/${id}?userId=${userId}`);
       fetchItems();
     } catch (err) { console.error(err); }
@@ -142,13 +152,11 @@ const Vault = ({ userId }) => {
   const deleteItem = async (id) => {
     if(!window.confirm("Delete this SKU?")) return;
     try {
-      // NEW: Pass userId to ensure user owns the item they are deleting
       await axios.delete(`${API_BASE_URL}/api/products/${id}?userId=${userId}`);
       fetchItems();
     } catch (err) { console.error(err); }
   };
 
-  // ... (Keep your existing math logic for valuation/profit)
   const taxRate = 0.18;
   const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
   const totalPotentialProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
@@ -202,7 +210,7 @@ const Vault = ({ userId }) => {
   );
 };
 
-// --- 5. THE ADVISOR (PRIVATE DATA ONLY) ---
+// --- 5. THE ADVISOR ---
 const Advisor = ({ userId }) => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
@@ -212,7 +220,6 @@ const Advisor = ({ userId }) => {
     if (!query) return;
     setLoading(true);
     try {
-      // NEW: Pass the userId so the AI only analyzes THIS user's products
       const res = await axios.post(`${API_BASE_URL}/api/chat`, { 
         message: query,
         userId: userId 
