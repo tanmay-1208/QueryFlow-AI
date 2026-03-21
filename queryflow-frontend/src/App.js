@@ -17,7 +17,6 @@ const GoogleBtn = ({ onLogin }) => {
         client_id: GOOGLE_CLIENT_ID,
         callback: (response) => {
           const userObject = JSON.parse(atob(response.credential.split('.')[1]));
-          console.log("Authenticated as:", userObject.email);
           onLogin(true, userObject.email); 
           navigate("/vault");
         }
@@ -71,15 +70,13 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="login-screen">
-      {/* NEW: Navigation Portal to get back to Landing Page */}
       <Link to="/" className="back-home-link">← Back to Home</Link>
-      
       <div className="login-card">
         <h2>Secure Login</h2>
         <p className="login-subtitle">Enter credentials to unlock your terminal</p>
         <form onSubmit={handleManualLogin}>
-          <input type="text" placeholder="Username" className="biz-input full-width" onChange={(e)=>setUser(e.target.value)} />
-          <input type="password" placeholder="Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPass(e.target.value)} />
+          <input type="text" placeholder="Username" className="biz-input full-width" onChange={(e)=>setUser(e.target.value)} required />
+          <input type="password" placeholder="Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPass(e.target.value)} required />
           <button type="submit" className="add-stock-btn login-btn">UNLOCK TERMINAL</button>
         </form>
         <div className="divider"><span>OR</span></div>
@@ -90,27 +87,47 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// --- 3. SIGNUP COMPONENT ---
-const Signup = ({ onLogin }) => (
-  <div className="login-screen">
-    {/* NEW: Navigation Portal to get back to Landing Page */}
-    <Link to="/" className="back-home-link">← Back to Home</Link>
+// --- 3. SIGNUP COMPONENT (UPDATED: NOW FUNCTIONAL) ---
+const Signup = ({ onLogin }) => {
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
-    <div className="login-card">
-      <h2>Register Business</h2>
-      <p className="login-subtitle">Join the QueryFlow SME Network</p>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <input type="text" placeholder="Business Name" className="biz-input full-width" />
-        <input type="email" placeholder="Business Email" className="biz-input full-width" style={{marginTop:'10px'}} />
-        <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} />
-        <button type="submit" className="add-stock-btn login-btn">CREATE ACCOUNT</button>
-      </form>
-      <div className="divider"><span>OR</span></div>
-      <GoogleBtn onLogin={onLogin} />
-      <p className="signup-text">Already a member? <Link to="/login" className="blue-accent">Login here</Link></p>
+  const handleManualSignup = (e) => {
+    e.preventDefault();
+    if (!email.includes("@")) return alert("Please enter a valid email");
+    
+    // Uses the email as the Tenant ID for Multi-Tenancy
+    onLogin(true, email); 
+    navigate("/vault");
+  };
+
+  return (
+    <div className="login-screen">
+      <Link to="/" className="back-home-link">← Back to Home</Link>
+      <div className="login-card">
+        <h2>Register Business</h2>
+        <p className="login-subtitle">Join the QueryFlow SME Network</p>
+        <form onSubmit={handleManualSignup}>
+          <input type="text" placeholder="Business Name" className="biz-input full-width" required />
+          <input 
+            type="email" 
+            placeholder="Business Email" 
+            className="biz-input full-width" 
+            style={{marginTop:'10px'}} 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required 
+          />
+          <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} required />
+          <button type="submit" className="add-stock-btn login-btn">CREATE ACCOUNT</button>
+        </form>
+        <div className="divider"><span>OR</span></div>
+        <GoogleBtn onLogin={onLogin} />
+        <p className="signup-text">Already a member? <Link to="/login" className="blue-accent">Login here</Link></p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- 4. THE VAULT ---
 const Vault = ({ userId }) => {
@@ -131,9 +148,9 @@ const Vault = ({ userId }) => {
     if (!form.name || !form.price) return alert("Required: Name & Price");
     try {
       await axios.post(`${API_BASE_URL}/api/products`, {
-        name: form.name, 
+        ...form,
         price: parseFloat(form.price) || 0,
-        cost: parseFloat(form.cost) || 0, 
+        cost: parseFloat(form.cost) || 0,
         stock: parseInt(form.stock) || 0,
         user_id: userId 
       });
@@ -150,7 +167,7 @@ const Vault = ({ userId }) => {
   };
 
   const deleteItem = async (id) => {
-    if(!window.confirm("Delete this SKU?")) return;
+    if(!window.confirm("Delete SKU?")) return;
     try {
       await axios.delete(`${API_BASE_URL}/api/products/${id}?userId=${userId}`);
       fetchItems();
@@ -159,9 +176,9 @@ const Vault = ({ userId }) => {
 
   const taxRate = 0.18;
   const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
-  const totalPotentialProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
+  const totalProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
   const estimatedTax = totalValuation * taxRate;
-  const netAfterTax = totalPotentialProfit - estimatedTax;
+  const netProfit = totalProfit - estimatedTax;
   const filteredItems = items.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
@@ -169,7 +186,7 @@ const Vault = ({ userId }) => {
       <div className="stats-header">
         <div className="stat-card"><label className="stat-label">VALUATION</label><h3 className="stat-value">${totalValuation.toLocaleString()}</h3></div>
         <div className="stat-card"><label className="stat-label">TAX (18%)</label><h3 className="stat-value text-red">-${estimatedTax.toLocaleString()}</h3></div>
-        <div className="stat-card"><label className="stat-label">NET PROFIT</label><h3 className="stat-value text-green">${netAfterTax.toLocaleString()}</h3></div>
+        <div className="stat-card"><label className="stat-label">NET PROFIT</label><h3 className="stat-value text-green">${netProfit.toLocaleString()}</h3></div>
         <div className="stat-card"><label className="stat-label">TOTAL SKUs</label><h3 className="stat-value">{items.length}</h3></div>
       </div>
       <div className="inventory-controls">
@@ -183,28 +200,23 @@ const Vault = ({ userId }) => {
         <input type="text" placeholder="🔍 Search Inventory..." className="search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
       <div className="inventory-grid">
-        {filteredItems.map((item) => {
-          const unitProfit = (item?.price || 0) - (item?.cost || 0);
-          const marginPercent = ((unitProfit / (item?.price || 1)) * 100).toFixed(1);
-          const isLowStock = (item?.stock || 0) <= 5;
-          return (
-            <div key={item.id} className={`inventory-card ${isLowStock ? 'low-stock-warning' : ''}`}>
-              {isLowStock && <div className="alert-badge">REORDER</div>}
-              <h4 className="item-title">{item.name}</h4>
-              <div className="item-financials"><span>Price: <b>${item?.price || 0}</b></span><span>Cost: <b>${item?.cost || 0}</b></span></div>
-              <div className="unit-economics">
-                <div className="eco-item"><span className="eco-label">Profit</span><span className="eco-value text-green">+${unitProfit.toLocaleString()}</span></div>
-                <div className="eco-item"><span className="eco-label">Margin</span><span className="eco-value">{marginPercent}%</span></div>
-              </div>
-              <div className={`item-meta ${isLowStock ? 'text-red bold' : ''}`}>Stock: {item?.stock || 0} | Sold: {item?.sold_count || 0}</div>
-              <div className="item-actions">
-                <button onClick={() => handleAction('sell', item.id)}>Sell</button>
-                <button onClick={() => handleAction('restock', item.id)}>Stock</button>
-                <button onClick={() => deleteItem(item.id)} className="del-btn">DEL</button>
-              </div>
+        {filteredItems.map((item) => (
+          <div key={item.id} className={`inventory-card ${(item?.stock || 0) <= 5 ? 'low-stock-warning' : ''}`}>
+            {(item?.stock || 0) <= 5 && <div className="alert-badge">REORDER</div>}
+            <h4 className="item-title">{item.name}</h4>
+            <div className="item-financials"><span>Price: <b>${item?.price}</b></span><span>Cost: <b>${item?.cost}</b></span></div>
+            <div className="unit-economics">
+              <div className="eco-item"><span className="eco-label">Profit</span><span className="eco-value text-green">+${(item.price - item.cost).toLocaleString()}</span></div>
+              <div className="eco-item"><span className="eco-label">Margin</span><span className="eco-value">{(((item.price - item.cost) / (item.price || 1)) * 100).toFixed(1)}%</span></div>
             </div>
-          );
-        })}
+            <div className="item-meta">Stock: {item?.stock} | Sold: {item?.sold_count}</div>
+            <div className="item-actions">
+              <button onClick={() => handleAction('sell', item.id)}>Sell</button>
+              <button onClick={() => handleAction('restock', item.id)}>Stock</button>
+              <button onClick={() => deleteItem(item.id)} className="del-btn">DEL</button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -220,10 +232,7 @@ const Advisor = ({ userId }) => {
     if (!query) return;
     setLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/chat`, { 
-        message: query,
-        userId: userId 
-      });
+      const res = await axios.post(`${API_BASE_URL}/api/chat`, { message: query, userId: userId });
       setResponse(res.data);
     } catch (err) { setResponse("Advisor error."); }
     setLoading(false);
@@ -276,7 +285,8 @@ function App() {
 
 const NavManager = ({ isAuthenticated, onLogout }) => {
   const location = useLocation();
-  if (!isAuthenticated || location.pathname === "/" || location.pathname === "/login" || location.pathname === "/signup") return null;
+  const publicPaths = ["/", "/login", "/signup"];
+  if (!isAuthenticated || publicPaths.includes(location.pathname)) return null;
   return (
     <nav className="navbar">
       <div className="logo-group"><Link to="/vault" style={{textDecoration: 'none'}}><div className="logo-text">QueryFlow <span className="blue-accent">Vault</span></div></Link></div>
