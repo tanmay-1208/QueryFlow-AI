@@ -7,7 +7,7 @@ import "./App.css";
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 const GOOGLE_CLIENT_ID = "355056127518-9jjnnp9q7mkeum589k53dseuvdsrdpnf.apps.googleusercontent.com";
 
-// --- GOOGLE AUTH COMPONENT ---
+// --- 1. GOOGLE AUTH COMPONENT ---
 const GoogleBtn = ({ onLogin }) => {
   const navigate = useNavigate();
 
@@ -17,22 +17,16 @@ const GoogleBtn = ({ onLogin }) => {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: async (response) => {
-          console.log("Google response received, authenticating with Supabase...");
-          
           const { data, error } = await supabase.auth.signInWithIdToken({
             provider: 'google',
             token: response.credential,
           });
           
-          if (error) {
-            console.error("Supabase Auth Error:", error.message);
-            alert(`Auth Error: ${error.message}`);
-          } else if (data.user) {
-            console.log("Authenticated successfully as:", data.user.email);
-            // Trigger the login state update in the parent
+          if (!error && data.user) {
             onLogin(true, data.user.email); 
-            // Explicitly force navigation
             navigate("/vault");
+          } else {
+            console.error("Auth Error:", error);
           }
         }
       });
@@ -46,7 +40,7 @@ const GoogleBtn = ({ onLogin }) => {
   return <div id="googleBtn" className="google-flex-center"></div>;
 };
 
-// --- 1. LANDING PAGE ---
+// --- 2. LANDING PAGE ---
 const LandingPage = () => (
   <div className="landing-page">
     <nav className="public-nav">
@@ -67,7 +61,7 @@ const LandingPage = () => (
   </div>
 );
 
-// --- 2. LOGIN COMPONENT ---
+// --- 3. LOGIN COMPONENT (REAL AUTH) ---
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,14 +71,10 @@ const Login = ({ onLogin }) => {
   const handleManualLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      alert(`Security Check Failed: ${error.message}`);
+      alert(`Access Denied: ${error.message}`);
       setLoading(false);
     } else {
       onLogin(true, data.user.email);
@@ -112,7 +102,7 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// --- 3. SIGNUP COMPONENT ---
+// --- 4. SIGNUP COMPONENT ---
 const Signup = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,17 +112,12 @@ const Signup = ({ onLogin }) => {
   const handleManualSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
       alert(`Registration Error: ${error.message}`);
       setLoading(false);
     } else {
-      alert("Account created! Logging you in...");
       onLogin(true, data.user.email);
       navigate("/vault");
     }
@@ -142,14 +127,13 @@ const Signup = ({ onLogin }) => {
     <div className="login-screen">
       <Link to="/" className="back-home-link">← Back to Home</Link>
       <div className="login-card">
-        <h2>Register Business</h2>
+        <div className="security-badge">NEW CLIENT REGISTRATION</div>
+        <h2>Create Account</h2>
         <form onSubmit={handleManualSignup}>
           <input type="text" placeholder="Business Name" className="biz-input full-width" required />
           <input type="email" placeholder="Business Email" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setEmail(e.target.value)} required />
           <input type="password" placeholder="Set Password" className="biz-input full-width" style={{marginTop:'10px'}} onChange={(e)=>setPassword(e.target.value)} required />
-          <button type="submit" disabled={loading} className="add-stock-btn login-btn">
-            {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
-          </button>
+          <button type="submit" disabled={loading} className="add-stock-btn login-btn">CREATE ACCOUNT</button>
         </form>
         <div className="divider"><span>OR</span></div>
         <GoogleBtn onLogin={onLogin} />
@@ -158,7 +142,7 @@ const Signup = ({ onLogin }) => {
   );
 };
 
-// --- 4. THE VAULT ---
+// --- 5. THE VAULT (RESTORED CFO LOGIC) ---
 const Vault = ({ userId }) => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -169,14 +153,20 @@ const Vault = ({ userId }) => {
   const fetchItems = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
-      setItems(res.data);
+      setItems(Array.isArray(res.data) ? res.data : []);
     } catch (err) { setItems([]); }
   };
 
   const addItem = async () => {
     if (!form.name || !form.price) return alert("Required: Name & Price");
     try {
-      await axios.post(`${API_BASE_URL}/api/products`, { ...form, user_id: userId });
+      await axios.post(`${API_BASE_URL}/api/products`, { 
+        ...form, 
+        price: parseFloat(form.price) || 0,
+        cost: parseFloat(form.cost) || 0,
+        stock: parseInt(form.stock) || 0,
+        user_id: userId 
+      });
       setForm({ name: "", price: "", cost: "", stock: "" });
       fetchItems();
     } catch (err) { console.error(err); }
@@ -197,13 +187,26 @@ const Vault = ({ userId }) => {
     } catch (err) { console.error(err); }
   };
 
+  // --- RESTORED CFO MATH ---
+  const taxRate = 0.18;
+  const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
+  const totalCost = items.reduce((acc, item) => acc + ((item?.cost || 0) * (item?.stock || 0)), 0);
+  const totalProfit = totalValuation - totalCost;
+  const estimatedTax = totalValuation * taxRate;
+  const netProfit = totalProfit - estimatedTax;
+
   const filteredItems = items.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="dashboard-container">
+      {/* HEADER STATS BOXES */}
       <div className="stats-header">
+        <div className="stat-card"><label className="stat-label">VALUATION</label><h3 className="stat-value">${totalValuation.toLocaleString()}</h3></div>
+        <div className="stat-card"><label className="stat-label">TAX (18%)</label><h3 className="stat-value text-red">-${estimatedTax.toLocaleString()}</h3></div>
+        <div className="stat-card"><label className="stat-label">NET PROFIT</label><h3 className="stat-value text-green">${netProfit.toLocaleString()}</h3></div>
         <div className="stat-card"><label className="stat-label">TOTAL SKUs</label><h3 className="stat-value">{items.length}</h3></div>
       </div>
+
       <div className="inventory-controls">
         <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Item Name" className="biz-input" />
         <input type="number" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} placeholder="Price" className="biz-input" />
@@ -211,16 +214,31 @@ const Vault = ({ userId }) => {
         <input type="number" value={form.stock} onChange={(e) => setForm({...form, stock: e.target.value})} placeholder="Qty" className="biz-input" />
         <button onClick={addItem} className="add-stock-btn">Add SKU</button>
       </div>
+
       <div className="search-section">
         <input type="text" placeholder="🔍 Search Inventory..." className="search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
+
       <div className="inventory-grid">
         {filteredItems.map((item) => (
-          <div key={item.id} className="inventory-card">
+          <div key={item.id} className={`inventory-card ${(item?.stock || 0) <= 5 ? 'low-stock-warning' : ''}`}>
+            {(item?.stock || 0) <= 5 && <div className="alert-badge">REORDER</div>}
+            
             <h4 className="item-title">{item.name}</h4>
-            <div className="item-financials"><span>Price: <b>${item?.price}</b></span><span>Stock: <b>{item?.stock}</b></span></div>
+            <div className="item-financials">
+              <span>Price: <b>${item?.price?.toLocaleString()}</b></span>
+              <span>Cost: <b>${item?.cost?.toLocaleString()}</b></span>
+            </div>
+            
+            <div className="unit-economics">
+               <div className="eco-item"><span className="eco-label">Unit Profit</span><span className="eco-value text-green">+${(item.price - item.cost).toLocaleString()}</span></div>
+               <div className="eco-item"><span className="eco-label">Margin</span><span className="eco-value">{(((item.price - item.cost) / (item.price || 1)) * 100).toFixed(1)}%</span></div>
+            </div>
+            
+            <div className="item-meta">Stock: {item?.stock} | Sold: {item?.sold_count || 0}</div>
             <div className="item-actions">
               <button onClick={() => handleAction('sell', item.id)}>Sell</button>
+              <button onClick={() => handleAction('restock', item.id)}>Stock</button>
               <button onClick={() => deleteItem(item.id)} className="del-btn">DEL</button>
             </div>
           </div>
@@ -230,7 +248,7 @@ const Vault = ({ userId }) => {
   );
 };
 
-// --- 5. THE ADVISOR ---
+// --- 6. THE ADVISOR ---
 const Advisor = ({ userId }) => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
@@ -249,7 +267,7 @@ const Advisor = ({ userId }) => {
   return (
     <div className="dashboard-container">
       <h2 className="page-header">Financial AI Analyst</h2>
-      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ask about profit..." className="advisor-textarea" />
+      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ask about profit optimization..." className="advisor-textarea" />
       <button onClick={askAdvisor} disabled={loading} className="add-stock-btn full-width">{loading ? "Analyzing..." : "Run AI Audit"}</button>
       {response && <div className="advisor-response fade-in">{response}</div>}
     </div>
@@ -298,7 +316,11 @@ const NavManager = ({ isAuthenticated, onLogout }) => {
   if (!isAuthenticated || publicPaths.includes(location.pathname)) return null;
   return (
     <nav className="navbar">
-      <div className="logo-group"><Link to="/vault" style={{textDecoration: 'none'}}><div className="logo-text">QueryFlow <span className="blue-accent">Vault</span></div></Link></div>
+      <div className="logo-group">
+        <Link to="/vault" style={{textDecoration: 'none'}}>
+          <div className="logo-text">QueryFlow <span className="blue-accent">Vault</span></div>
+        </Link>
+      </div>
       <div className="nav-links">
         <Link to="/vault" className="nav-item">Inventory</Link>
         <Link to="/advisor" className="nav-item">CFO Suite</Link>
