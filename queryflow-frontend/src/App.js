@@ -203,18 +203,38 @@ const Vault = ({ userId, onLogout }) => {
   };
   const status = getStatus();
 
+  // --- AI LOGIC FIX ---
   const handleChat = async (e) => {
     e.preventDefault();
     if (!userQuery.trim()) return;
+
     const newHistory = [...chatHistory, { role: 'user', text: userQuery }];
     setChatHistory(newHistory);
     setUserQuery("");
     setIsAnalyzing(true);
+
     setTimeout(() => {
-      let reply = `Audit complete. Realizable profit is projected at $${realizableProfit.toLocaleString()}.`;
+      let reply = "I have analyzed the fiscal ledger. Risk levels are within normal parameters.";
+      const q = userQuery.toLowerCase();
+
+      // CA Level Logic branching
+      if (q.includes("tax") && q.includes("credit")) {
+        const potentialSavings = 250000;
+        reply = `Applying a $250k R&D tax credit would reduce your provision to $${(estimatedTax - potentialSavings).toLocaleString()}. This shifts net realizable profit to $${(realizableProfit + potentialSavings).toLocaleString()}, improving effective tax rate by approx 7.4%.`;
+      } 
+      else if (q.includes("profit") || q.includes("make") || q.includes("improve")) {
+        reply = `Your current realizable profit is $${realizableProfit.toLocaleString()}. To improve this, I suggest liquidating low-turnover SKUs and reallocating capital to high-margin assets like the Vintage Rolex collection.`;
+      } 
+      else if (q.includes("liquidity") || q.includes("liquidate")) {
+        reply = `A 50% liquidation of current vaulted stock would generate $${Math.floor(totalValuation * 0.5).toLocaleString()} in immediate cash flow. This would drastically improve your quick ratio from 1.1 to 1.9.`;
+      } 
+      else if (q.includes("valuation") || q.includes("worth")) {
+        reply = `The total portfolio valuation is currently $${totalValuation.toLocaleString()}. Capital is heavily concentrated in luxury timepieces, representing ${(valuation / 1000000).toFixed(1)}M in net equity.`;
+      }
+
       setChatHistory([...newHistory, { role: 'assistant', text: reply }]);
       setIsAnalyzing(false);
-    }, 800);
+    }, 1000);
   };
 
   if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING TERMINAL...</div>;
@@ -312,6 +332,7 @@ const Vault = ({ userId, onLogout }) => {
           {chatHistory.map((msg, i) => (
             <div key={i} className={`p-4 rounded-2xl text-[11px] leading-relaxed font-['Inter'] ${msg.role === 'assistant' ? 'bg-black/30 border-l-2 border-[#adc7ff] text-gray-400' : 'bg-[#adc7ff]/10 text-[#adc7ff] text-right'}`}>{msg.text}</div>
           ))}
+          {isAnalyzing && <div className="p-3 text-[10px] text-[#adc7ff] animate-pulse">CFO AI is auditing ledger...</div>}
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
