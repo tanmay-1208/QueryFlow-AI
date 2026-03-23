@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#2563eb" />
+    <meta name="theme-color" content="#131313" />
     <meta
       name="description"
-      content="QueryFlow SME - Enterprise Resource Planning & AI Financial Analyst"
+      content="QueryFlow Vault - Enterprise Ledger Integrity & Institutional Intelligence"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
@@ -16,17 +16,66 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-    <title>QueryFlow Business | Secure Terminal</title>
+    <title>QueryFlow Vault | Secure Terminal</title>
 
-    <meta name="google-signin-client_id" content="355056127518-9jjnnp9q7mkeum589k53dseuvdsrdpnf.apps.googleusercontent.com">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
-  
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#131313",
+              "surface": "#1c1b1b",
+              "primary": "#adc7ff",
+              "on-primary": "#002e68",
+              "secondary": "#66dd8b",
+              "error": "#ffb4ab",
+              "outline-variant": "#414754"
+            },
+            fontFamily: {
+              headline: ["Manrope", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Space Grotesk", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      /* Glassmorphism utility for Stitch-style headers and cards */
+      .glass {
+        background: rgba(53, 53, 52, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      
+      /* Smooth transitions for high-end feel */
+      * {
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+      }
+
+      /* Custom scrollbar for Dark Terminal aesthetic */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #131313;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #444;
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-background text-white font-body selection:bg-primary selection:text-on-primary">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
