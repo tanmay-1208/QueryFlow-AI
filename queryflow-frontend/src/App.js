@@ -20,7 +20,7 @@ const LandingPage = () => (
   </div>
 );
 
-// --- 2. LOGIN COMPONENT (GOOGLE + MANUAL) ---
+// --- 2. LOGIN COMPONENT ---
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,9 +29,7 @@ const Login = ({ onLogin }) => {
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({ 
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin + "/vault"
-      }
+      options: { redirectTo: window.location.origin + "/vault" }
     });
     if (error) alert(error.message);
   };
@@ -52,19 +50,11 @@ const Login = ({ onLogin }) => {
       <div className="max-w-md w-full bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
         <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter">Access Terminal</h2>
-        
         <form onSubmit={handleManualLogin} className="space-y-4 mb-6">
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="email" placeholder="Business Email" onChange={e => setEmail(e.target.value)} required />
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
           <button type="submit" className="w-full bg-[#adc7ff] text-[#002e68] py-5 rounded-[1.5rem] font-black text-xl hover:scale-[1.02] transition-all">SIGN IN</button>
         </form>
-
-        <div className="relative flex items-center gap-4 mb-6">
-          <div className="flex-1 h-[1px] bg-white/5"></div>
-          <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">OR</span>
-          <div className="flex-1 h-[1px] bg-white/5"></div>
-        </div>
-
         <button onClick={handleGoogleLogin} className="w-full bg-white/5 text-white border border-white/10 py-5 rounded-[1.5rem] font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-3">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
           Sign in with Google
@@ -81,8 +71,9 @@ const Vault = ({ userId, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   
+  // LEDGER STATE (Stores recent interactions)
   const [ledger, setLedger] = useState([
-    { id: 1, action: "System Initialization", entity: "Node 04", status: "Verified", value: 0, time: "Start" }
+    { id: 1, action: "Cloud Sync Established", entity: "System", value: 0, time: new Date().toLocaleTimeString() }
   ]);
 
   const [userQuery, setUserQuery] = useState("");
@@ -107,21 +98,26 @@ const Vault = ({ userId, onLogout }) => {
     const newStock = Math.max(0, (Number(item.stock) || 0) + delta);
     const transactionValue = -(delta * (Number(item.price) || 0));
 
+    // Update state locally
     setItems(prevItems => prevItems.map(i => i.id === id ? { ...i, stock: newStock } : i));
 
-    setLedger(prev => [{
+    // ADD TO LEDGER (Recent Interactions)
+    const newEntry = {
       id: Date.now(),
       action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation",
-      entity: item.name || "Unknown Asset",
+      entity: item.name || "Asset",
       value: transactionValue,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }, ...prev.slice(0, 4)]);
+    };
+    setLedger(prev => [newEntry, ...prev.slice(0, 4)]);
 
+    // Sync with database
     try {
       await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId: userId });
     } catch (err) { console.error("Cloud Sync Failed:", err); }
   };
 
+  // --- ACCOUNTING ENGINE ---
   const safeItems = items || [];
   const totalValuation = Math.floor(safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0));
   const totalInvestment = Math.floor(safeItems.reduce((acc, i) => acc + (((Number(i?.price) || 0) * 0.7) * (Number(i?.stock) || 0)), 0)); 
@@ -143,9 +139,7 @@ const Vault = ({ userId, onLogout }) => {
     setUserQuery("");
     setIsAnalyzing(true);
     setTimeout(() => {
-      let reply = "Audit complete. Risk levels are within normal parameters.";
-      const query = userQuery.toLowerCase();
-      if (query.includes("profit")) reply = `Realizable profit is projected at $${realizableProfit.toLocaleString()}.`;
+      let reply = `Audit complete. Realizable profit is projected at $${realizableProfit.toLocaleString()}.`;
       setChatHistory([...newHistory, { role: 'assistant', text: reply }]);
       setIsAnalyzing(false);
     }, 800);
@@ -155,6 +149,8 @@ const Vault = ({ userId, onLogout }) => {
 
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-hidden fixed inset-0">
+      
+      {/* SIDEBAR */}
       <aside className="w-64 border-r border-white/5 bg-[#131313] flex flex-col p-6 shrink-0">
         <div className="mb-10 font-['Manrope']"><span className="text-xl font-black">QueryFlow Vault</span></div>
         <nav className="flex-1 space-y-2">
@@ -167,6 +163,7 @@ const Vault = ({ userId, onLogout }) => {
         <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
       </aside>
 
+      {/* MAIN PANEL */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md">
           <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
@@ -174,8 +171,10 @@ const Vault = ({ userId, onLogout }) => {
         </header>
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
+          
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
+              {/* KPI ROW */}
               <div className="grid grid-cols-4 gap-4">
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span>
@@ -220,6 +219,24 @@ const Vault = ({ userId, onLogout }) => {
                   </div>
                 </div>
               </div>
+
+              {/* RESTORED RECENT INTERACTION LEDGER */}
+              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
+                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Ledger Activity</h4>
+                <div className="space-y-2">
+                  {ledger.map((entry) => (
+                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-in slide-in-from-top duration-300">
+                      <div>
+                        <p className="font-bold text-sm">{entry.action}</p>
+                        <p className="text-[9px] text-gray-500 uppercase tracking-widest">{entry.entity} | {entry.time}</p>
+                      </div>
+                      <span className={`font-black text-sm ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>
+                        {entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
@@ -233,16 +250,33 @@ const Vault = ({ userId, onLogout }) => {
                      <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold</button>
                    </div>
                  </div>
                ))}
              </div>
           )}
+
+          {/* RESTORED REPORTS VIEW */}
+          {activeTab === "reports" && (
+             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
+                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
+                <div className="space-y-6 font-['Inter']">
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested (Cost)</span><span className="font-black text-xl text-red-400">-${totalInvestment.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Tax Provision (18%)</span><span className="font-black text-xl text-[#fbbc00]">-${estimatedTax.toLocaleString()}</span></div>
+                  <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12 border border-[#66dd8b]/20">
+                    <span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span>
+                    <span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${realizableProfit.toLocaleString()}</span>
+                  </div>
+                </div>
+             </div>
+          )}
         </div>
       </main>
 
+      {/* AI PANEL */}
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4"><span className="text-[11px] font-black font-['Manrope'] uppercase tracking-widest">AI Advisor</span></div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-1 custom-scrollbar">
@@ -260,34 +294,23 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 4. MAIN APP COMPONENT (MASTER SESSION FIX) ---
+// --- 4. MAIN APP COMPONENT ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    // Check session on mount to catch Google Redirect tokens
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        handleLogin(true, session.user.email);
-      }
+      if (session) { handleLogin(true, session.user.email); }
       setIsInitialLoading(false);
     };
-
     checkSession();
-
-    // Listen for real-time auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        handleLogin(true, session.user.email);
-      } else {
-        setIsAuthenticated(false);
-        setUserId("");
-      }
+      if (session) { handleLogin(true, session.user.email); }
+      else { setIsAuthenticated(false); setUserId(""); }
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
