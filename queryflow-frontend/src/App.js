@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate, useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient"; // IMPORT YOUR REAL CLIENT
+import { supabase } from "./supabaseClient"; 
 import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
@@ -17,14 +17,21 @@ const GoogleBtn = ({ onLogin }) => {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: async (response) => {
-          // Real Google Auth with Supabase
+          console.log("Google response received, authenticating with Supabase...");
+          
           const { data, error } = await supabase.auth.signInWithIdToken({
             provider: 'google',
             token: response.credential,
           });
           
-          if (!error && data.user) {
+          if (error) {
+            console.error("Supabase Auth Error:", error.message);
+            alert(`Auth Error: ${error.message}`);
+          } else if (data.user) {
+            console.log("Authenticated successfully as:", data.user.email);
+            // Trigger the login state update in the parent
             onLogin(true, data.user.email); 
+            // Explicitly force navigation
             navigate("/vault");
           }
         }
@@ -60,7 +67,7 @@ const LandingPage = () => (
   </div>
 );
 
-// --- 2. LOGIN COMPONENT (REAL AUTH) ---
+// --- 2. LOGIN COMPONENT ---
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,7 +78,6 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setLoading(true);
 
-    // REAL SUPABASE AUTH CALL
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
@@ -106,7 +112,7 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// --- 3. SIGNUP COMPONENT (REAL REGISTRATION) ---
+// --- 3. SIGNUP COMPONENT ---
 const Signup = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -126,7 +132,7 @@ const Signup = ({ onLogin }) => {
       alert(`Registration Error: ${error.message}`);
       setLoading(false);
     } else {
-      alert("Registration Successful! Redirecting to your vault...");
+      alert("Account created! Logging you in...");
       onLogin(true, data.user.email);
       navigate("/vault");
     }
@@ -163,7 +169,7 @@ const Vault = ({ userId }) => {
   const fetchItems = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
-      setItems(Array.isArray(res.data) ? res.data : []);
+      setItems(res.data);
     } catch (err) { setItems([]); }
   };
 
@@ -191,19 +197,11 @@ const Vault = ({ userId }) => {
     } catch (err) { console.error(err); }
   };
 
-  const taxRate = 0.18;
-  const totalValuation = items.reduce((acc, item) => acc + ((item?.price || 0) * (item?.stock || 0)), 0);
-  const totalProfit = items.reduce((acc, item) => acc + (((item?.price || 0) - (item?.cost || 0)) * (item?.stock || 0)), 0);
-  const estimatedTax = totalValuation * taxRate;
-  const netProfit = totalProfit - estimatedTax;
   const filteredItems = items.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="dashboard-container">
       <div className="stats-header">
-        <div className="stat-card"><label className="stat-label">VALUATION</label><h3 className="stat-value">${totalValuation.toLocaleString()}</h3></div>
-        <div className="stat-card"><label className="stat-label">TAX (18%)</label><h3 className="stat-value text-red">-${estimatedTax.toLocaleString()}</h3></div>
-        <div className="stat-card"><label className="stat-label">NET PROFIT</label><h3 className="stat-value text-green">${netProfit.toLocaleString()}</h3></div>
         <div className="stat-card"><label className="stat-label">TOTAL SKUs</label><h3 className="stat-value">{items.length}</h3></div>
       </div>
       <div className="inventory-controls">
@@ -218,16 +216,11 @@ const Vault = ({ userId }) => {
       </div>
       <div className="inventory-grid">
         {filteredItems.map((item) => (
-          <div key={item.id} className={`inventory-card ${(item?.stock || 0) <= 5 ? 'low-stock-warning' : ''}`}>
+          <div key={item.id} className="inventory-card">
             <h4 className="item-title">{item.name}</h4>
-            <div className="item-financials"><span>Price: <b>${item?.price}</b></span><span>Cost: <b>${item?.cost}</b></span></div>
-            <div className="unit-economics">
-               <div className="eco-item"><span className="eco-label">Profit</span><span className="eco-value text-green">+${(item.price - item.cost).toLocaleString()}</span></div>
-            </div>
-            <div className="item-meta">Stock: {item?.stock} | Sold: {item?.sold_count}</div>
+            <div className="item-financials"><span>Price: <b>${item?.price}</b></span><span>Stock: <b>{item?.stock}</b></span></div>
             <div className="item-actions">
               <button onClick={() => handleAction('sell', item.id)}>Sell</button>
-              <button onClick={() => handleAction('restock', item.id)}>Stock</button>
               <button onClick={() => deleteItem(item.id)} className="del-btn">DEL</button>
             </div>
           </div>
@@ -256,7 +249,7 @@ const Advisor = ({ userId }) => {
   return (
     <div className="dashboard-container">
       <h2 className="page-header">Financial AI Analyst</h2>
-      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ask about profit optimization..." className="advisor-textarea" />
+      <textarea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ask about profit..." className="advisor-textarea" />
       <button onClick={askAdvisor} disabled={loading} className="add-stock-btn full-width">{loading ? "Analyzing..." : "Run AI Audit"}</button>
       {response && <div className="advisor-response fade-in">{response}</div>}
     </div>
