@@ -21,7 +21,7 @@ const Login = ({ onLogin }) => {
     <div className="min-h-screen bg-[#0e0e0e] flex items-center justify-center px-4 font-['Inter']">
       <div className="max-w-md w-full bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
-        <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter">Access Terminal</h2>
+        <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter leading-none">Access Terminal</h2>
         <form onSubmit={handleManualLogin} className="space-y-4">
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="email" placeholder="Business Email" onChange={e => setEmail(e.target.value)} required />
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
@@ -32,27 +32,25 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// --- LANDING PAGE ---
 const LandingPage = () => (
   <div className="bg-[#131313] min-h-screen text-white font-['Inter'] flex items-center justify-center text-center p-8">
     <div className="max-w-4xl">
-      <h1 className="text-8xl font-black font-['Manrope'] tracking-tighter leading-tight mb-8">The Modern CFO's<br/><span className="text-[#adc7ff] italic">Digital Vault</span></h1>
+      <h1 className="text-7xl md:text-8xl font-black font-['Manrope'] tracking-tighter leading-tight mb-8">The Modern CFO's<br/><span className="text-[#adc7ff] italic">Digital Vault</span></h1>
       <Link to="/login" className="bg-[#adc7ff] text-[#002e68] px-12 py-5 rounded-2xl font-black text-xl inline-block shadow-2xl">Enter Terminal</Link>
     </div>
   </div>
 );
 
-// --- THE VAULT TERMINAL (ERP EDITION) ---
+// --- THE VAULT TERMINAL ---
 const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   
-  // AI States
   const [userQuery, setUserQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
+  const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by for fiscal queries." }]);
   const chatEndRef = useRef(null);
 
   useEffect(() => { if (userId) fetchItems(); }, [userId]);
@@ -73,7 +71,7 @@ const Vault = ({ userId, onLogout }) => {
     await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId });
   };
 
-  // Calculations
+  // Safe Calculations
   const totalValuation = items.reduce((acc, item) => acc + ((Number(item.price) || 0) * (Number(item.stock) || 0)), 0);
   const totalCost = items.reduce((acc, item) => acc + ((Number(item.cost) || 0) * (Number(item.stock) || 0)), 0);
   const estimatedTax = totalValuation * 0.18;
@@ -87,16 +85,16 @@ const Vault = ({ userId, onLogout }) => {
     setUserQuery("");
     setIsAnalyzing(true);
     setTimeout(() => {
-      let reply = "Audit complete. Portfolio risk is stable.";
+      let reply = "Audit complete. Risk levels are within normal parameters.";
       const query = userQuery.toLowerCase();
-      if (query.includes("tax")) reply = `Based on a $${totalValuation.toLocaleString()} valuation, your current tax provision is $${estimatedTax.toLocaleString()}.`;
-      if (query.includes("stock")) reply = `You have ${items.filter(i => i.stock <= 5).length} items in critical low-stock status.`;
+      if (query.includes("tax")) reply = `Based on current valuation, your tax provision is $${estimatedTax.toLocaleString()}.`;
+      if (query.includes("stock")) reply = `Alert: ${items.filter(i => i.stock <= 5).length} SKUs require immediate reconciliation.`;
       setChatHistory([...newHistory, { role: 'assistant', text: reply }]);
       setIsAnalyzing(false);
     }, 800);
   };
 
-  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">TERMINAL BOOT...</div>;
+  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING TERMINAL...</div>;
 
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-hidden fixed inset-0">
@@ -105,6 +103,7 @@ const Vault = ({ userId, onLogout }) => {
       <aside className="w-64 border-r border-white/5 bg-[#131313] flex flex-col p-6 shrink-0">
         <div className="mb-10 font-['Manrope']">
           <span className="text-xl font-black tracking-tighter">QueryFlow Vault</span>
+          <p className="text-[10px] text-gray-600 font-['Space_Grotesk'] uppercase tracking-[0.3em] mt-1">Enterprise Finance</p>
         </div>
         <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
@@ -113,7 +112,7 @@ const Vault = ({ userId, onLogout }) => {
             </button>
           ))}
         </nav>
-        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">Exit Terminal</button>
+        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
       </aside>
 
       {/* MAIN CONTENT */}
@@ -121,43 +120,45 @@ const Vault = ({ userId, onLogout }) => {
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md shrink-0">
           <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
           <div className="relative">
+             <span className="absolute left-4 top-2.5 text-gray-600 material-symbols-outlined text-sm">search</span>
              <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white" placeholder="Search ledger..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           
-          {/* TAB 1: DASHBOARD (HIGH DENSITY VIEW) */}
+          {/* TAB 1: DASHBOARD (FIXED OVERFLOW VIEW) */}
           {activeTab === "dashboard" && (
             <div className="space-y-8">
-              {/* KPI ROW */}
+              
+              {/* KPI ROW - RE-STYLED FOR LONG NUMBERS */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest">Valuation</span>
-                  <h3 className="text-3xl font-black font-['Manrope'] mt-1">${totalValuation.toLocaleString()}</h3>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden">
+                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Valuation</span>
+                  <h3 className="text-2xl font-black font-['Manrope'] tracking-tighter truncate" title={`$${totalValuation.toLocaleString()}`}>${totalValuation.toLocaleString()}</h3>
                 </div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest">Tax Provision</span>
-                  <h3 className="text-3xl font-black font-['Manrope'] mt-1">-${estimatedTax.toLocaleString()}</h3>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl overflow-hidden">
+                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Tax Provision</span>
+                  <h3 className="text-2xl font-black font-['Manrope'] tracking-tighter truncate" title={`-$${estimatedTax.toLocaleString()}`}>-${estimatedTax.toLocaleString()}</h3>
                 </div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest">Net Profit</span>
-                  <h3 className="text-3xl font-black font-['Manrope'] mt-1 text-[#66dd8b]">${netProfit.toLocaleString()}</h3>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl overflow-hidden">
+                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Net Profit</span>
+                  <h3 className="text-2xl font-black font-['Manrope'] tracking-tighter text-[#66dd8b] truncate" title={`$${netProfit.toLocaleString()}`}>${netProfit.toLocaleString()}</h3>
                 </div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest">Alerts</span>
-                  <h3 className="text-3xl font-black font-['Manrope'] mt-1 text-red-500">{items.filter(i => i.stock <= 5).length}</h3>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl overflow-hidden">
+                  <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">SKU Alerts</span>
+                  <h3 className="text-2xl font-black font-['Manrope'] tracking-tighter text-red-500">{items.filter(i => i.stock <= 5).length}</h3>
                 </div>
               </div>
 
-              {/* BENTO INTELLIGENCE GRID */}
+              {/* BENTO GRID */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5">
-                  <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-xs text-gray-400 mb-8">Capital Concentration</h4>
+                  <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
                   <div className="space-y-6">
                     {items.slice(0, 4).map((item, idx) => (
                       <div key={idx} className="group">
-                        <div className="flex justify-between text-xs mb-2">
+                        <div className="flex justify-between text-[11px] mb-2">
                           <span className="font-bold">{item.name}</span>
                           <span className="text-gray-500">${(item.price * item.stock).toLocaleString()}</span>
                         </div>
@@ -168,25 +169,22 @@ const Vault = ({ userId, onLogout }) => {
                     ))}
                   </div>
                 </div>
-                <div className="bg-[#adc7ff] p-8 rounded-[2.5rem] text-[#002e68] flex flex-col justify-between shadow-2xl shadow-[#adc7ff]/10">
+                <div className="bg-[#adc7ff] p-8 rounded-[2.5rem] text-[#002e68] flex flex-col justify-between shadow-2xl">
                   <span className="material-symbols-outlined text-4xl">trending_up</span>
                   <div>
-                    <h4 className="text-2xl font-black font-['Manrope'] leading-tight">Optimized<br/>Yield</h4>
-                    <p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-70">Institutional Node Active</p>
+                    <h4 className="text-2xl font-black font-['Manrope'] leading-tight">Optimized<br/>Performance</h4>
+                    <p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-60">System Synchronized</p>
                   </div>
                 </div>
               </div>
 
-              {/* ACTIVITY TABLE */}
+              {/* ACTIVITY LIST */}
               <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5">
-                <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-xs text-gray-400 mb-6">Recent Ledger Activity</h4>
-                <div className="space-y-4">
+                <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-6">Recent Ledger Activity</h4>
+                <div className="space-y-2">
                   {[1, 2, 3].map((_, i) => (
-                    <div key={i} className="flex justify-between items-center py-4 border-b border-white/5">
-                      <div>
-                        <p className="font-bold text-sm">Ledger Reconciliation</p>
-                        <p className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk']">System Verified Node</p>
-                      </div>
+                    <div key={i} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
+                      <div><p className="font-bold text-sm">Ledger Reconciliation</p><p className="text-[9px] text-gray-500 uppercase font-['Space_Grotesk']">Network Node 04</p></div>
                       <span className="font-black text-sm text-[#66dd8b]">+$12,400.00</span>
                     </div>
                   ))}
@@ -201,30 +199,31 @@ const Vault = ({ userId, onLogout }) => {
               {items.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
                 <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl`}>
                   <div className="flex justify-between items-start mb-6">
-                    <h4 className="font-black text-xl font-['Manrope'] truncate">{item.name}</h4>
+                    <h4 className="font-black text-xl font-['Manrope'] truncate leading-none">{item.name}</h4>
                     {item.stock <= 5 && <div className="bg-red-500 text-white text-[8px] font-black px-3 py-1 rounded-full animate-pulse uppercase">Low Stock</div>}
                   </div>
                   <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between">
-                    <div><span className="text-[9px] text-gray-500 block uppercase font-bold">Value</span><span className="text-xl font-black font-['Manrope']">${Number(item.price).toLocaleString()}</span></div>
-                    <div className="text-right"><span className="text-[9px] text-gray-500 block uppercase font-bold">Stock</span><span className="text-xl font-black font-['Manrope']">{item.stock} Units</span></div>
+                    <div><span className="text-[9px] text-gray-600 block uppercase font-bold">Price Point</span><span className="text-xl font-black font-['Manrope']">${Number(item.price).toLocaleString()}</span></div>
+                    <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold">On Hand</span><span className={`text-xl font-black font-['Manrope'] ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                   </div>
                   <div className="flex gap-3">
-                    <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase">Restock</button>
-                    <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase">Sold Stock</button>
+                    <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase transition-all">Restock</button>
+                    <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Sold Stock</button>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* TAB 3: REPORTS (FINANCIALS) */}
+          {/* TAB 3: REPORTS (FISCAL) */}
           {activeTab === "reports" && (
-            <div className="max-w-4xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl">
-              <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Fiscal Report Summary</h3>
+            <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl">
+              <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
               <div className="space-y-6">
-                <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400">Gross Valuation</span><span className="font-black font-['Manrope'] text-xl">${totalValuation.toLocaleString()}</span></div>
+                <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400">Total Asset Value</span><span className="font-black font-['Manrope'] text-xl">${totalValuation.toLocaleString()}</span></div>
+                <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400">Total Asset Cost</span><span className="font-black font-['Manrope'] text-xl text-red-400">-${totalCost.toLocaleString()}</span></div>
                 <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400">Tax Liability (18%)</span><span className="font-black font-['Manrope'] text-xl text-[#fbbc00]">-${estimatedTax.toLocaleString()}</span></div>
-                <div className="flex justify-between bg-[#66dd8b]/10 p-6 rounded-2xl mt-12"><span className="text-[#66dd8b] font-black uppercase">Net Projected Profit</span><span className="font-black font-['Manrope'] text-3xl text-[#66dd8b]">${netProfit.toLocaleString()}</span></div>
+                <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12 border border-[#66dd8b]/20"><span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Net Liquidity</span><span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${netProfit.toLocaleString()}</span></div>
               </div>
             </div>
           )}
@@ -232,11 +231,11 @@ const Vault = ({ userId, onLogout }) => {
       </main>
 
       {/* AI INTERACTIVE PANEL (RIGHT) */}
-      <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-[-20px_0_50px_rgba(0,0,0,0.3)]">
+      <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
           <span className={`material-symbols-outlined text-[#adc7ff] text-xl ${isAnalyzing ? 'animate-spin' : 'animate-pulse'}`}>auto_awesome</span>
-          <span className="text-sm font-black font-['Manrope'] uppercase tracking-widest">AI Advisor</span>
-          <span className="ml-auto w-2 h-2 bg-[#66dd8b] rounded-full"></span>
+          <span className="text-[11px] font-black font-['Manrope'] uppercase tracking-widest">AI Advisor</span>
+          <span className="ml-auto w-2 h-2 bg-[#66dd8b] rounded-full shadow-[0_0_8px_#66dd8b]"></span>
         </div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-1 custom-scrollbar">
           {chatHistory.map((msg, i) => (
@@ -245,7 +244,7 @@ const Vault = ({ userId, onLogout }) => {
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
-          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all" />
+          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Ask terminal..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all" />
           <button type="submit" className="absolute right-3 top-2.5 text-[#adc7ff] material-symbols-outlined text-lg">send</button>
         </form>
       </aside>
