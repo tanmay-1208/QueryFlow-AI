@@ -46,7 +46,7 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// --- 3. THE VAULT TERMINAL (INSTITUTIONAL EDITION) ---
+// --- 3. THE VAULT TERMINAL ---
 const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -72,16 +72,18 @@ const Vault = ({ userId, onLogout }) => {
     } catch (err) { setItems([]); } finally { setIsLoading(false); }
   };
 
+  // --- UPDATED PERSISTENCE LOGIC ---
   const updateStock = async (id, delta) => {
     const item = (items || []).find(i => i.id === id);
     if (!item) return;
+
     const newStock = Math.max(0, (Number(item.stock) || 0) + delta);
-    
-    // CASH FLOW LOGIC: Selling (delta < 0) = +Cash | Restocking (delta > 0) = -Cash
-    const transactionValue = -(delta * Number(item.price || 0));
+    const transactionValue = -(delta * (Number(item.price) || 0));
 
-    setItems(items.map(i => i.id === id ? { ...i, stock: newStock } : i));
+    // Optimistic UI Update
+    setItems(prevItems => prevItems.map(i => i.id === id ? { ...i, stock: newStock } : i));
 
+    // Update Ledger
     const newEntry = {
       id: Date.now(),
       action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation",
@@ -90,19 +92,26 @@ const Vault = ({ userId, onLogout }) => {
       value: transactionValue,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    setLedger([newEntry, ...ledger.slice(0, 4)]);
+    setLedger(prev => [newEntry, ...prev.slice(0, 4)]);
 
-    await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId });
+    // Save to Database
+    try {
+      await axios.put(`${API_BASE_URL}/api/products/${id}`, { 
+        stock: newStock, 
+        userId: userId 
+      });
+    } catch (err) {
+      console.error("Failed to sync with cloud:", err);
+    }
   };
 
-  // --- SAFE ACCOUNTING ENGINE ---
+  // --- ACCOUNTING ENGINE ---
   const safeItems = items || [];
   const totalValuation = Math.floor(safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0));
   const totalInvestment = Math.floor(safeItems.reduce((acc, i) => acc + (((Number(i?.price) || 0) * 0.7) * (Number(i?.stock) || 0)), 0)); 
   const estimatedTax = Math.floor(totalValuation * 0.18);
   const realizableProfit = Math.floor(totalValuation - totalInvestment - estimatedTax);
 
-  // --- DYNAMIC STATUS CONFIG ---
   const getStatus = () => {
     if (realizableProfit > 1000000) return { bg: "bg-[#66dd8b]", text: "text-[#003115]", label: "Institutional Profit", icon: "trending_up", desc: "Yield optimized." };
     if (realizableProfit < 0) return { bg: "bg-[#ffb4ab]", text: "text-[#680003]", label: "Liquidity Deficit", icon: "warning", desc: "High investment detected." };
@@ -148,15 +157,13 @@ const Vault = ({ userId, onLogout }) => {
       <main className="flex-1 flex flex-col overflow-hidden bg-[#0e0e0e] relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md shrink-0">
           <h2 className="text-xl font-black font-['Manrope'] capitalize tracking-tight">{activeTab} Overview</h2>
-          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white" placeholder="Search ledger..." onChange={(e) => setSearchTerm(e.target.value)} />
+          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white font-['Inter']" placeholder="Search ledger..." onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
-              
-              {/* KPI ROW */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Valuation</span>
@@ -172,11 +179,10 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">SKU Alerts</span>
-                  <h3 className="text-2xl font-black font-['Manrope'] text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3>
+                  <h3 className="text-2xl font-black font-['Manrope'] text-red-500 tracking-tighter">{safeItems.filter(i => i.stock <= 5).length}</h3>
                 </div>
               </div>
 
-              {/* BENTO INTELLIGENCE */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
                   <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
@@ -195,7 +201,6 @@ const Vault = ({ userId, onLogout }) => {
                   </div>
                 </div>
                 
-                {/* DYNAMIC HEALTH CARD */}
                 <div className={`${status.bg} ${status.text} p-8 rounded-[2.5rem] flex flex-col justify-between shadow-2xl transition-all duration-500`}>
                   <span className="material-symbols-outlined text-4xl">{status.icon}</span>
                   <div>
@@ -205,7 +210,6 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
               </div>
 
-              {/* LIVE LEDGER ACTIVITY */}
               <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-6">Recent Ledger Activity</h4>
                 <div className="space-y-2">
@@ -225,18 +229,17 @@ const Vault = ({ userId, onLogout }) => {
             </div>
           )}
 
-          {/* INVENTORY TAB */}
           {activeTab === "inventory" && (
-             <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 animate-in fade-in duration-500">
+             <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
                  <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl transition-all`}>
-                   <div className="flex justify-between items-start mb-6 font-['Manrope']">
-                     <h4 className="font-black text-xl truncate leading-none">{item.name}</h4>
+                   <div className="flex justify-between items-start mb-6">
+                     <h4 className="font-black text-xl font-['Manrope'] truncate leading-none">{item.name}</h4>
                      {item.stock <= 5 && <div className="bg-red-500 text-white text-[8px] font-black px-3 py-1 rounded-full animate-pulse uppercase tracking-widest">Low Stock</div>}
                    </div>
                    <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between font-['Inter']">
                      <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price Point</span><span className="text-xl font-black">${Math.floor(item.price || 0).toLocaleString()}</span></div>
-                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
+                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">In-Vault</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
                      <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase transition-all tracking-widest">Restock (-Cash)</button>
@@ -247,15 +250,14 @@ const Vault = ({ userId, onLogout }) => {
              </div>
           )}
 
-          {/* REPORTS TAB */}
           {activeTab === "reports" && (
-             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
-                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
+             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl">
+                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Fiscal Performance Summary</h3>
                 <div className="space-y-6 font-['Inter']">
                   <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
                   <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested (Cost)</span><span className="font-black text-xl text-red-400">-${totalInvestment.toLocaleString()}</span></div>
                   <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Tax Provision (18%)</span><span className="font-black text-xl text-[#fbbc00]">-${estimatedTax.toLocaleString()}</span></div>
-                  <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12 border border-[#66dd8b]/20">
+                  <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12 border border-[#66dd8b]/20 shadow-inner">
                     <span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span>
                     <span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${realizableProfit.toLocaleString()}</span>
                   </div>
@@ -265,7 +267,6 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* AI INTERACTIVE PANEL (RIGHT) */}
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
           <span className={`material-symbols-outlined text-[#adc7ff] text-xl ${isAnalyzing ? 'animate-spin' : 'animate-pulse'}`}>auto_awesome</span>
