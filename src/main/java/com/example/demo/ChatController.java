@@ -8,7 +8,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+// Updated CORS to allow your specific Vercel Origin
+@CrossOrigin(origins = "https://query-flow-ai-uq5t.vercel.app", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class ChatController {
 
     private final ChatModel chatModel;
@@ -28,6 +29,25 @@ public class ChatController {
         );
     }
 
+    // --- NEW: THE MISSING PUT METHOD (This fixes your reload issue) ---
+    @PutMapping("/products/{id}")
+    public void updateProductStock(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+        try {
+            // Extract the new stock and userId sent from React
+            int stock = Integer.parseInt(String.valueOf(payload.get("stock")));
+            String userId = String.valueOf(payload.get("userId"));
+
+            // Update the database for that specific ID and User
+            jdbcTemplate.update(
+                "UPDATE products SET stock = ? WHERE id = ? AND user_id = ?",
+                stock, id, userId
+            );
+            System.out.println(">>> SUCCESS: Updated ID " + id + " to stock " + stock);
+        } catch (Exception e) {
+            System.err.println(">>> UPDATE ERROR: " + e.getMessage());
+        }
+    }
+
     // 2. Add product with a User ID tag
     @PostMapping("/products")
     public void addProduct(@RequestBody Map<String, Object> p) {
@@ -36,7 +56,7 @@ public class ChatController {
             double price = Double.parseDouble(String.valueOf(p.getOrDefault("price", "0")));
             double cost = Double.parseDouble(String.valueOf(p.getOrDefault("cost", "0")));
             int stock = Integer.parseInt(String.valueOf(p.getOrDefault("stock", "0")));
-            String userId = String.valueOf(p.get("user_id")); // Get the ID from React
+            String userId = String.valueOf(p.get("user_id")); 
 
             jdbcTemplate.update(
                 "INSERT INTO products (name, price, cost, stock, sold_count, user_id) VALUES (?, ?, ?, ?, 0, ?)",
@@ -47,36 +67,13 @@ public class ChatController {
         }
     }
 
-    // 3. Security Check: Only update if the item belongs to the user
-    @PostMapping("/products/sell/{id}")
-    public void sellItem(@PathVariable Long id, @RequestParam String userId) {
-        jdbcTemplate.update(
-            "UPDATE products SET stock = stock - 1, sold_count = sold_count + 1 WHERE id = ? AND user_id = ? AND stock > 0", 
-            id, userId
-        );
-    }
-
-    @PostMapping("/products/restock/{id}")
-    public void restockItem(@PathVariable Long id, @RequestParam String userId) {
-        jdbcTemplate.update(
-            "UPDATE products SET stock = stock + 1 WHERE id = ? AND user_id = ?", 
-            id, userId
-        );
-    }
-
-    @DeleteMapping("/products/{id}")
-    public void deleteItem(@PathVariable Long id, @RequestParam String userId) {
-        jdbcTemplate.update("DELETE FROM products WHERE id = ? AND user_id = ?", id, userId);
-    }
-
-    // 4. AI Advisor: Only analyzes the current user's data
+    // 3. AI Advisor
     @PostMapping("/chat")
     public String chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
-        String userId = payload.get("userId"); // Ensure React sends this
+        String userId = payload.get("userId");
 
         try {
-            // AI only gets context for the logged-in user
             List<Map<String, Object>> products = jdbcTemplate.queryForList(
                 "SELECT name, price, cost, stock, sold_count FROM products WHERE user_id = ?", 
                 userId
@@ -104,5 +101,11 @@ public class ChatController {
         } catch (Exception e) {
             return "Advisor Error: " + e.getMessage();
         }
+    }
+
+    // Delete Item
+    @DeleteMapping("/products/{id}")
+    public void deleteItem(@PathVariable Long id, @RequestParam String userId) {
+        jdbcTemplate.update("DELETE FROM products WHERE id = ? AND user_id = ?", id, userId);
     }
 }
