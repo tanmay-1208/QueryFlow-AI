@@ -30,7 +30,6 @@ const Login = ({ onLogin }) => {
     const { error } = await supabase.auth.signInWithOAuth({ 
       provider: 'google',
       options: {
-        // Ensures user returns to the live site/vault after Google auth
         redirectTo: window.location.origin + "/vault"
       }
     });
@@ -234,8 +233,8 @@ const Vault = ({ userId, onLogout }) => {
                      <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
                    </div>
                  </div>
                ))}
@@ -261,18 +260,34 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 4. MAIN APP COMPONENT ---
+// --- 4. MAIN APP COMPONENT (MASTER SESSION FIX) ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  // Detect Supabase Auth Changes for Google Login
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Check session on mount to catch Google Redirect tokens
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         handleLogin(true, session.user.email);
       }
+      setIsInitialLoading(false);
+    };
+
+    checkSession();
+
+    // Listen for real-time auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        handleLogin(true, session.user.email);
+      } else {
+        setIsAuthenticated(false);
+        setUserId("");
+      }
     });
+
     return () => subscription.unsubscribe();
   }, []);
 
@@ -288,9 +303,14 @@ export default function App() {
     localStorage.clear(); 
     setIsAuthenticated(false); 
     setUserId("");
-    // Final Escape fix to ensure Landing Page redirect
     window.location.replace("/"); 
   };
+
+  if (isInitialLoading) return (
+    <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">
+      VERIFYING CREDENTIALS...
+    </div>
+  );
 
   return (
     <Router>
