@@ -6,24 +6,36 @@ import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
-// --- AUTH HELPERS ---
+// --- 1. LANDING PAGE (FIXES THE REFERENCE ERROR) ---
+const LandingPage = () => (
+  <div className="bg-[#131313] min-h-screen text-white font-['Inter'] flex items-center justify-center text-center p-8">
+    <div className="max-w-4xl">
+      <h1 className="text-7xl md:text-8xl font-black font-['Manrope'] tracking-tighter leading-tight mb-8">
+        The Modern CFO's<br/><span className="text-[#adc7ff] italic">Digital Vault</span>
+      </h1>
+      <Link to="/login" className="bg-[#adc7ff] text-[#002e68] px-12 py-5 rounded-2xl font-black text-xl inline-block shadow-2xl">
+        Enter Terminal
+      </Link>
+    </div>
+  </div>
+);
+
+// --- 2. AUTH HELPERS ---
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const handleManualLogin = async (e) => {
     e.preventDefault();
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (!error) { onLogin(true, data.user.email); navigate("/vault"); }
-      else { alert(error.message); }
-    } catch (err) { alert("Connection Error"); }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (!error) { onLogin(true, data.user.email); navigate("/vault"); }
+    else { alert(error.message); }
   };
   return (
     <div className="min-h-screen bg-[#0e0e0e] flex items-center justify-center px-4 font-['Inter']">
       <div className="max-w-md w-full bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
-        <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter">Access Terminal</h2>
+        <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter leading-none">Access Terminal</h2>
         <form onSubmit={handleManualLogin} className="space-y-4">
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="email" placeholder="Business Email" onChange={e => setEmail(e.target.value)} required />
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
@@ -34,16 +46,7 @@ const Login = ({ onLogin }) => {
   );
 };
 
-const LandingPage = () => (
-  <div className="bg-[#131313] min-h-screen text-white font-['Inter'] flex items-center justify-center text-center p-8">
-    <div className="max-w-4xl">
-      <h1 className="text-7xl md:text-8xl font-black font-['Manrope'] tracking-tighter leading-tight mb-8">The Modern CFO's<br/><span className="text-[#adc7ff] italic">Digital Vault</span></h1>
-      <Link to="/login" className="bg-[#adc7ff] text-[#002e68] px-12 py-5 rounded-2xl font-black text-xl inline-block shadow-2xl">Enter Terminal</Link>
-    </div>
-  </div>
-);
-
-// --- THE VAULT TERMINAL ---
+// --- 3. THE VAULT TERMINAL (STABILIZED EDITION) ---
 const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -56,7 +59,7 @@ const Vault = ({ userId, onLogout }) => {
 
   const [userQuery, setUserQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
+  const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by for fiscal queries." }]);
   const chatEndRef = useRef(null);
 
   useEffect(() => { if (userId) fetchItems(); }, [userId]);
@@ -73,26 +76,26 @@ const Vault = ({ userId, onLogout }) => {
     const item = (items || []).find(i => i.id === id);
     if (!item) return;
     const newStock = Math.max(0, (Number(item.stock) || 0) + delta);
-    const transactionValue = -(delta * (Number(item.price) || 0));
+    
+    // CASH FLOW LOGIC: Selling (delta < 0) = +Cash | Restocking (delta > 0) = -Cash
+    const transactionValue = -(delta * Number(item.price || 0));
 
     setItems(items.map(i => i.id === id ? { ...i, stock: newStock } : i));
 
     const newEntry = {
       id: Date.now(),
       action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation",
-      entity: item.name || "Unknown Asset",
+      entity: item.name || "Unknown SKU",
       status: "Verified",
       value: transactionValue,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setLedger([newEntry, ...ledger.slice(0, 4)]);
 
-    try {
-      await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId });
-    } catch (e) { console.error("Sync failed"); }
+    await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId });
   };
 
-  // --- SAFE CALCULATIONS (PREVENTS BLANK SCREEN) ---
+  // --- SAFE FINANCIAL CALCULATIONS (FIXES BLANK SCREEN) ---
   const safeItems = items || [];
   const totalValuation = safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0);
   const totalInvestment = safeItems.reduce((acc, i) => acc + (((Number(i?.price) || 0) * 0.7) * (Number(i?.stock) || 0)), 0); 
@@ -109,8 +112,8 @@ const Vault = ({ userId, onLogout }) => {
     setTimeout(() => {
       let reply = "Audit complete. Portfolio risk is stable.";
       const query = userQuery.toLowerCase();
-      if (query.includes("tax")) reply = `Based on a $${totalValuation.toLocaleString()} valuation, tax provision is $${estimatedTax.toLocaleString()}.`;
-      if (query.includes("profit")) reply = `Realizable profit is projected at $${realizableProfit.toLocaleString()}.`;
+      if (query.includes("tax")) reply = `Based on current valuation, tax provision is $${estimatedTax.toLocaleString()}.`;
+      if (query.includes("profit")) reply = `Accounting for capital tied in inventory ($${totalInvestment.toLocaleString()}), realizable profit is $${realizableProfit.toLocaleString()}.`;
       setChatHistory([...newHistory, { role: 'assistant', text: reply }]);
       setIsAnalyzing(false);
     }, 800);
@@ -140,9 +143,10 @@ const Vault = ({ userId, onLogout }) => {
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col overflow-hidden bg-[#0e0e0e] relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md shrink-0">
-          <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
+          <h2 className="text-xl font-black font-['Manrope'] capitalize tracking-tight">{activeTab} Overview</h2>
           <div className="relative">
-             <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white" placeholder="Search ledger..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+             <span className="absolute left-4 top-2.5 text-gray-600 material-symbols-outlined text-sm">search</span>
+             <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white font-['Inter']" placeholder="Search ledger..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
         </header>
 
@@ -150,25 +154,27 @@ const Vault = ({ userId, onLogout }) => {
           
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
+              {/* KPI ROW - OVERFLOW SAFE */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Valuation</span>
-                  <h3 className="text-2xl font-black font-['Manrope'] truncate">${totalValuation.toLocaleString()}</h3>
+                  <h3 className="text-2xl font-black font-['Manrope'] tracking-tighter truncate">${totalValuation.toLocaleString()}</h3>
                 </div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Tax Provision</span>
-                  <h3 className="text-2xl font-black font-['Manrope'] truncate">-${estimatedTax.toLocaleString()}</h3>
+                  <h3 className="text-2xl font-black font-['Manrope'] tracking-tighter truncate">-${estimatedTax.toLocaleString()}</h3>
                 </div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Net Profit</span>
-                  <h3 className="text-2xl font-black font-['Manrope'] text-[#66dd8b] truncate">${realizableProfit.toLocaleString()}</h3>
+                  <h3 className="text-2xl font-black font-['Manrope'] text-[#66dd8b] tracking-tighter truncate">${realizableProfit.toLocaleString()}</h3>
                 </div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">SKU Alerts</span>
-                  <h3 className="text-2xl font-black font-['Manrope'] text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3>
+                  <h3 className="text-2xl font-black font-['Manrope'] text-red-500 tracking-tighter">{safeItems.filter(i => i.stock <= 5).length}</h3>
                 </div>
               </div>
 
+              {/* BENTO GRID */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
                   <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
@@ -180,25 +186,34 @@ const Vault = ({ userId, onLogout }) => {
                           <span className="text-gray-500">${((Number(item.price)||0) * (Number(item.stock)||0)).toLocaleString()}</span>
                         </div>
                         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#adc7ff] transition-all duration-1000" style={{ width: `${Math.min(100, ((Number(item.price)||0) * (Number(item.stock)||0) / (totalValuation || 1)) * 100)}%` }}></div>
+                          <div className="h-full bg-[#adc7ff] transition-all duration-1000" style={{ width: `${Math.min(100, (((Number(item.price)||0) * (Number(item.stock)||0)) / (totalValuation || 1)) * 100)}%` }}></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="bg-[#adc7ff] p-8 rounded-[2.5rem] text-[#002e68] flex flex-col justify-between">
+                <div className="bg-[#adc7ff] p-8 rounded-[2.5rem] text-[#002e68] flex flex-col justify-between shadow-2xl">
                   <span className="material-symbols-outlined text-4xl">trending_up</span>
-                  <h4 className="text-2xl font-black font-['Manrope'] leading-tight">Optimized<br/>Yield</h4>
+                  <div>
+                    <h4 className="text-2xl font-black font-['Manrope'] leading-tight">Optimized<br/>Yield</h4>
+                    <p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-60">Audit Node Active</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5">
+              {/* LEDGER ACTIVITY - SYNCED */}
+              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-6">Recent Ledger Activity</h4>
                 <div className="space-y-2">
                   {ledger.map((entry) => (
-                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
-                      <div><p className="font-bold text-sm font-['Inter']">{entry.action}</p><p className="text-[9px] text-gray-500 uppercase">{entry.entity} | {entry.time}</p></div>
-                      <span className={`font-black text-sm ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.abs(entry.value).toLocaleString()}</span>
+                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-in slide-in-from-top duration-300">
+                      <div>
+                        <p className="font-bold text-sm font-['Inter']">{entry.action}</p>
+                        <p className="text-[9px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest">{entry.entity} | {entry.time}</p>
+                      </div>
+                      <span className={`font-black text-sm font-['Manrope'] ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>
+                        {entry.value >= 0 ? '+' : '-'}${Math.abs(entry.value).toLocaleString()}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -206,60 +221,70 @@ const Vault = ({ userId, onLogout }) => {
             </div>
           )}
 
+          {/* INVENTORY TAB */}
           {activeTab === "inventory" && (
              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
-                 <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl`}>
-                   <h4 className="font-black text-xl font-['Manrope'] truncate mb-6">{item.name}</h4>
-                   <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between">
-                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price</span><span className="text-xl font-black font-['Manrope']">${Number(item.price).toLocaleString()}</span></div>
-                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vault</span><span className="text-xl font-black font-['Manrope']">{item.stock}</span></div>
+                 <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl transition-all`}>
+                   <div className="flex justify-between items-start mb-6 font-['Manrope']">
+                     <h4 className="font-black text-xl truncate leading-none">{item.name}</h4>
+                     {item.stock <= 5 && <div className="bg-red-500 text-white text-[8px] font-black px-3 py-1 rounded-full animate-pulse uppercase tracking-widest">Low Stock</div>}
+                   </div>
+                   <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between font-['Inter']">
+                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price Point</span><span className="text-xl font-black">${Number(item.price || 0).toLocaleString()}</span></div>
+                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">On Hand</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase">Mark Sold</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
                    </div>
                  </div>
                ))}
              </div>
           )}
 
+          {/* REPORTS TAB */}
           {activeTab === "reports" && (
              <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl">
-                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Fiscal Summary</h3>
-                <div className="space-y-6">
-                  <div className="flex justify-between"><span className="text-gray-400">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-400">Investment Cost</span><span className="font-black text-xl text-red-400">-${totalInvestment.toLocaleString()}</span></div>
-                  <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12"><span className="text-[#66dd8b] font-black uppercase">Net Projected Profit</span><span className="font-black text-4xl text-[#66dd8b]">${realizableProfit.toLocaleString()}</span></div>
+                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
+                <div className="space-y-6 font-['Inter']">
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested (Cost)</span><span className="font-black text-xl text-red-400">-${totalInvestment.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Tax Provision (18%)</span><span className="font-black text-xl text-[#fbbc00]">-${estimatedTax.toLocaleString()}</span></div>
+                  <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12 border border-[#66dd8b]/20">
+                    <span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span>
+                    <span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${realizableProfit.toLocaleString()}</span>
+                  </div>
                 </div>
              </div>
           )}
         </div>
       </main>
 
+      {/* AI INTERACTIVE PANEL */}
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-          <span className={`material-symbols-outlined text-[#adc7ff] text-xl ${isAnalyzing ? 'animate-spin' : ''}`}>auto_awesome</span>
+          <span className={`material-symbols-outlined text-[#adc7ff] text-xl ${isAnalyzing ? 'animate-spin' : 'animate-pulse'}`}>auto_awesome</span>
           <span className="text-[11px] font-black font-['Manrope'] uppercase tracking-widest">AI Advisor</span>
-          <span className="ml-auto w-2 h-2 bg-[#66dd8b] rounded-full"></span>
+          <span className="ml-auto w-2 h-2 bg-[#66dd8b] rounded-full shadow-[0_0_8px_#66dd8b]"></span>
         </div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-1 custom-scrollbar">
           {chatHistory.map((msg, i) => (
-            <div key={i} className={`p-4 rounded-2xl text-[11px] font-['Inter'] ${msg.role === 'assistant' ? 'bg-black/30 border-l-2 border-[#adc7ff] text-gray-400' : 'bg-[#adc7ff]/10 border-r-2 border-[#adc7ff] text-[#adc7ff] text-right'}`}>{msg.text}</div>
+            <div key={i} className={`p-4 rounded-2xl text-[11px] leading-relaxed font-['Inter'] ${msg.role === 'assistant' ? 'bg-black/30 border-l-2 border-[#adc7ff] text-gray-400' : 'bg-[#adc7ff]/10 border-r-2 border-[#adc7ff] text-[#adc7ff] text-right'}`}>{msg.text}</div>
           ))}
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
-          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none" />
-          <button type="submit" className="absolute right-3 top-2.5 text-[#adc7ff] material-symbols-outlined">send</button>
+          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all font-['Inter']" />
+          <button type="submit" className="absolute right-3 top-2.5 text-[#adc7ff] material-symbols-outlined text-lg">send</button>
         </form>
       </aside>
     </div>
   );
 };
 
-// --- APP WRAPPER ---
-function App() {
+// --- 4. APP WRAPPER ---
+export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
   const handleLogin = (status, id) => { setIsAuthenticated(status); setUserId(id); localStorage.setItem("isLoggedIn", status); localStorage.setItem("userId", id); };
@@ -275,5 +300,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;
