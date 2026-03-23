@@ -1,195 +1,118 @@
 /* --- 1. THE STITCH COLOR PALETTE --- */
 :root {
-  --bg-main: #131313;          /* Deep Charcoal */
-  --bg-surface: #1c1b1b;       /* Bento Box Background */
-  --bg-input: #2a2a2a;         /* Input Background */
+  --bg-main: #0e0e0e;          /* Deep Black for Terminal */
+  --bg-surface: #131313;       /* Sidebar/Card Background */
+  --bg-input: #1c1b1b;         /* Input Background */
   --primary: #adc7ff;          /* Electric Soft Blue */
-  --on-primary: #002e68;       /* Deep Blue Text for Buttons */
+  --on-primary: #002e68;       /* Deep Blue Text */
   --secondary: #66dd8b;        /* Growth Green */
   --error: #ffb4ab;            /* Alert Red */
   --text-dim: #8b90a0;         /* Muted Text */
   --border: rgba(255, 255, 255, 0.05);
 }
 
-/* --- 2. GLOBAL RESET & FONTS --- */
-* {
-  box-sizing: border-box;
+/* --- 2. LAYOUT ENGINE (CRITICAL FOR BLANK SCREEN FIX) --- */
+html, body, #root {
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-}
-
-body {
   background-color: var(--bg-main);
   color: #e5e2e1;
   font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
+  overflow: hidden; /* Prevents double scrollbars */
 }
 
-/* Typography Overrides for Stitch */
-h1, h2, h3, .logo-text { font-family: 'Manrope', sans-serif; font-weight: 800; }
-.stat-label, .alert-badge { font-family: 'Space Grotesk', sans-serif; }
+/* Typography */
+h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; font-weight: 800; }
+.font-label { font-family: 'Space Grotesk', sans-serif; }
 
-/* --- 3. GLASSMORPHISM NAVIGATION --- */
-.navbar, .public-nav {
+/* --- 3. TERMINAL STRUCTURE --- */
+.flex-terminal {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 4rem;
-  background: rgba(19, 19, 19, 0.7);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.logo-text {
-  font-size: 1.2rem;
-  letter-spacing: -1px;
-  text-transform: none;
-}
-
-/* --- 4. BENTO STATS HEADER --- */
-.dashboard-container { padding: 6rem 4rem 2rem; }
-
-.stats-header {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-.stat-card {
-  background: var(--bg-surface);
-  padding: 1.5rem;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  transition: border 0.3s ease;
-}
-
-.stat-card:hover { border-color: rgba(173, 199, 255, 0.2); }
-
-.stat-label { 
-  font-size: 0.65rem; 
-  color: var(--text-dim); 
-  letter-spacing: 2px; 
-  text-transform: uppercase;
-}
-
-.stat-value { font-size: 2rem; margin-top: 8px; font-weight: 900; letter-spacing: -1px; }
-
-/* --- 5. INVENTORY GRID & CARDS --- */
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.inventory-card {
-  background: var(--bg-surface);
-  border-radius: 24px;
-  padding: 2rem;
-  border: 1px solid var(--border);
-  position: relative;
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
 
-.inventory-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(180deg, rgba(173, 199, 255, 0.03) 0%, rgba(19, 19, 19, 0) 100%);
-  pointer-events: none;
+/* Scrollbar Style */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
 }
 
-.unit-economics {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-  border-radius: 12px;
-  margin: 1.5rem 0;
-  display: flex;
-  justify-content: space-between;
+/* --- 4. SIDEBAR & PANE LOCKING --- */
+aside {
+  flex-shrink: 0; /* Prevents sidebar from squishing */
+  z-index: 50;
 }
 
-.alert-badge {
-  background: rgba(255, 180, 171, 0.1);
-  color: var(--error);
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 180, 171, 0.2);
-}
-
-/* --- 6. FORM INPUTS (THE TERMINAL LOOK) --- */
-.inventory-controls {
-  background: var(--bg-surface);
-  padding: 1rem;
-  border-radius: 16px;
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  border: 1px solid var(--border);
-}
-
-.biz-input {
-  background: var(--bg-input);
-  border: none;
-  color: white;
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-size: 0.95rem;
+main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents layout breaking on long text */
 }
 
-.biz-input::placeholder { color: #555; }
-
-/* --- 7. AUTH SCREENS --- */
-.login-screen {
-  background: var(--bg-main);
-  background-image: radial-gradient(circle at 50% -20%, #1e2329 0%, #131313 80%);
-}
-
-.login-card {
-  background: var(--bg-surface);
-  border-radius: 32px;
-  padding: 3.5rem;
+/* --- 5. BENTO CARDS & ASSETS --- */
+.stat-card {
+  background: var(--bg-input);
+  padding: 1.5rem;
+  border-radius: 20px;
   border: 1px solid var(--border);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+  transition: all 0.3s ease;
 }
 
-/* --- 8. BUTTONS (ELECTRIC BLUE) --- */
-.cta-button, .add-stock-btn, .login-btn {
+.inventory-card {
+  background: var(--bg-input);
+  border-radius: 28px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  transition: border 0.3s ease, transform 0.2s ease;
+}
+
+.inventory-card:hover {
+  border-color: rgba(173, 199, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* --- 6. BUTTONS & INPUTS --- */
+.biz-input {
+  background: #2a2a2a;
+  border: 1px solid transparent;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  outline: none;
+}
+
+.biz-input:focus {
+  border-color: var(--primary);
+  background: #1c1b1b;
+}
+
+.cta-button {
   background: var(--primary);
   color: var(--on-primary);
   border: none;
-  padding: 14px 28px;
   border-radius: 12px;
   font-weight: 800;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.cta-button:hover, .add-stock-btn:hover {
-  transform: scale(1.03);
-  background: #c2d4ff;
-  box-shadow: 0 0 20px rgba(173, 199, 255, 0.3);
+.cta-button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
 }
 
-.del-btn {
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-dim);
-  border: 1px solid var(--border);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.del-btn:hover { background: rgba(207, 48, 74, 0.1); color: var(--error); border-color: var(--error); }
-
-/* --- Helper Classes --- */
-.text-green { color: var(--secondary); }
-.text-red { color: var(--error); }
-.blue-accent { color: var(--primary); }
+/* --- Helper Utilities --- */
+.text-growth { color: var(--secondary); }
+.text-alert { color: var(--error); }
+.glow-blue { box-shadow: 0 0 20px rgba(173, 199, 255, 0.1); }
