@@ -6,7 +6,7 @@ import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
-// --- 1. LANDING PAGE (FIXES THE REFERENCE ERROR) ---
+// --- 1. LANDING PAGE ---
 const LandingPage = () => (
   <div className="bg-[#131313] min-h-screen text-white font-['Inter'] flex items-center justify-center text-center p-8">
     <div className="max-w-4xl">
@@ -35,7 +35,7 @@ const Login = ({ onLogin }) => {
     <div className="min-h-screen bg-[#0e0e0e] flex items-center justify-center px-4 font-['Inter']">
       <div className="max-w-md w-full bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
-        <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter leading-none">Access Terminal</h2>
+        <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter">Access Terminal</h2>
         <form onSubmit={handleManualLogin} className="space-y-4">
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="email" placeholder="Business Email" onChange={e => setEmail(e.target.value)} required />
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
@@ -46,7 +46,7 @@ const Login = ({ onLogin }) => {
   );
 };
 
-// --- 3. THE VAULT TERMINAL (STABILIZED EDITION) ---
+// --- 3. THE VAULT TERMINAL (INSTITUTIONAL EDITION) ---
 const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -85,7 +85,7 @@ const Vault = ({ userId, onLogout }) => {
     const newEntry = {
       id: Date.now(),
       action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation",
-      entity: item.name || "Unknown SKU",
+      entity: item.name || "Unknown Asset",
       status: "Verified",
       value: transactionValue,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -95,12 +95,20 @@ const Vault = ({ userId, onLogout }) => {
     await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId });
   };
 
-  // --- SAFE FINANCIAL CALCULATIONS (FIXES BLANK SCREEN) ---
+  // --- SAFE ACCOUNTING ENGINE ---
   const safeItems = items || [];
-  const totalValuation = safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0);
-  const totalInvestment = safeItems.reduce((acc, i) => acc + (((Number(i?.price) || 0) * 0.7) * (Number(i?.stock) || 0)), 0); 
-  const estimatedTax = totalValuation * 0.18;
-  const realizableProfit = totalValuation - totalInvestment - estimatedTax;
+  const totalValuation = Math.floor(safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0));
+  const totalInvestment = Math.floor(safeItems.reduce((acc, i) => acc + (((Number(i?.price) || 0) * 0.7) * (Number(i?.stock) || 0)), 0)); 
+  const estimatedTax = Math.floor(totalValuation * 0.18);
+  const realizableProfit = Math.floor(totalValuation - totalInvestment - estimatedTax);
+
+  // --- DYNAMIC STATUS CONFIG ---
+  const getStatus = () => {
+    if (realizableProfit > 1000000) return { bg: "bg-[#66dd8b]", text: "text-[#003115]", label: "Institutional Profit", icon: "trending_up", desc: "Yield optimized." };
+    if (realizableProfit < 0) return { bg: "bg-[#ffb4ab]", text: "text-[#680003]", label: "Liquidity Deficit", icon: "warning", desc: "High investment detected." };
+    return { bg: "bg-[#adc7ff]", text: "text-[#002e68]", label: "Neutral Position", icon: "sync", desc: "System synchronized." };
+  };
+  const status = getStatus();
 
   const handleChat = async (e) => {
     e.preventDefault();
@@ -110,10 +118,9 @@ const Vault = ({ userId, onLogout }) => {
     setUserQuery("");
     setIsAnalyzing(true);
     setTimeout(() => {
-      let reply = "Audit complete. Portfolio risk is stable.";
+      let reply = "Audit complete. Risk levels are within institutional parameters.";
       const query = userQuery.toLowerCase();
-      if (query.includes("tax")) reply = `Based on current valuation, tax provision is $${estimatedTax.toLocaleString()}.`;
-      if (query.includes("profit")) reply = `Accounting for capital tied in inventory ($${totalInvestment.toLocaleString()}), realizable profit is $${realizableProfit.toLocaleString()}.`;
+      if (query.includes("profit")) reply = `Accounting for capital tied in inventory, realizable profit is $${realizableProfit.toLocaleString()}.`;
       setChatHistory([...newHistory, { role: 'assistant', text: reply }]);
       setIsAnalyzing(false);
     }, 800);
@@ -126,10 +133,7 @@ const Vault = ({ userId, onLogout }) => {
       
       {/* SIDEBAR */}
       <aside className="w-64 border-r border-white/5 bg-[#131313] flex flex-col p-6 shrink-0">
-        <div className="mb-10 font-['Manrope']">
-          <span className="text-xl font-black tracking-tighter">QueryFlow Vault</span>
-          <p className="text-[10px] text-gray-600 font-['Space_Grotesk'] uppercase tracking-[0.3em] mt-1">Enterprise Finance</p>
-        </div>
+        <div className="mb-10 font-['Manrope']"><span className="text-xl font-black tracking-tighter">QueryFlow Vault</span></div>
         <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black transition-all capitalize ${activeTab === tab ? 'bg-[#adc7ff]/10 text-[#adc7ff]' : 'text-gray-500 hover:text-white'}`}>
@@ -144,17 +148,15 @@ const Vault = ({ userId, onLogout }) => {
       <main className="flex-1 flex flex-col overflow-hidden bg-[#0e0e0e] relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md shrink-0">
           <h2 className="text-xl font-black font-['Manrope'] capitalize tracking-tight">{activeTab} Overview</h2>
-          <div className="relative">
-             <span className="absolute left-4 top-2.5 text-gray-600 material-symbols-outlined text-sm">search</span>
-             <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white font-['Inter']" placeholder="Search ledger..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-          </div>
+          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none focus:ring-1 ring-[#adc7ff]/40 text-white" placeholder="Search ledger..." onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
-              {/* KPI ROW - OVERFLOW SAFE */}
+              
+              {/* KPI ROW */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">Valuation</span>
@@ -170,38 +172,40 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl overflow-hidden">
                   <span className="text-[10px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest block mb-1">SKU Alerts</span>
-                  <h3 className="text-2xl font-black font-['Manrope'] text-red-500 tracking-tighter">{safeItems.filter(i => i.stock <= 5).length}</h3>
+                  <h3 className="text-2xl font-black font-['Manrope'] text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3>
                 </div>
               </div>
 
-              {/* BENTO GRID */}
+              {/* BENTO INTELLIGENCE */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
                   <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
                   <div className="space-y-6">
                     {safeItems.slice(0, 4).map((item, idx) => (
                       <div key={idx} className="group">
-                        <div className="flex justify-between text-[11px] mb-2 font-['Inter']">
-                          <span className="font-bold">{item.name}</span>
-                          <span className="text-gray-500">${((Number(item.price)||0) * (Number(item.stock)||0)).toLocaleString()}</span>
+                        <div className="flex justify-between text-[11px] mb-2 font-bold font-['Inter']">
+                          <span>{item.name}</span>
+                          <span>${Math.floor(item.price * item.stock).toLocaleString()}</span>
                         </div>
                         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#adc7ff] transition-all duration-1000" style={{ width: `${Math.min(100, (((Number(item.price)||0) * (Number(item.stock)||0)) / (totalValuation || 1)) * 100)}%` }}></div>
+                          <div className="h-full bg-[#adc7ff] transition-all duration-1000" style={{ width: `${Math.min(100, (item.price * item.stock / (totalValuation || 1)) * 100)}%` }}></div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="bg-[#adc7ff] p-8 rounded-[2.5rem] text-[#002e68] flex flex-col justify-between shadow-2xl">
-                  <span className="material-symbols-outlined text-4xl">trending_up</span>
+                
+                {/* DYNAMIC HEALTH CARD */}
+                <div className={`${status.bg} ${status.text} p-8 rounded-[2.5rem] flex flex-col justify-between shadow-2xl transition-all duration-500`}>
+                  <span className="material-symbols-outlined text-4xl">{status.icon}</span>
                   <div>
-                    <h4 className="text-2xl font-black font-['Manrope'] leading-tight">Optimized<br/>Yield</h4>
-                    <p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-60">Audit Node Active</p>
+                    <h4 className="text-2xl font-black font-['Manrope'] leading-tight">{status.label}</h4>
+                    <p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-60">{status.desc}</p>
                   </div>
                 </div>
               </div>
 
-              {/* LEDGER ACTIVITY - SYNCED */}
+              {/* LIVE LEDGER ACTIVITY */}
               <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-6">Recent Ledger Activity</h4>
                 <div className="space-y-2">
@@ -212,7 +216,7 @@ const Vault = ({ userId, onLogout }) => {
                         <p className="text-[9px] text-gray-500 uppercase font-['Space_Grotesk'] tracking-widest">{entry.entity} | {entry.time}</p>
                       </div>
                       <span className={`font-black text-sm font-['Manrope'] ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>
-                        {entry.value >= 0 ? '+' : '-'}${Math.abs(entry.value).toLocaleString()}
+                        {entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}
                       </span>
                     </div>
                   ))}
@@ -223,7 +227,7 @@ const Vault = ({ userId, onLogout }) => {
 
           {/* INVENTORY TAB */}
           {activeTab === "inventory" && (
-             <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+             <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
                  <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl transition-all`}>
                    <div className="flex justify-between items-start mb-6 font-['Manrope']">
@@ -231,12 +235,12 @@ const Vault = ({ userId, onLogout }) => {
                      {item.stock <= 5 && <div className="bg-red-500 text-white text-[8px] font-black px-3 py-1 rounded-full animate-pulse uppercase tracking-widest">Low Stock</div>}
                    </div>
                    <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between font-['Inter']">
-                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price Point</span><span className="text-xl font-black">${Number(item.price || 0).toLocaleString()}</span></div>
-                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">On Hand</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
+                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price Point</span><span className="text-xl font-black">${Math.floor(item.price || 0).toLocaleString()}</span></div>
+                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase transition-all tracking-widest">Restock (-Cash)</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase transition-all tracking-widest">Mark Sold (+Cash)</button>
                    </div>
                  </div>
                ))}
@@ -245,7 +249,7 @@ const Vault = ({ userId, onLogout }) => {
 
           {/* REPORTS TAB */}
           {activeTab === "reports" && (
-             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl">
+             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
                 <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
                 <div className="space-y-6 font-['Inter']">
                   <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
@@ -261,7 +265,7 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* AI INTERACTIVE PANEL */}
+      {/* AI INTERACTIVE PANEL (RIGHT) */}
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
           <span className={`material-symbols-outlined text-[#adc7ff] text-xl ${isAnalyzing ? 'animate-spin' : 'animate-pulse'}`}>auto_awesome</span>
@@ -283,7 +287,7 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 4. APP WRAPPER ---
+// --- 4. MAIN APP COMPONENT ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
