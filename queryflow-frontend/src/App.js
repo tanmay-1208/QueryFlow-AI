@@ -20,11 +20,17 @@ const LandingPage = () => (
   </div>
 );
 
-// --- 2. AUTH HELPERS ---
+// --- 2. LOGIN COMPONENT (GOOGLE + MANUAL) ---
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+    if (error) alert(error.message);
+  };
+
   const handleManualLogin = async (e) => {
     e.preventDefault();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -35,16 +41,29 @@ const Login = ({ onLogin }) => {
       alert(error.message); 
     }
   };
+
   return (
     <div className="min-h-screen bg-[#0e0e0e] flex items-center justify-center px-4 font-['Inter']">
       <div className="max-w-md w-full bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
         <h2 className="text-5xl font-black font-['Manrope'] text-white mb-10 tracking-tighter">Access Terminal</h2>
-        <form onSubmit={handleManualLogin} className="space-y-4">
+        
+        <form onSubmit={handleManualLogin} className="space-y-4 mb-6">
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="email" placeholder="Business Email" onChange={e => setEmail(e.target.value)} required />
           <input className="w-full bg-[#2a2a2a] border-none text-white rounded-[1.5rem] px-8 py-5 outline-none focus:ring-1 ring-[#adc7ff]" type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
           <button type="submit" className="w-full bg-[#adc7ff] text-[#002e68] py-5 rounded-[1.5rem] font-black text-xl hover:scale-[1.02] transition-all">SIGN IN</button>
         </form>
+
+        <div className="relative flex items-center gap-4 mb-6">
+          <div className="flex-1 h-[1px] bg-white/5"></div>
+          <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">OR</span>
+          <div className="flex-1 h-[1px] bg-white/5"></div>
+        </div>
+
+        <button onClick={handleGoogleLogin} className="w-full bg-white/5 text-white border border-white/10 py-5 rounded-[1.5rem] font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
+          Sign in with Google
+        </button>
       </div>
     </div>
   );
@@ -140,7 +159,6 @@ const Vault = ({ userId, onLogout }) => {
             </button>
           ))}
         </nav>
-        {/* NUCLEAR EXIT BUTTON */}
         <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
       </aside>
 
@@ -206,30 +224,15 @@ const Vault = ({ userId, onLogout }) => {
                  <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl transition-all`}>
                    <h4 className="font-black text-xl mb-6 font-['Manrope'] truncate">{item.name}</h4>
                    <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between font-['Inter']">
-                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price Point</span><span className="text-xl font-black">${Math.floor(item.price || 0).toLocaleString()}</span></div>
+                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Market Value</span><span className="text-xl font-black">${Math.floor(item.price || 0).toLocaleString()}</span></div>
                      <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold</button>
                    </div>
                  </div>
                ))}
-             </div>
-          )}
-
-          {activeTab === "reports" && (
-             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
-                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
-                <div className="space-y-6 font-['Inter']">
-                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
-                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested (Cost)</span><span className="font-black text-xl text-red-400">-${totalInvestment.toLocaleString()}</span></div>
-                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Tax Provision (18%)</span><span className="font-black text-xl text-[#fbbc00]">-${estimatedTax.toLocaleString()}</span></div>
-                  <div className="flex justify-between bg-[#66dd8b]/10 p-8 rounded-3xl mt-12 border border-[#66dd8b]/20">
-                    <span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span>
-                    <span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${realizableProfit.toLocaleString()}</span>
-                  </div>
-                </div>
              </div>
           )}
         </div>
@@ -252,10 +255,20 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 4. MAIN APP COMPONENT (NUCLEAR NAVIGATION FIX) ---
+// --- 4. MAIN APP COMPONENT ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
+
+  // Detect Supabase Auth Changes for Google Login
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        handleLogin(true, session.user.email);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleLogin = (status, id) => { 
     setIsAuthenticated(status); 
@@ -265,10 +278,10 @@ export default function App() {
   };
 
   const handleLogout = () => { 
+    supabase.auth.signOut();
     localStorage.clear(); 
     setIsAuthenticated(false); 
     setUserId("");
-    // NUCLEAR OPTION: Bypasses router logic entirely to force Landing Page
     window.location.replace("/"); 
   };
 
@@ -277,8 +290,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/signup" element={<Login onLogin={handleLogin} />} />
-        
         <Route 
           path="/vault" 
           element={isAuthenticated ? <Vault userId={userId} onLogout={handleLogout} /> : <Navigate to="/login" replace />} 
