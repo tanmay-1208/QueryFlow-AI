@@ -27,7 +27,13 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+    const { error } = await supabase.auth.signInWithOAuth({ 
+      provider: 'google',
+      options: {
+        // Ensures user returns to the live site/vault after Google auth
+        redirectTo: window.location.origin + "/vault"
+      }
+    });
     if (error) alert(error.message);
   };
 
@@ -224,12 +230,12 @@ const Vault = ({ userId, onLogout }) => {
                  <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl transition-all`}>
                    <h4 className="font-black text-xl mb-6 font-['Manrope'] truncate">{item.name}</h4>
                    <div className="bg-black/30 p-5 rounded-2xl mb-6 flex justify-between font-['Inter']">
-                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Market Value</span><span className="text-xl font-black">${Math.floor(item.price || 0).toLocaleString()}</span></div>
+                     <div><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Price Point</span><span className="text-xl font-black">${Math.floor(item.price || 0).toLocaleString()}</span></div>
                      <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold</button>
                    </div>
                  </div>
                ))}
@@ -282,6 +288,7 @@ export default function App() {
     localStorage.clear(); 
     setIsAuthenticated(false); 
     setUserId("");
+    // Final Escape fix to ensure Landing Page redirect
     window.location.replace("/"); 
   };
 
