@@ -6,7 +6,7 @@ import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
-// --- 1. LANDING PAGE ---
+// --- 1. LANDING PAGE (ALWAYS ACCESSIBLE) ---
 const LandingPage = () => (
   <div className="bg-[#131313] min-h-screen text-white font-['Inter'] flex items-center justify-center text-center p-8">
     <div className="max-w-4xl animate-in fade-in zoom-in duration-700">
@@ -99,7 +99,6 @@ const Vault = ({ userId, onLogout }) => {
     } catch (err) { console.error("Cloud Sync Failed:", err); }
   };
 
-  // --- ACCOUNTING ENGINE ---
   const safeItems = items || [];
   const totalValuation = Math.floor(safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0));
   const totalInvestment = Math.floor(safeItems.reduce((acc, i) => acc + (((Number(i?.price) || 0) * 0.7) * (Number(i?.stock) || 0)), 0)); 
@@ -113,10 +112,10 @@ const Vault = ({ userId, onLogout }) => {
   };
   const status = getStatus();
 
-  // --- CLEAN LOGOUT ---
+  // FIX: Explicitly navigating to home after clearing state
   const handleExit = () => {
     onLogout();
-    navigate("/"); // Redirects to Landing Page
+    navigate("/"); 
   };
 
   const handleChat = async (e) => {
@@ -139,13 +138,11 @@ const Vault = ({ userId, onLogout }) => {
 
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-hidden fixed inset-0">
-      
-      {/* Sidebar */}
       <aside className="w-64 border-r border-white/5 bg-[#131313] flex flex-col p-6 shrink-0">
         <div className="mb-10 font-['Manrope']"><span className="text-xl font-black">QueryFlow Vault</span></div>
         <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black capitalize transition-all ${activeTab === tab ? 'bg-[#adc7ff]/10 text-[#adc7ff]' : 'text-gray-500 hover:text-white'}`}>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black transition-all capitalize ${activeTab === tab ? 'bg-[#adc7ff]/10 text-[#adc7ff]' : 'text-gray-500 hover:text-white'}`}>
                <span className="material-symbols-outlined">{tab === 'dashboard' ? 'dashboard' : tab === 'inventory' ? 'inventory_2' : 'description'}</span> {tab}
             </button>
           ))}
@@ -153,7 +150,6 @@ const Vault = ({ userId, onLogout }) => {
         <button onClick={handleExit} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md">
           <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
@@ -199,7 +195,6 @@ const Vault = ({ userId, onLogout }) => {
                     ))}
                   </div>
                 </div>
-                
                 <div className={`${status.bg} ${status.text} p-8 rounded-[2.5rem] flex flex-col justify-between shadow-2xl transition-all duration-500`}>
                   <span className="material-symbols-outlined text-4xl">{status.icon}</span>
                   <div>
@@ -209,13 +204,13 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
               </div>
 
-              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5">
+              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
                 <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Ledger Activity</h4>
                 <div className="space-y-2">
                   {ledger.map((entry) => (
-                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
-                      <div><p className="font-bold text-sm">{entry.action}</p><p className="text-[9px] text-gray-500">{entry.entity} | {entry.time}</p></div>
-                      <span className={`font-black text-sm ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
+                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-in slide-in-from-top duration-300">
+                      <div><p className="font-bold text-sm font-['Inter']">{entry.action}</p><p className="text-[9px] text-gray-500">{entry.entity} | {entry.time}</p></div>
+                      <span className={`font-black text-sm font-['Manrope'] ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -224,7 +219,7 @@ const Vault = ({ userId, onLogout }) => {
           )}
 
           {activeTab === "inventory" && (
-             <div className="grid grid-cols-2 gap-5">
+             <div className="grid grid-cols-2 gap-5 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
                  <div key={item.id} className={`bg-[#1c1b1b] p-7 rounded-[2.5rem] border ${item.stock <= 5 ? 'border-red-500/30' : 'border-white/5'} shadow-xl transition-all`}>
                    <h4 className="font-black text-xl mb-6 font-['Manrope'] truncate">{item.name}</h4>
@@ -233,8 +228,8 @@ const Vault = ({ userId, onLogout }) => {
                      <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-bold tracking-widest">Vaulted</span><span className={`text-xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-white'}`}>{item.stock}</span></div>
                    </div>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 text-white hover:text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Restock (-Cash)</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 text-white hover:text-[#66dd8b] py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Mark Sold (+Cash)</button>
                    </div>
                  </div>
                ))}
@@ -242,8 +237,8 @@ const Vault = ({ userId, onLogout }) => {
           )}
 
           {activeTab === "reports" && (
-             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl">
-                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Summary</h3>
+             <div className="max-w-3xl mx-auto bg-[#1c1b1b] p-12 rounded-[3rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
+                <h3 className="text-2xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
                 <div className="space-y-6 font-['Inter']">
                   <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-xl">${totalValuation.toLocaleString()}</span></div>
                   <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested (Cost)</span><span className="font-black text-xl text-red-400">-${totalInvestment.toLocaleString()}</span></div>
@@ -258,7 +253,6 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* AI Advisor Panel */}
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4"><span className="text-[11px] font-black font-['Manrope'] uppercase tracking-widest">AI Advisor</span></div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-1 custom-scrollbar">
@@ -276,7 +270,7 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 4. MAIN APP COMPONENT ---
+// --- 4. MAIN APP COMPONENT (STRETCHED ROUTES) ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
@@ -285,10 +279,16 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/signup" element={<Login onLogin={handleLogin} />} />
-        <Route path="/vault" element={isAuthenticated ? <Vault userId={userId} onLogout={handleLogout} /> : <Navigate to="/login" />} />
+        
+        {/* PROTECTED VAULT ROUTE ONLY */}
+        <Route 
+          path="/vault" 
+          element={isAuthenticated ? <Vault userId={userId} onLogout={handleLogout} /> : <Navigate to="/login" />} 
+        />
       </Routes>
     </Router>
   );
