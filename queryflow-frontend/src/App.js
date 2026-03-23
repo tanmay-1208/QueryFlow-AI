@@ -6,7 +6,7 @@ import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
-// --- 1. LANDING PAGE (ALWAYS ACCESSIBLE) ---
+// --- 1. LANDING PAGE ---
 const LandingPage = () => (
   <div className="bg-[#131313] min-h-screen text-white font-['Inter'] flex items-center justify-center text-center p-8">
     <div className="max-w-4xl animate-in fade-in zoom-in duration-700">
@@ -56,7 +56,6 @@ const Vault = ({ userId, onLogout }) => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
   
   const [ledger, setLedger] = useState([
     { id: 1, action: "System Initialization", entity: "Node 04", status: "Verified", value: 0, time: "Start" }
@@ -112,12 +111,6 @@ const Vault = ({ userId, onLogout }) => {
   };
   const status = getStatus();
 
-  // FIX: Explicitly navigating to home after clearing state
-  const handleExit = () => {
-    onLogout();
-    navigate("/"); 
-  };
-
   const handleChat = async (e) => {
     e.preventDefault();
     if (!userQuery.trim()) return;
@@ -147,7 +140,8 @@ const Vault = ({ userId, onLogout }) => {
             </button>
           ))}
         </nav>
-        <button onClick={handleExit} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
+        {/* NUCLEAR EXIT BUTTON */}
+        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden relative">
@@ -201,18 +195,6 @@ const Vault = ({ userId, onLogout }) => {
                     <h4 className="text-2xl font-black font-['Manrope'] leading-tight">{status.label}</h4>
                     <p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-60">{status.desc}</p>
                   </div>
-                </div>
-              </div>
-
-              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
-                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Ledger Activity</h4>
-                <div className="space-y-2">
-                  {ledger.map((entry) => (
-                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-in slide-in-from-top duration-300">
-                      <div><p className="font-bold text-sm font-['Inter']">{entry.action}</p><p className="text-[9px] text-gray-500">{entry.entity} | {entry.time}</p></div>
-                      <span className={`font-black text-sm font-['Manrope'] ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
@@ -270,25 +252,38 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 4. MAIN APP COMPONENT (STRETCHED ROUTES) ---
+// --- 4. MAIN APP COMPONENT (NUCLEAR NAVIGATION FIX) ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
-  const handleLogin = (status, id) => { setIsAuthenticated(status); setUserId(id); localStorage.setItem("isLoggedIn", status); localStorage.setItem("userId", id); };
-  const handleLogout = () => { setIsAuthenticated(false); setUserId(""); localStorage.clear(); };
+
+  const handleLogin = (status, id) => { 
+    setIsAuthenticated(status); 
+    setUserId(id); 
+    localStorage.setItem("isLoggedIn", "true"); 
+    localStorage.setItem("userId", id); 
+  };
+
+  const handleLogout = () => { 
+    localStorage.clear(); 
+    setIsAuthenticated(false); 
+    setUserId("");
+    // NUCLEAR OPTION: Bypasses router logic entirely to force Landing Page
+    window.location.replace("/"); 
+  };
+
   return (
     <Router>
       <Routes>
-        {/* PUBLIC ROUTES */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/signup" element={<Login onLogin={handleLogin} />} />
         
-        {/* PROTECTED VAULT ROUTE ONLY */}
         <Route 
           path="/vault" 
-          element={isAuthenticated ? <Vault userId={userId} onLogout={handleLogout} /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <Vault userId={userId} onLogout={handleLogout} /> : <Navigate to="/login" replace />} 
         />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
