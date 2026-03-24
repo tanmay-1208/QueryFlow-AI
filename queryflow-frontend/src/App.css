@@ -1,38 +1,46 @@
 /* --- 1. THE STITCH COLOR PALETTE --- */
 :root {
-  --bg-main: #0e0e0e;          /* Deep Black for Terminal */
-  --bg-surface: #131313;       /* Sidebar/Card Background */
-  --bg-input: #1c1b1b;         /* Input Background */
-  --primary: #adc7ff;          /* Electric Soft Blue */
-  --on-primary: #002e68;       /* Deep Blue Text */
-  --secondary: #66dd8b;        /* Growth Green */
-  --error: #ffb4ab;            /* Alert Red */
-  --text-dim: #8b90a0;         /* Muted Text */
+  --bg-main: #0e0e0e;          
+  --bg-surface: #131313;       
+  --bg-input: #1c1b1b;         
+  --primary: #adc7ff;          
+  --on-primary: #002e68;       
+  --secondary: #66dd8b;        
+  --error: #ffb4ab;            
+  --text-dim: #8b90a0;         
   --border: rgba(255, 255, 255, 0.05);
 }
 
-/* --- 2. LAYOUT ENGINE (CRITICAL FOR BLANK SCREEN FIX) --- */
+/* --- 2. LAYOUT ENGINE (SCROLL FIX APPLIED) --- */
 html, body, #root {
-  height: 100%;
+  /* Changed from height: 100% to min-height: 100% */
+  min-height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--bg-main);
   color: #e5e2e1;
   font-family: 'Inter', sans-serif;
-  overflow: hidden; /* Prevents double scrollbars */
+  
+  /* FIX: Changed 'hidden' to 'auto' to allow landing page to scroll */
+  overflow-x: hidden; 
+  overflow-y: auto; 
 }
 
 /* Typography */
 h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; font-weight: 800; }
 .font-label { font-family: 'Space Grotesk', sans-serif; }
 
-/* --- 3. TERMINAL STRUCTURE --- */
+/* --- 3. TERMINAL STRUCTURE (For the Vault only) --- */
+/* This ensures your Dashboard stays locked while the Home Page scrolls */
 .flex-terminal {
   display: flex;
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  overflow: hidden; /* Keeps the Dashboard stable */
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 /* Scrollbar Style */
@@ -49,7 +57,7 @@ h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; font-weight: 800; }
 
 /* --- 4. SIDEBAR & PANE LOCKING --- */
 aside {
-  flex-shrink: 0; /* Prevents sidebar from squishing */
+  flex-shrink: 0; 
   z-index: 50;
 }
 
@@ -57,7 +65,7 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Prevents layout breaking on long text */
+  min-width: 0; 
 }
 
 /* --- 5. BENTO CARDS & ASSETS --- */
@@ -112,7 +120,12 @@ main {
   transform: scale(1.02);
 }
 
-/* --- Helper Utilities --- */
+/* Helper Utilities */
 .text-growth { color: var(--secondary); }
 .text-alert { color: var(--error); }
 .glow-blue { box-shadow: 0 0 20px rgba(173, 199, 255, 0.1); }
+
+/* --- 7. SMOOTH SCROLLING --- */
+html {
+  scroll-behavior: smooth;
+}
