@@ -38,8 +38,56 @@ const Footer = () => (
   </footer>
 );
 
-/* --- 2. NEW PAGE CONTENT --- */
+/* --- NEW PAGES --- */
 
+const SecurityPage = () => (
+  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white selection:bg-[#66dd8b] selection:text-[#003115]">
+    <Navbar />
+    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+      <div className="inline-flex items-center gap-2 bg-[#66dd8b]/10 border border-[#66dd8b]/20 px-4 py-2 rounded-full mb-12">
+        <span className="w-2 h-2 bg-[#66dd8b] rounded-full"></span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#66dd8b]">Fortress Protocol 4.0</span>
+      </div>
+      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Zero-Leak<br/><span className="text-[#66dd8b]">Fiscal Integrity</span></h1>
+      <div className="grid md:grid-cols-3 gap-8">
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl">
+          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Encryption</h3>
+          <p className="text-gray-500 leading-relaxed text-lg">AES-256 end-to-end data obfuscation at rest and in transit.</p>
+        </div>
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl">
+          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Isolation</h3>
+          <p className="text-gray-500 leading-relaxed text-lg">Physically isolated database clusters for every institutional node.</p>
+        </div>
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl">
+          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Compliance</h3>
+          <p className="text-gray-500 leading-relaxed text-lg">Full SOC2 Type II and GDPR readiness for global treasury.</p>
+        </div>
+      </div>
+    </div>
+    <Footer />
+  </div>
+);
+
+const SolutionsPage = () => (
+  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
+    <Navbar />
+    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Tailored for<br/><span className="italic text-gray-600">Complex Treasury</span></h1>
+      <div className="bg-[#1c1b1b] p-20 rounded-[5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-20">
+        <div className="max-w-xl">
+            <h3 className="text-5xl font-black mb-8 tracking-tight">E-Commerce Conglomerates</h3>
+            <p className="text-xl text-gray-400 leading-relaxed">Unify multiple entity ledgers into a single source of truth with automated tax provision logic.</p>
+        </div>
+        <div className="w-80 h-80 bg-[#4182ff]/5 rounded-full border border-[#4182ff]/10 flex items-center justify-center">
+            <span className="material-symbols-outlined text-[#4182ff] text-9xl">hub</span>
+        </div>
+      </div>
+    </div>
+    <Footer />
+  </div>
+);
+
+// (FeaturesPage and PricingPage stay the same as previous)
 const FeaturesPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
     <Navbar />
@@ -49,13 +97,13 @@ const FeaturesPage = () => (
         <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5">
           <span className="material-symbols-outlined text-[#adc7ff] text-6xl mb-10">inventory_2</span>
           <h3 className="text-4xl font-black mb-6 tracking-tight">Real-time Valuation</h3>
-          <p className="text-gray-400 text-xl leading-relaxed">Algorithmic tracking of asset liquidity and tax provisioning with 4ms SKU latency.</p>
+          <p className="text-gray-400 text-xl leading-relaxed">Algorithmic tracking of asset liquidity with 4ms SKU latency.</p>
         </div>
         <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 flex flex-col justify-between">
           <div>
             <span className="material-symbols-outlined text-[#66dd8b] text-6xl mb-10">psychology</span>
             <h3 className="text-4xl font-black mb-6 tracking-tight">AI Tax Forecasting</h3>
-            <p className="text-gray-400 text-xl leading-relaxed">Predict jurisdictional liability daily using specialized LLM fiscal modeling.</p>
+            <p className="text-gray-400 text-xl leading-relaxed">Predict jurisdictional liability daily using specialized LLM models.</p>
           </div>
           <div className="mt-12"><div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[#66dd8b] w-[99%]"></div></div></div>
         </div>
