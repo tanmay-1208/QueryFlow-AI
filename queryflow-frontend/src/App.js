@@ -257,7 +257,13 @@ const Vault = ({ userId, onLogout }) => {
     if (!item) return;
     const newStock = Math.max(0, (Number(item.stock) || 0) + delta);
     setItems(prevItems => prevItems.map(i => i.id === id ? { ...i, stock: newStock } : i));
-    const newEntry = { id: Date.now(), action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation", entity: item.name || "Asset", value: -(delta * (Number(item.price) || 0)), time: new Date().toLocaleTimeString() };
+    const newEntry = { 
+        id: Date.now(), 
+        action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation", 
+        entity: item.name || "Asset", 
+        value: -(delta * (Number(item.price) || 0)), 
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    };
     setLedger(prev => [newEntry, ...prev.slice(0, 4)]);
     try { await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId: userId }); } 
     catch (err) { console.error("Cloud Sync Failed:", err); }
@@ -277,9 +283,9 @@ const Vault = ({ userId, onLogout }) => {
     setUserQuery("");
     setIsAnalyzing(true);
     setTimeout(() => {
-        setChatHistory([...newHistory, { role: 'assistant', text: `Audit complete. Projected profit: $${Math.floor(realizableProfit).toLocaleString()}` }]);
+        setChatHistory([...newHistory, { role: 'assistant', text: `Audit complete. Realizable profit: $${Math.floor(realizableProfit).toLocaleString()}` }]);
         setIsAnalyzing(false);
-    }, 800);
+    }, 1000);
   };
 
   if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING...</div>;
@@ -309,22 +315,10 @@ const Vault = ({ userId, onLogout }) => {
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span>
-                  <h3 className="text-2xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3>
-                </div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase block mb-1">Tax Provision</span>
-                  <h3 className="text-2xl font-black">-${Math.floor(estimatedTax).toLocaleString()}</h3>
-                </div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span>
-                  <h3 className="text-2xl font-black text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</h3>
-                </div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl">
-                  <span className="text-[10px] text-gray-500 uppercase block mb-1">SKU Alerts</span>
-                  <h3 className="text-2xl font-black text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3>
-                </div>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span><h3 className="text-2xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3></div>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">Tax Provision</span><h3 className="text-2xl font-black">-${Math.floor(estimatedTax).toLocaleString()}</h3></div>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span><h3 className="text-2xl font-black text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</h3></div>
+                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">SKU Alerts</span><h3 className="text-2xl font-black text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3></div>
               </div>
 
               <div className="grid grid-cols-3 gap-6">
@@ -344,6 +338,19 @@ const Vault = ({ userId, onLogout }) => {
                   <div><h4 className="text-2xl font-black font-['Manrope'] leading-tight">System Status</h4><p className="text-[10px] font-bold uppercase mt-4 opacity-60">Synchronized.</p></div>
                 </div>
               </div>
+
+              {/* DASHBOARD INTERACTION LEDGER */}
+              <div className="bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5">
+                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Interaction Ledger</h4>
+                <div className="space-y-4">
+                  {ledger.map((entry) => (
+                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
+                      <div><p className="font-bold text-lg">{entry.action}</p><p className="text-xs text-gray-500 uppercase tracking-widest">{entry.entity} | {entry.time}</p></div>
+                      <span className={`font-black text-xl ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
@@ -351,15 +358,28 @@ const Vault = ({ userId, onLogout }) => {
           {activeTab === "inventory" && (
              <div className="grid grid-cols-2 gap-6 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
-                 <div key={item.id} className="bg-[#1c1b1b] p-8 rounded-[3rem] border border-white/5 shadow-xl transition-all">
+                 <div key={item.id} className={`bg-[#1c1b1b] p-8 rounded-[3rem] border transition-all ${item.stock <= 5 ? 'border-red-500/20' : 'border-white/5'} shadow-xl`}>
                    <div className="flex justify-between items-center mb-6">
                      <h4 className="font-black text-2xl font-['Manrope'] truncate">{item.name}</h4>
                      {item.stock <= 5 && <span className="text-[9px] bg-red-500/10 text-red-500 font-black px-2 py-1 rounded-lg">LOW STOCK</span>}
                    </div>
-                   <div className="bg-black/30 p-5 rounded-2xl mb-8 flex justify-between text-sm">
-                     <div><span className="text-[9px] text-gray-600 block uppercase font-black">Price Point</span><span className="font-black text-xl">${Math.floor(item.price).toLocaleString()}</span></div>
-                     <div className="text-right"><span className="text-[9px] text-gray-600 block uppercase font-black">Vaulted</span><span className="font-black text-xl">{item.stock}</span></div>
+                   
+                   {/* COST AND PRICE GRID */}
+                   <div className="grid grid-cols-2 gap-4 mb-8">
+                      <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
+                        <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Cost Point</span>
+                        <span className="text-lg font-black font-['Manrope'] text-gray-400">${Math.floor(item.price * 0.7).toLocaleString()}</span>
+                      </div>
+                      <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
+                        <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Market Price</span>
+                        <span className="text-lg font-black font-['Manrope']">${Math.floor(item.price).toLocaleString()}</span>
+                      </div>
+                      <div className="bg-black/30 p-4 rounded-2xl border border-white/5 col-span-2 flex justify-between items-center">
+                        <span className="text-[9px] text-gray-600 uppercase font-black tracking-widest">Vaulted Units</span>
+                        <span className={`font-black text-2xl ${item.stock <= 5 ? 'text-red-500' : 'text-[#adc7ff]'}`}>{item.stock}</span>
+                      </div>
                    </div>
+
                    <div className="flex gap-4">
                      <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#adc7ff]/10">Restock</button>
                      <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500/10">Mark Sold</button>
@@ -380,17 +400,6 @@ const Vault = ({ userId, onLogout }) => {
                     <div className="flex justify-between bg-[#66dd8b]/10 p-10 rounded-3xl mt-12 border border-[#66dd8b]/20"><span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span><span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</span></div>
                   </div>
                </div>
-               <div className="bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5">
-                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Interaction Ledger</h4>
-                <div className="space-y-4">
-                  {ledger.map((entry) => (
-                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
-                      <div><p className="font-bold text-lg">{entry.action}</p><p className="text-xs text-gray-500">{entry.entity} | {entry.time}</p></div>
-                      <span className={`font-black text-xl ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
              </div>
           )}
         </div>
