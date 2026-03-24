@@ -592,7 +592,7 @@ const Vault = ({ userId, onLogout }) => {
     </div>
   );
 };
-
+//
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
