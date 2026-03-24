@@ -154,3 +154,51 @@ html {
     padding-right: 1.5rem !important;
   }
 }
+
+/* Global Mobile Header Fix */
+@media (max-width: 768px) {
+  h1 {
+    word-break: break-word; /* Prevents long words from cutting off */
+    overflow-wrap: break-word;
+  }
+  
+  /* Optional: Makes the Bento cards take up more width on small phones */
+  .grid {
+    gap: 1rem !important;
+  }
+}
+
+/* Container adjustment */
+.vault-container {
+  display: flex;
+  flex-direction: column; /* Stack vertically on mobile */
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Sidebar adjustment */
+.sidebar {
+  width: 100%; 
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Desktop override */
+@media (min-width: 768px) {
+  .vault-container {
+    flex-direction: row;
+  }
+  .sidebar {
+    width: 250px;
+    height: 100vh;
+  }
+}
+
+/* In your CSS file */
+.vault-wrapper {
+  @apply flex flex-col md:flex-row min-h-screen w-full overflow-x-hidden;
+}
+
+.vault-sidebar {
+  @apply w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-800;
+}
