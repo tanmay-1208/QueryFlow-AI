@@ -76,7 +76,7 @@ const Footer = () => (
 const FeaturesPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white selection:bg-[#adc7ff] selection:text-[#002e68]">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+    <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
       <h1 className="text-5xl md:text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-tight">Precision<br/><span className="text-[#adc7ff]">Architecture</span></h1>
       
       {/* Primary Grid */}
@@ -124,7 +124,7 @@ const FeaturesPage = () => (
 const SolutionsPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+    <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
 <h1 className="text-5xl md:text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Tailored for<br/><span className="italic text-gray-600 font-light">Complex Treasury</span></h1>      
       <div className="space-y-10">
         <div className="bg-[#1c1b1b] p-20 rounded-[5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-20">
@@ -170,7 +170,7 @@ const SolutionsPage = () => (
 const SecurityPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white selection:bg-[#66dd8b] selection:text-[#003115]">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-10 pb-40 text-center">
+    <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
       <div className="inline-flex items-center gap-2 bg-[#66dd8b]/10 border border-[#66dd8b]/20 px-6 py-2 rounded-full mb-12">
         <span className="w-2 h-2 bg-[#66dd8b] rounded-full animate-pulse"></span>
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#66dd8b]">Fortress Protocol 4.0 Verified</span>
@@ -214,8 +214,8 @@ const SecurityPage = () => (
 const PricingPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-10 pb-40 text-center">
-      <h1 className="text-8xl font-black font-['Manrope'] tracking-tighter mb-20 leading-none">Transparent Licensing</h1>
+    <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
+      <h1 className="text-5xl md:text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Zero-Leak<br/><span className="text-[#66dd8b]">Fiscal Integrity</span></h1>
       <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
         <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 text-left">
           <h3 className="text-xl font-bold uppercase tracking-widest text-gray-500 mb-4">Professional</h3>
