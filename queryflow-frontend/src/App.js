@@ -479,7 +479,7 @@ const Vault = ({ userId, onLogout }) => {
   ))}
 </div>
 
-        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-[#0e0e0e]">
+        <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar bg-[#0e0e0e]">
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -489,7 +489,7 @@ const Vault = ({ userId, onLogout }) => {
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">SKU Alerts</span><h3 className="text-2xl font-black text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3></div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid **grid-cols-2 md:grid-cols-4** gap-4">
                 <div className="col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
                   <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
                   <div className="space-y-6">
@@ -552,18 +552,27 @@ const Vault = ({ userId, onLogout }) => {
              </div>
           )}
 
-          {activeTab === "reports" && (
-             <div className="max-w-3xl mx-auto space-y-8 animate-in slide-in-from-bottom duration-500">
-               <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 shadow-2xl">
-                  <h3 className="text-3xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
-                  <div className="space-y-6 font-['Inter']">
-                    <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-2xl">${totalValuation.toLocaleString()}</span></div>
-                    <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested</span><span className="font-black text-2xl text-red-400">-${Math.floor(totalInvestment).toLocaleString()}</span></div>
-                    <div className="flex justify-between bg-[#66dd8b]/10 p-10 rounded-3xl mt-12 border border-[#66dd8b]/20"><span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span><span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</span></div>
-                  </div>
-               </div>
-             </div>
-          )}
+         {activeTab === "reports" && (
+   <div className="max-w-3xl mx-auto space-y-6 animate-in slide-in-from-bottom duration-500">
+     <div className="bg-[#1c1b1b] p-6 md:p-16 rounded-[2.5rem] md:rounded-[4rem] border border-white/5 shadow-2xl">
+        <h3 className="text-xl md:text-3xl font-black font-['Manrope'] mb-8 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
+        <div className="space-y-6 font-['Inter']">
+          <div className="flex flex-col md:flex-row justify-between md:items-center pb-4 border-b border-white/5 gap-2">
+            <span className="text-gray-400 font-medium text-xs">Total Asset Value</span>
+            <span className="font-black text-xl md:text-2xl">${totalValuation.toLocaleString()}</span>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between md:items-center pb-4 border-b border-white/5 gap-2">
+            <span className="text-gray-400 font-medium text-xs">Capital Invested</span>
+            <span className="font-black text-xl md:text-2xl text-red-400">-${Math.floor(totalInvestment).toLocaleString()}</span>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between bg-[#66dd8b]/10 p-6 md:p-10 rounded-3xl mt-8 border border-[#66dd8b]/20 gap-4">
+            <span className="text-[#66dd8b] font-black uppercase tracking-widest text-[10px]">Projected Profit</span>
+            <span className="font-black font-['Manrope'] text-2xl md:text-4xl text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</span>
+          </div>
+        </div>
+     </div>
+   </div>
+)}
         </div>
       </main>
 
