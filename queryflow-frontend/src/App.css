@@ -202,3 +202,11 @@ html {
 .vault-sidebar {
   @apply w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-800;
 }
+@media (max-width: 768px) {
+  .text-2xl {
+    font-size: 1.25rem; /* Shrink font size on mobile */
+  }
+  .p-7 {
+    padding: 1rem; /* Reduce padding so content doesn't overflow */
+  }
+}

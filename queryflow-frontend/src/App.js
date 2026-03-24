@@ -457,10 +457,14 @@ const Vault = ({ userId, onLogout }) => {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-16 border-b border-white/5 flex justify-between items-center px-4 md:px-10 bg-[#131313]/50 backdrop-blur-md">
-          <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
-          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white font-['Inter']" placeholder="Search assets..." onChange={(e) => setSearchTerm(e.target.value)} />
-        </header>
+        <header className="min-h-16 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center p-4 md:px-10 bg-[#131313]/50 backdrop-blur-md gap-4">
+  <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
+  <input 
+    className="bg-[#1c1b1b] border-none rounded-xl px-4 py-2 text-sm w-full md:w-80 outline-none text-white font-['Inter']" 
+    placeholder="Search assets..." 
+    onChange={(e) => setSearchTerm(e.target.value)} 
+  />
+</header>
 
         {/* MOBILE TAB NAVIGATION */}
 <div className="flex md:hidden bg-[#131313] border-b border-white/5 overflow-x-auto">
@@ -478,14 +482,14 @@ const Vault = ({ userId, onLogout }) => {
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-[#0e0e0e]">
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span><h3 className="text-2xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3></div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">Tax Provision</span><h3 className="text-2xl font-black">-${Math.floor(estimatedTax).toLocaleString()}</h3></div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span><h3 className="text-2xl font-black text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</h3></div>
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">SKU Alerts</span><h3 className="text-2xl font-black text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3></div>
               </div>
 
-              <div className="grid **grid-cols-2 md:grid-cols-4** gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
                   <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
                   <div className="space-y-6">
