@@ -6,6 +6,97 @@ import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
+const Navbar = () => (
+  <nav className="fixed top-0 w-full z-50 bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-white/5">
+    <div className="flex justify-between items-center px-10 py-6 max-w-[1400px] mx-auto">
+      <div className="flex items-center gap-12">
+        <Link to="/" className="text-xl font-black tracking-tighter font-['Manrope']">QueryFlow Vault</Link>
+        <div className="hidden lg:flex gap-8 text-[11px] font-bold text-gray-500 uppercase tracking-[0.2em]">
+          <Link to="/features" className="hover:text-white transition-colors">Features</Link>
+          <Link to="/solutions" className="hover:text-white transition-colors">Solutions</Link>
+          <Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+          <Link to="/security" className="hover:text-white transition-colors">Security</Link>
+        </div>
+      </div>
+      <div className="flex items-center gap-8">
+        <Link to="/login" className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Login</Link>
+        <Link to="/login" className="bg-[#4182ff] text-white px-8 py-3.5 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 transition-all">Request Demo</Link>
+      </div>
+    </div>
+  </nav>
+);
+
+const Footer = () => (
+  <footer className="py-20 border-t border-white/5 px-10 bg-[#0e0e0e]">
+    <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+      <p className="text-gray-600 text-[10px] font-black uppercase tracking-[0.4em]">© 2026 QUERYFLOW VAULT • INSTITUTIONAL GRADE</p>
+      <div className="flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
+        <Link to="/security">Security Protocol</Link>
+        <Link to="/pricing">Licensing</Link>
+      </div>
+    </div>
+  </footer>
+);
+
+/* --- 2. NEW PAGE CONTENT --- */
+
+const FeaturesPage = () => (
+  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
+    <Navbar />
+    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-none">Precision<br/><span className="text-[#adc7ff]">Architecture</span></h1>
+      <div className="grid md:grid-cols-2 gap-10">
+        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5">
+          <span className="material-symbols-outlined text-[#adc7ff] text-6xl mb-10">inventory_2</span>
+          <h3 className="text-4xl font-black mb-6 tracking-tight">Real-time Valuation</h3>
+          <p className="text-gray-400 text-xl leading-relaxed">Algorithmic tracking of asset liquidity and tax provisioning with 4ms SKU latency.</p>
+        </div>
+        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 flex flex-col justify-between">
+          <div>
+            <span className="material-symbols-outlined text-[#66dd8b] text-6xl mb-10">psychology</span>
+            <h3 className="text-4xl font-black mb-6 tracking-tight">AI Tax Forecasting</h3>
+            <p className="text-gray-400 text-xl leading-relaxed">Predict jurisdictional liability daily using specialized LLM fiscal modeling.</p>
+          </div>
+          <div className="mt-12"><div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[#66dd8b] w-[99%]"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <Footer />
+  </div>
+);
+
+const PricingPage = () => (
+  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
+    <Navbar />
+    <div className="max-w-[1400px] mx-auto px-10 pb-40 text-center">
+      <h1 className="text-8xl font-black font-['Manrope'] tracking-tighter mb-20 leading-none">Transparent Licensing</h1>
+      <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 text-left">
+          <h3 className="text-xl font-bold uppercase tracking-widest text-gray-500 mb-4">Professional</h3>
+          <div className="text-6xl font-black mb-10">$0<span className="text-lg text-gray-700">/mo</span></div>
+          <ul className="space-y-4 mb-12 text-gray-400 font-medium">
+            <li>• 1 Active Ledger Vault</li>
+            <li>• Standard AI Advisor</li>
+            <li>• Real-time Tax Provisioning</li>
+          </ul>
+          <Link to="/login" className="block text-center py-5 bg-white text-black font-black rounded-2xl">Start Free</Link>
+        </div>
+        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-[#adc7ff]/30 text-left relative overflow-hidden">
+          <h3 className="text-xl font-bold uppercase tracking-widest text-[#adc7ff] mb-4">Institutional</h3>
+          <div className="text-6xl font-black mb-10">Custom</div>
+          <ul className="space-y-4 mb-12 text-gray-400 font-medium">
+            <li>• Unlimited Ledger Vaults</li>
+            <li>• Advanced Fiscal Modeling</li>
+            <li>• SOC2 Compliance API</li>
+          </ul>
+          <button className="w-full py-5 bg-[#4182ff] text-white font-black rounded-2xl">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+    <Footer />
+  </div>
+);
+
 // --- 1. FULL SCROLLABLE LANDING PAGE (SCROLL FIX APPLIED) ---
 const LandingPage = () => (
   <div className="bg-[#0e0e0e] text-white font-['Inter'] selection:bg-[#4182ff]">
@@ -27,6 +118,7 @@ const LandingPage = () => (
         </div>
       </div>
     </nav>
+    
 
     {/* SECTION 1: HERO */}
     <section className="max-w-[1400px] mx-auto px-10 pt-48 pb-32 grid lg:grid-cols-2 gap-24 items-center">
