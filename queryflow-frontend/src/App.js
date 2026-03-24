@@ -373,30 +373,18 @@ const Vault = ({ userId, onLogout }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-const [newItem, setNewItem] = useState({ name: "", price: "", stock: "" });
+const [newItem, setNewItem] = useState({ name: "", cost_price: "", market_price: "", stock: "" });
   const chatEndRef = useRef(null);
 
   useEffect(() => { if (userId) fetchItems(); }, [userId]);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHistory]);
 
-  const handleAddItem = async (e) => {
-  e.preventDefault();
+const fetchItems = async () => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/api/products`, { ...newItem, userId });
-    setItems([...items, res.data]); // Update UI instantly
-    setIsAddModalOpen(false); // Close modal
-    setNewItem({ name: "", price: "", stock: "" }); // Reset form
-  } catch (err) {
-    alert("Failed to vault asset. Check connection.");
-  }
+    const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
+    setItems(Array.isArray(res.data) ? res.data : []);
+  } catch (err) { setItems([]); } finally { setIsLoading(false); }
 };
-
-  const fetchItems = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
-      setItems(Array.isArray(res.data) ? res.data : []);
-    } catch (err) { setItems([]); } finally { setIsLoading(false); }
-  };
 
   const updateStock = async (id, delta) => {
     const item = items.find(i => i.id === id);
@@ -455,9 +443,28 @@ const [newItem, setNewItem] = useState({ name: "", price: "", stock: "" });
     }, 1200);
   };
 
-  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING...</div>;
+if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING...</div>;
 
-  return (
+const handleAddItem = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${API_BASE_URL}/api/products`, { 
+      name: newItem.name,
+      price: newItem.market_price,
+      cost_price: newItem.cost_price,
+      stock: newItem.stock,
+      userId 
+    });
+    setItems([...items, res.data]);
+    setIsAddModalOpen(false);
+    setNewItem({ name: "", cost_price: "", market_price: "", stock: "" });
+  } catch (err) {
+    console.error(err);
+    alert("Vaulting failed. Verify backend fields.");
+  }
+};
+
+return (
     <div className="flex flex-col md:flex-row h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-x-hidden md:overflow-hidden fixed inset-0">
       <aside className="hidden md:flex md:w-64 border-r border-white/5 bg-[#131313] flex-col p-6 shrink-0 shadow-2xl">
         <div className="mb-10 font-['Manrope'] text-xl font-black">QueryFlow Vault</div>
