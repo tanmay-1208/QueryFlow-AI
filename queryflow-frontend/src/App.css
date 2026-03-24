@@ -129,3 +129,28 @@ main {
 html {
   scroll-behavior: smooth;
 }
+
+/* --- Global Mobile Refinements --- */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 3.5rem !important; /* Resizes 'The Modern CFO's' */
+    line-height: 1.1 !important;
+    text-align: left;
+    margin-bottom: 1.5rem;
+  }
+
+  .nav-menu-desktop {
+    display: none; /* Hides the long list of links in the header */
+  }
+
+  /* Ensures Bento cards stack vertically without overlapping */
+  .responsive-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .mobile-padding {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
