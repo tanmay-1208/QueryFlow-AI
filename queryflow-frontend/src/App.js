@@ -298,6 +298,7 @@ const Login = ({ onLogin }) => {
     });
     if (error) alert(error.message);
   };
+  
 
   const handleManualLogin = async (e) => {
     e.preventDefault();
@@ -442,8 +443,8 @@ const Vault = ({ userId, onLogout }) => {
   if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING...</div>;
 
   return (
-    <div className="flex h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-hidden fixed inset-0">
-      <aside className="w-64 border-r border-white/5 bg-[#131313] flex flex-col p-6 shrink-0 shadow-2xl">
+    <div className="flex flex-col md:flex-row h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-x-hidden md:overflow-hidden fixed inset-0">
+      <aside className="hidden md:flex md:w-64 border-r border-white/5 bg-[#131313] flex-col p-6 shrink-0 shadow-2xl">
         <div className="mb-10 font-['Manrope'] text-xl font-black">QueryFlow Vault</div>
         <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
@@ -456,7 +457,7 @@ const Vault = ({ userId, onLogout }) => {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md">
+        <header className="h-16 border-b border-white/5 flex justify-between items-center px-4 md:px-10 bg-[#131313]/50 backdrop-blur-md">
           <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
           <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white font-['Inter']" placeholder="Search assets..." onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
@@ -549,7 +550,7 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
+<aside className="hidden md:flex md:w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex-col h-full shrink-0 shadow-2xl">
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] tracking-widest">AI Advisor</div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
           {chatHistory.map((msg, i) => (
