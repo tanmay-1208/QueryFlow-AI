@@ -645,21 +645,43 @@ return (
   <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
     <div className="bg-[#1c1b1b] w-full max-w-md p-10 rounded-[3rem] border border-white/10 shadow-2xl animate-in zoom-in duration-300">
       <h3 className="text-3xl font-black font-['Manrope'] mb-8">Vault New Asset</h3>
-      <form onSubmit={handleAddItem} className="space-y-6">
-        <input 
-          className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
-          placeholder="Asset Name (e.g. Vintage Rolex)" 
-          onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-          required 
-        />
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleAddItem} className="space-y-4">
+        
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase font-black text-gray-500 ml-2 tracking-widest">Asset Name</label>
           <input 
-            type="number"
             className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
-            placeholder="Price ($)" 
-            onChange={(e) => setNewItem({...newItem, price: e.target.value})}
+            placeholder="e.g. Vintage Rolex" 
+            onChange={(e) => setNewItem({...newItem, name: e.target.value})}
             required 
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase font-black text-gray-500 ml-2 tracking-widest">Cost Point ($)</label>
+            <input 
+              type="number"
+              className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
+              placeholder="Purchase Price" 
+              onChange={(e) => setNewItem({...newItem, cost_price: e.target.value})}
+              required 
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase font-black text-gray-500 ml-2 tracking-widest">Market Price ($)</label>
+            <input 
+              type="number"
+              className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
+              placeholder="Current Value" 
+              onChange={(e) => setNewItem({...newItem, market_price: e.target.value})}
+              required 
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase font-black text-gray-500 ml-2 tracking-widest">Quantity</label>
           <input 
             type="number"
             className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
@@ -668,7 +690,8 @@ return (
             required 
           />
         </div>
-        <div className="flex gap-4 pt-4">
+
+        <div className="flex gap-4 pt-6">
           <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 text-gray-500 font-bold uppercase text-xs tracking-widest">Cancel</button>
           <button type="submit" className="flex-1 bg-[#4182ff] py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-[#4182ff]/20">Initialize Asset</button>
         </div>
