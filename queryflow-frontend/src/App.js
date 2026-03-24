@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } f
 import { supabase } from "./supabaseClient"; 
 import "./App.css";
 
-const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
+const API_BASE_URL = "queryflow-ai-production.up.railway.app";
 
 /* --- 1. SHARED COMPONENTS --- */
 
