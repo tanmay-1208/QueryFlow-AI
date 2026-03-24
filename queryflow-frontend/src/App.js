@@ -462,6 +462,19 @@ const Vault = ({ userId, onLogout }) => {
           <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white font-['Inter']" placeholder="Search assets..." onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
 
+        {/* MOBILE TAB NAVIGATION */}
+<div className="flex md:hidden bg-[#131313] border-b border-white/5 overflow-x-auto">
+  {['dashboard', 'inventory', 'reports'].map(tab => (
+    <button 
+      key={tab} 
+      onClick={() => setActiveTab(tab)} 
+      className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'text-[#adc7ff] border-b-2 border-[#adc7ff]' : 'text-gray-500'}`}
+    >
+      {tab}
+    </button>
+  ))}
+</div>
+
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-[#0e0e0e]">
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
@@ -472,7 +485,7 @@ const Vault = ({ userId, onLogout }) => {
                 <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl"><span className="text-[10px] text-gray-500 uppercase block mb-1">SKU Alerts</span><h3 className="text-2xl font-black text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3></div>
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid **grid-cols-2 md:grid-cols-4** gap-4">
                 <div className="col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
                   <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
                   <div className="space-y-6">
@@ -505,7 +518,7 @@ const Vault = ({ userId, onLogout }) => {
           )}
 
           {activeTab === "inventory" && (
-             <div className="grid grid-cols-2 gap-6 animate-in fade-in duration-500">
+             <div className="grid **grid-cols-1 md:grid-cols-2** gap-6 gap-6 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
                  <div key={item.id} className={`bg-[#1c1b1b] p-8 rounded-[3rem] border transition-all ${item.stock <= 5 ? 'border-red-500/20' : 'border-white/5'} shadow-xl`}>
                    <div className="flex justify-between items-center mb-6">
@@ -564,6 +577,7 @@ const Vault = ({ userId, onLogout }) => {
         </form>
       </aside>
     </div>
+    
   );
 };
 
