@@ -290,14 +290,35 @@ const Vault = ({ userId, onLogout }) => {
   const handleChat = async (e) => {
     e.preventDefault();
     if (!userQuery.trim()) return;
+
     const newHistory = [...chatHistory, { role: 'user', text: userQuery }];
     setChatHistory(newHistory);
+    const currentQuery = userQuery.toLowerCase();
     setUserQuery("");
     setIsAnalyzing(true);
+
     setTimeout(() => {
-        setChatHistory([...newHistory, { role: 'assistant', text: `Audit complete. Realizable profit: $${Math.floor(realizableProfit).toLocaleString()}` }]);
-        setIsAnalyzing(false);
-    }, 1000);
+      let aiResponse = "";
+      if (currentQuery.includes("concentration") || currentQuery.includes("risk")) {
+        const highestValueItem = [...safeItems].sort((a, b) => (Number(b.price) * Number(b.stock)) - (Number(a.price) * Number(a.stock)))[0];
+        const percentage = totalValuation > 0 ? Math.floor(((highestValueItem?.price * highestValueItem?.stock) / totalValuation) * 100) : 0;
+        aiResponse = `Concentration Audit: High Risk detected in '${highestValueItem?.name || "N/A"}'. This asset accounts for ${percentage}% of total vaulted liquidity ($${Math.floor(highestValueItem?.price * highestValueItem?.stock).toLocaleString()}). Diversification recommended.`;
+      } 
+      else if (currentQuery.includes("increase") || currentQuery.includes("tax") || currentQuery.includes("unit")) {
+        const rolexItem = safeItems.find(i => i.name.toLowerCase().includes("rolex")) || safeItems[0];
+        const price = Number(rolexItem?.price) || 1500000;
+        const taxImpact = (5 * price) * 0.18;
+        aiResponse = `Fiscal Projection: Increasing '${rolexItem?.name || "Asset"}' by 5 units adds $${(5 * price).toLocaleString()} to gross valuation. This triggers a deferred tax liability increase of $${Math.floor(taxImpact).toLocaleString()} for the next reporting cycle.`;
+      }
+      else if (currentQuery.includes("profit") || currentQuery.includes("audit") || currentQuery.includes("realizable")) {
+        aiResponse = `Audit Complete: Net Realizable Profit is verified at $${Math.floor(realizableProfit).toLocaleString()}. Current capital invested is $${Math.floor(totalInvestment).toLocaleString()}. System status is Synchronized.`;
+      }
+      else {
+        aiResponse = `Query verified. Institutional Vault Valuation stands at $${totalValuation.toLocaleString()}. I am monitoring ${safeItems.filter(i => i.stock <= 5).length} SKU alerts and a tax provision of -$${Math.floor(estimatedTax).toLocaleString()}.`;
+      }
+      setChatHistory([...newHistory, { role: 'assistant', text: aiResponse }]);
+      setIsAnalyzing(false);
+    }, 1200);
   };
 
   if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING...</div>;
@@ -323,7 +344,6 @@ const Vault = ({ userId, onLogout }) => {
         </header>
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-[#0e0e0e]">
-          {/* --- DASHBOARD SECTION --- */}
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in duration-500">
               <div className="grid grid-cols-4 gap-4">
@@ -351,7 +371,6 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
               </div>
 
-              {/* DASHBOARD INTERACTION LEDGER */}
               <div className="bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5">
                 <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Interaction Ledger</h4>
                 <div className="space-y-4">
@@ -366,7 +385,6 @@ const Vault = ({ userId, onLogout }) => {
             </div>
           )}
 
-          {/* --- INVENTORY SECTION --- */}
           {activeTab === "inventory" && (
              <div className="grid grid-cols-2 gap-6 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
@@ -375,23 +393,20 @@ const Vault = ({ userId, onLogout }) => {
                      <h4 className="font-black text-2xl font-['Manrope'] truncate">{item.name}</h4>
                      {item.stock <= 5 && <span className="text-[9px] bg-red-500/10 text-red-500 font-black px-2 py-1 rounded-lg">LOW STOCK</span>}
                    </div>
-                   
-                   {/* COST AND PRICE GRID */}
                    <div className="grid grid-cols-2 gap-4 mb-8">
                       <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
                         <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Cost Point</span>
-                        <span className="text-lg font-black font-['Manrope'] text-gray-400">${Math.floor(item.price * 0.7).toLocaleString()}</span>
+                        <span className="text-lg font-black text-gray-400">${Math.floor(item.price * 0.7).toLocaleString()}</span>
                       </div>
                       <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
                         <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Market Price</span>
-                        <span className="text-lg font-black font-['Manrope']">${Math.floor(item.price).toLocaleString()}</span>
+                        <span className="text-lg font-black">${Math.floor(item.price).toLocaleString()}</span>
                       </div>
                       <div className="bg-black/30 p-4 rounded-2xl border border-white/5 col-span-2 flex justify-between items-center">
                         <span className="text-[9px] text-gray-600 uppercase font-black tracking-widest">Vaulted Units</span>
                         <span className={`font-black text-2xl ${item.stock <= 5 ? 'text-red-500' : 'text-[#adc7ff]'}`}>{item.stock}</span>
                       </div>
                    </div>
-
                    <div className="flex gap-4">
                      <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#adc7ff]/10">Restock</button>
                      <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500/10">Mark Sold</button>
@@ -401,7 +416,6 @@ const Vault = ({ userId, onLogout }) => {
              </div>
           )}
 
-          {/* --- REPORTS SECTION --- */}
           {activeTab === "reports" && (
              <div className="max-w-3xl mx-auto space-y-8 animate-in slide-in-from-bottom duration-500">
                <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 shadow-2xl">
@@ -434,7 +448,6 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 5. MAIN APP COMPONENT ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
@@ -463,7 +476,6 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* FIXED: All routes are now explicitly defined */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/features" element={<FeaturesPage />} />
         <Route path="/solutions" element={<SolutionsPage />} />
