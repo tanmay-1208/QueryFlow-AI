@@ -257,15 +257,21 @@ const Vault = ({ userId, onLogout }) => {
     if (!item) return;
     const newStock = Math.max(0, (Number(item.stock) || 0) + delta);
     setItems(prevItems => prevItems.map(i => i.id === id ? { ...i, stock: newStock } : i));
-    setLedger(prev => [{ id: Date.now(), action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation", entity: item.name || "Asset", value: -(delta * (Number(item.price) || 0)), time: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)]);
+    const newEntry = { 
+        id: Date.now(), 
+        action: delta > 0 ? "Inventory Purchase" : "Asset Liquidation", 
+        entity: item.name || "Asset", 
+        value: -(delta * (Number(item.price) || 0)), 
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    };
+    setLedger(prev => [newEntry, ...prev.slice(0, 4)]);
     try { await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId: userId }); } 
     catch (err) { console.error("Cloud Sync Failed:", err); }
   };
 
   const safeItems = items || [];
   const totalValuation = safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0);
-  const totalInvestment = totalValuation * 0.7;
-  const realizableProfit = totalValuation - totalInvestment - (totalValuation * 0.18);
+  const realizableProfit = totalValuation - (totalValuation * 0.7) - (totalValuation * 0.18);
 
   const handleChat = async (e) => {
     e.preventDefault();
@@ -277,10 +283,10 @@ const Vault = ({ userId, onLogout }) => {
     setTimeout(() => {
         setChatHistory([...newHistory, { role: 'assistant', text: `Audit complete. Projected profit: $${Math.floor(realizableProfit).toLocaleString()}` }]);
         setIsAnalyzing(false);
-    }, 800);
+    }, 1000);
   };
 
-  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING TERMINAL...</div>;
+  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING...</div>;
 
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-hidden fixed inset-0">
@@ -293,59 +299,59 @@ const Vault = ({ userId, onLogout }) => {
             </button>
           ))}
         </nav>
-        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">Exit Terminal</button>
+        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase">Exit Terminal</button>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md">
           <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
-          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white" placeholder="Search assets..." onChange={(e) => setSearchTerm(e.target.value)} />
+          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white font-['Inter']" placeholder="Search assets..." onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-[#0e0e0e]">
           {activeTab === "dashboard" && (
-             <div className="grid grid-cols-2 gap-4">
-               <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#adc7ff] shadow-xl">
-                 <span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span>
-                 <h3 className="text-4xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3>
-               </div>
-               <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#66dd8b] shadow-xl">
-                 <span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span>
-                 <h3 className="text-4xl font-black text-[#66dd8b] font-['Manrope']">${Math.floor(realizableProfit).toLocaleString()}</h3>
-               </div>
-             </div>
+            <div className="space-y-8 animate-in fade-in duration-500">
+              {/* TOP KPI CARDS */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#adc7ff] shadow-xl">
+                    <span className="text-[10px] text-gray-500 uppercase block mb-1 font-bold tracking-widest">Valuation</span>
+                    <h3 className="text-4xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3>
+                </div>
+                <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#66dd8b] shadow-xl">
+                    <span className="text-[10px] text-gray-500 uppercase block mb-1 font-bold tracking-widest">Net Profit</span>
+                    <h3 className="text-4xl font-black text-[#66dd8b] font-['Manrope']">${Math.floor(realizableProfit).toLocaleString()}</h3>
+                </div>
+              </div>
+
+              {/* RECENT INTERACTION LEDGER (MISSING FROM SCREENSHOT) */}
+              <div className="bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#adc7ff]/20"></div>
+                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-10 tracking-widest">Recent Interaction Ledger</h4>
+                <div className="space-y-2">
+                  {ledger.map((entry) => (
+                    <div key={entry.id} className="flex justify-between items-center py-5 border-b border-white/5 last:border-0 group hover:bg-white/[0.02] transition-colors rounded-xl px-4">
+                      <div>
+                        <p className="font-bold text-lg font-['Inter']">{entry.action}</p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-['Manrope']">{entry.entity} | {entry.time}</p>
+                      </div>
+                      <span className={`font-black text-2xl font-['Manrope'] ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>
+                        {entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
 
           {activeTab === "inventory" && (
              <div className="grid grid-cols-2 gap-6 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
-                 <div key={item.id} className={`bg-[#1c1b1b] p-8 rounded-[3rem] border transition-all duration-300 ${item.stock <= 5 ? 'border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.05)]' : 'border-white/5 shadow-xl'}`}>
-                   <div className="flex justify-between items-start mb-6">
-                     <h4 className="font-black text-2xl font-['Manrope'] truncate max-w-[180px]">{item.name}</h4>
-                     {item.stock <= 5 && (
-                       <span className="bg-red-500/10 text-red-500 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse border border-red-500/20">Low Stock Alert</span>
-                     )}
-                   </div>
-                   
-                   {/* Pricing & Unit Info Grid */}
-                   <div className="grid grid-cols-2 gap-3 mb-8">
-                     <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
-                        <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Cost (Avg)</span>
-                        <span className="text-lg font-bold text-gray-400 font-['Manrope']">${Math.floor((item.price || 0) * 0.7).toLocaleString()}</span>
-                     </div>
-                     <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
-                        <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Market Price</span>
-                        <span className="text-lg font-black text-white font-['Manrope']">${Math.floor(item.price || 0).toLocaleString()}</span>
-                     </div>
-                     <div className="bg-black/30 p-4 rounded-2xl border border-white/5 col-span-2 flex justify-between items-center">
-                        <span className="text-[9px] text-gray-500 uppercase font-black tracking-widest">Vaulted Units</span>
-                        <span className={`text-2xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-[#adc7ff]'}`}>{item.stock}</span>
-                     </div>
-                   </div>
-
+                 <div key={item.id} className="bg-[#1c1b1b] p-8 rounded-[3rem] border border-white/5 hover:border-[#adc7ff]/30 transition-all shadow-xl">
+                   <h4 className="font-black text-2xl mb-8 font-['Manrope'] truncate">{item.name}</h4>
                    <div className="flex gap-4">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-[#adc7ff]/10 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-red-500/10 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all">Mark Sold</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#adc7ff]/10">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500/10">Mark Sold</button>
                    </div>
                  </div>
                ))}
@@ -354,17 +360,18 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
+      {/* AI ADVISOR (SIDEBAR) */}
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
-        <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] tracking-widest">AI Advisor</div>
+        <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] font-['Manrope'] tracking-widest text-gray-500">AI Advisor</div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
           {chatHistory.map((msg, i) => (
-            <div key={i} className={`p-4 rounded-2xl text-[11px] leading-relaxed ${msg.role === 'assistant' ? 'bg-black/30 text-gray-400' : 'bg-[#adc7ff]/10 text-[#adc7ff] text-right'}`}>{msg.text}</div>
+            <div key={i} className={`p-5 rounded-2xl text-[11px] leading-relaxed font-['Inter'] ${msg.role === 'assistant' ? 'bg-black/40 border-l-2 border-[#adc7ff] text-gray-400' : 'bg-[#adc7ff]/10 text-[#adc7ff] text-right'}`}>{msg.text}</div>
           ))}
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
-          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all" />
-          <button type="submit" className="absolute right-3 top-2.5 text-[#adc7ff] material-symbols-outlined text-lg">send</button>
+          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-5 py-4 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all" />
+          <button type="submit" className="absolute right-4 top-3.5 text-[#adc7ff] material-symbols-outlined text-xl">send</button>
         </form>
       </aside>
     </div>
