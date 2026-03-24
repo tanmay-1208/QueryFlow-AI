@@ -6,9 +6,9 @@ import "./App.css";
 
 const API_BASE_URL = "https://queryflow-ai-tubi.onrender.com";
 
-// --- 1. FULL SCROLLABLE LANDING PAGE ---
+// --- 1. FULL SCROLLABLE LANDING PAGE (SCROLL FIX APPLIED) ---
 const LandingPage = () => (
-  <div className="bg-[#0e0e0e] min-h-screen text-white font-['Inter'] selection:bg-[#4182ff]">
+  <div className="bg-[#0e0e0e] text-white font-['Inter'] selection:bg-[#4182ff]">
     {/* Navigation Bar - Fixed at top */}
     <nav className="fixed top-0 w-full z-50 bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-white/5">
       <div className="flex justify-between items-center px-10 py-6 max-w-[1400px] mx-auto">
@@ -28,8 +28,8 @@ const LandingPage = () => (
       </div>
     </nav>
 
-    {/* SECTION 1: HERO (Relaxed Spacing) */}
-    <section className="max-w-[1400px] mx-auto px-10 pt-48 pb-32 grid lg:grid-cols-2 gap-24 items-center min-h-screen">
+    {/* SECTION 1: HERO */}
+    <section className="max-w-[1400px] mx-auto px-10 pt-48 pb-32 grid lg:grid-cols-2 gap-24 items-center">
       <div className="animate-in fade-in slide-in-from-left duration-1000">
         <div className="inline-flex items-center gap-2 bg-[#66dd8b]/10 border border-[#66dd8b]/20 px-4 py-2 rounded-full mb-12">
           <span className="w-2 h-2 bg-[#66dd8b] rounded-full animate-pulse"></span>
@@ -66,7 +66,7 @@ const LandingPage = () => (
       </div>
     </section>
 
-    {/* SECTION 2: PRECISION ARCHITECTURE (Features - ID matched for Anchor Link) */}
+    {/* SECTION 2: PRECISION ARCHITECTURE */}
     <section id="features" className="bg-[#0b0b0b] py-48 border-y border-white/5">
       <div className="max-w-[1400px] mx-auto px-10">
         <h2 className="text-[70px] font-black font-['Manrope'] tracking-tighter mb-8 leading-tight">Precision Architecture</h2>
@@ -114,7 +114,7 @@ const LandingPage = () => (
       </div>
     </section>
 
-    {/* SECTION 3: CONSOLIDATED LEDGER (Relaxed table view) */}
+    {/* SECTION 3: CONSOLIDATED LEDGER */}
     <section className="py-48 bg-[#0e0e0e]">
         <div className="max-w-[1400px] mx-auto px-10">
             <div className="bg-[#1c1b1b] rounded-[4rem] border border-[#adc7ff]/10 overflow-hidden shadow-2xl">
@@ -192,7 +192,6 @@ const LandingPage = () => (
 );
 
 // --- 2. AUTH & VAULT COMPONENTS (UNCHANGED LOGIC) ---
-
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -330,8 +329,8 @@ const Vault = ({ userId, onLogout }) => {
                  <div key={item.id} className="bg-[#1c1b1b] p-7 rounded-[2.5rem] border border-white/5 shadow-xl">
                    <h4 className="font-black text-xl mb-6 truncate">{item.name}</h4>
                    <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 py-4 rounded-xl text-[10px] font-black uppercase">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 py-4 rounded-xl text-[10px] font-black uppercase">Mark Sold</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase">Mark Sold</button>
                    </div>
                  </div>
                ))}
@@ -358,7 +357,7 @@ const Vault = ({ userId, onLogout }) => {
   );
 };
 
-// --- 3. MAIN APP WRAPPER ---
+// --- 4. MAIN APP COMPONENT ---
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isLoggedIn") === "true");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
@@ -387,7 +386,11 @@ export default function App() {
     supabase.auth.signOut(); localStorage.clear(); setIsAuthenticated(false); setUserId(""); window.location.replace("/"); 
   };
 
-  if (isInitialLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">SYNCHRONIZING TERMINAL...</div>;
+  if (isInitialLoading) return (
+    <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">
+      SYNCHRONIZING TERMINAL...
+    </div>
+  );
 
   return (
     <Router>
