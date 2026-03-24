@@ -459,14 +459,26 @@ const Vault = ({ userId, onLogout }) => {
 
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="min-h-16 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center p-4 md:px-10 bg-[#131313]/50 backdrop-blur-md gap-4">
-  <div className="flex justify-between items-center w-full md:w-auto">
+  <div className="flex justify-between items-center w-full md:w-auto gap-4">
   <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
-  <button 
-    onClick={() => setIsAdvisorOpen(!isAdvisorOpen)}
-    className="md:hidden p-2 bg-[#adc7ff]/10 rounded-lg text-[#adc7ff] material-symbols-outlined"
-  >
-    smart_toy
-  </button>
+  
+  <div className="flex items-center gap-2">
+    {/* LOGOUT ICON */}
+    <button 
+      onClick={onLogout}
+      className="md:hidden p-2 text-red-500/70 material-symbols-outlined"
+    >
+      logout
+    </button>
+
+    {/* AI TOGGLE */}
+    <button 
+      onClick={() => setIsAdvisorOpen(!isAdvisorOpen)}
+      className="md:hidden p-2 bg-[#adc7ff]/10 rounded-lg text-[#adc7ff] material-symbols-outlined"
+    >
+      smart_toy
+    </button>
+  </div>
 </div>
   <input 
     className="bg-[#1c1b1b] border-none rounded-xl px-4 py-2 text-sm w-full md:w-80 outline-none text-white font-['Inter']" 
