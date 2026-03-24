@@ -44,23 +44,47 @@ const Footer = () => (
 
 /* --- 2. PAGE COMPONENTS --- */
 
-const SecurityPage = () => (
-  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
+/* --- 1. EXPANDED FEATURES PAGE --- */
+const FeaturesPage = () => (
+  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white selection:bg-[#adc7ff] selection:text-[#002e68]">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-10 pb-40 text-center">
-      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-10 leading-none">Zero-Leak<br/><span className="text-[#66dd8b]">Fiscal Integrity</span></h1>
-      <div className="grid md:grid-cols-3 gap-8 mt-20">
-        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl">
-          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Encryption</h3>
-          <p className="text-gray-500 leading-relaxed text-lg">AES-256 end-to-end data obfuscation at rest and in transit.</p>
+    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-none">Precision<br/><span className="text-[#adc7ff]">Architecture</span></h1>
+      
+      {/* Primary Grid */}
+      <div className="grid lg:grid-cols-3 gap-10 mb-20">
+        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 lg:col-span-2">
+          <h3 className="text-5xl font-black mb-6">Real-time Valuation</h3>
+          <p className="text-gray-400 text-xl leading-relaxed mb-10">Our proprietary indexing engine hooks directly into your entity ledgers. Every movement is calculated with 4ms SKU latency, ensuring your balance sheet is never out of sync.</p>
+          <div className="flex gap-10">
+            <div><span className="block text-2xl font-black text-[#adc7ff]">99.99%</span><span className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Sync Uptime</span></div>
+            <div><span className="block text-2xl font-black text-[#adc7ff]">Global</span><span className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Node Coverage</span></div>
+          </div>
         </div>
-        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl">
-          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Isolation</h3>
-          <p className="text-gray-500 leading-relaxed text-lg">Physically isolated database clusters for every institutional node.</p>
+        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 flex flex-col justify-between">
+          <h3 className="text-4xl font-black">AI Tax Forecasting</h3>
+          <p className="text-gray-400 text-lg">Automated jurisdictional liability modeling. Predict capital requirements for Q4 before Q3 even ends.</p>
+          <div className="h-2 w-full bg-white/5 rounded-full mt-10"><div className="h-full bg-[#66dd8b] w-[85%] shadow-[0_0_20px_rgba(102,221,139,0.3)]"></div></div>
         </div>
-        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl">
-          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Compliance</h3>
-          <p className="text-gray-500 leading-relaxed text-lg">Full SOC2 Type II and GDPR readiness for global treasury.</p>
+      </div>
+
+      {/* Technical Deep Dive Bento */}
+      <div className="grid md:grid-cols-4 gap-6">
+        <div className="bg-[#131313] p-10 rounded-[3rem] border border-white/5">
+          <h4 className="font-black text-sm mb-4 uppercase text-gray-500">Auto-Reconcile</h4>
+          <p className="text-gray-400 text-sm">Eliminate manual ledger entries. Our AI cross-references 1,000+ interactions per second.</p>
+        </div>
+        <div className="bg-[#131313] p-10 rounded-[3rem] border border-white/5">
+          <h4 className="font-black text-sm mb-4 uppercase text-gray-500">Anomaly Detection</h4>
+          <p className="text-gray-400 text-sm">Instant alerts for unauthorized balance shifts or fraudulent entity movements.</p>
+        </div>
+        <div className="bg-[#131313] p-10 rounded-[3rem] border border-white/5">
+          <h4 className="font-black text-sm mb-4 uppercase text-gray-500">Custom Reports</h4>
+          <p className="text-gray-400 text-sm">Generate Board-ready PDFs in 2 seconds using natural language queries.</p>
+        </div>
+        <div className="bg-[#131313] p-10 rounded-[3rem] border border-white/5">
+          <h4 className="font-black text-sm mb-4 uppercase text-gray-500">API Access</h4>
+          <p className="text-gray-400 text-sm">Standardized REST endpoints for seamless integration into your existing ERP suite.</p>
         </div>
       </div>
     </div>
@@ -68,18 +92,46 @@ const SecurityPage = () => (
   </div>
 );
 
+/* --- 2. EXPANDED SOLUTIONS PAGE --- */
 const SolutionsPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
     <Navbar />
     <div className="max-w-[1400px] mx-auto px-10 pb-40">
-      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Tailored for<br/><span className="italic text-gray-600">Complex Treasury</span></h1>
-      <div className="bg-[#1c1b1b] p-20 rounded-[5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-20">
-        <div className="max-w-xl text-center md:text-left">
+      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Tailored for<br/><span className="italic text-gray-600 font-light">Complex Treasury</span></h1>
+      
+      <div className="space-y-10">
+        <div className="bg-[#1c1b1b] p-20 rounded-[5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-20">
+          <div className="max-w-xl">
+            <div className="bg-[#4182ff]/10 text-[#4182ff] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 inline-block border border-[#4182ff]/20">Enterprise</div>
             <h3 className="text-5xl font-black mb-8 tracking-tight">E-Commerce Conglomerates</h3>
-            <p className="text-xl text-gray-400 leading-relaxed">Unify multiple entity ledgers into a single source of truth with automated tax provision logic.</p>
+            <p className="text-xl text-gray-400 leading-relaxed mb-8">Unify fragmented logistics data across 50+ global nodes into a single source of truth. QueryFlow Vault handles currency conversions and tax provisioning automatically.</p>
+            <ul className="grid grid-cols-2 gap-4 text-sm font-bold text-gray-500">
+              <li>✓ Multi-Currency Support</li>
+              <li>✓ Automated VAT/GST</li>
+              <li>✓ SKU Risk Scoring</li>
+              <li>✓ Liquidity Forecasting</li>
+            </ul>
+          </div>
+          <div className="w-96 h-96 bg-gradient-to-br from-[#1c1b1b] to-black rounded-full border border-white/5 flex items-center justify-center shadow-2xl">
+             <span className="material-symbols-outlined text-[#4182ff] text-[150px] animate-pulse">hub</span>
+          </div>
         </div>
-        <div className="w-80 h-80 bg-[#4182ff]/5 rounded-full border border-[#4182ff]/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-[#4182ff] text-9xl">hub</span>
+
+        <div className="bg-[#1c1b1b] p-20 rounded-[5rem] border border-white/5 flex flex-col md:flex-row-reverse justify-between items-center gap-20">
+          <div className="max-w-xl">
+            <div className="bg-[#66dd8b]/10 text-[#66dd8b] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 inline-block border border-[#66dd8b]/20">Asset Management</div>
+            <h3 className="text-5xl font-black mb-8 tracking-tight">High-Frequency Vaulting</h3>
+            <p className="text-xl text-gray-400 leading-relaxed">For firms managing physical or high-value digital assets. Track market fluctuations and unrealized gains with precision instrumentation.</p>
+            <ul className="grid grid-cols-2 gap-4 text-sm font-bold text-gray-500">
+              <li>✓ Market Price Crawlers</li>
+              <li>✓ Capital Gain Tracking</li>
+              <li>✓ Custodial Audit Logs</li>
+              <li>✓ Identity Verification</li>
+            </ul>
+          </div>
+          <div className="w-96 h-96 bg-gradient-to-br from-[#1c1b1b] to-black rounded-full border border-white/5 flex items-center justify-center shadow-2xl">
+             <span className="material-symbols-outlined text-[#66dd8b] text-[150px]">verified_user</span>
+          </div>
         </div>
       </div>
     </div>
@@ -87,24 +139,45 @@ const SolutionsPage = () => (
   </div>
 );
 
-const FeaturesPage = () => (
-  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
+/* --- 3. EXPANDED SECURITY PAGE --- */
+const SecurityPage = () => (
+  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white selection:bg-[#66dd8b] selection:text-[#003115]">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-10 pb-40">
-      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-none">Precision<br/><span className="text-[#adc7ff]">Architecture</span></h1>
-      <div className="grid md:grid-cols-2 gap-10">
-        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5">
-          <span className="material-symbols-outlined text-[#adc7ff] text-6xl mb-10">inventory_2</span>
-          <h3 className="text-4xl font-black mb-6 tracking-tight">Real-time Valuation</h3>
-          <p className="text-gray-400 text-xl leading-relaxed">Algorithmic tracking of asset liquidity with 4ms SKU latency.</p>
+    <div className="max-w-[1400px] mx-auto px-10 pb-40 text-center">
+      <div className="inline-flex items-center gap-2 bg-[#66dd8b]/10 border border-[#66dd8b]/20 px-6 py-2 rounded-full mb-12">
+        <span className="w-2 h-2 bg-[#66dd8b] rounded-full animate-pulse"></span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#66dd8b]">Fortress Protocol 4.0 Verified</span>
+      </div>
+      <h1 className="text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Zero-Leak<br/><span className="text-[#66dd8b]">Fiscal Integrity</span></h1>
+      
+      <div className="grid md:grid-cols-3 gap-8 text-left">
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl group hover:border-[#66dd8b]/30 transition-all">
+          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Encryption</h3>
+          <p className="text-gray-500 leading-relaxed text-lg mb-8">We use industry-standard AES-256 for all data at rest. During transit, every packet is wrapped in TLS 1.3 with Perfect Forward Secrecy (PFS).</p>
+          <div className="text-[10px] font-black text-[#66dd8b] uppercase tracking-widest">Active: SHA-512 Hashing</div>
         </div>
-        <div className="bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 flex flex-col justify-between">
-          <div>
-            <span className="material-symbols-outlined text-[#66dd8b] text-6xl mb-10">psychology</span>
-            <h3 className="text-4xl font-black mb-6 tracking-tight">AI Tax Forecasting</h3>
-            <p className="text-gray-400 text-xl leading-relaxed">Predict jurisdictional liability daily using specialized LLM models.</p>
-          </div>
-          <div className="mt-12"><div className="h-2 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[#66dd8b] w-[99%]"></div></div></div>
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl group hover:border-[#66dd8b]/30 transition-all">
+          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Isolation</h3>
+          <p className="text-gray-500 leading-relaxed text-lg mb-8">Every institutional node resides on a physically isolated database cluster. This "Air-Gap" philosophy ensures zero cross-tenant data leakage.</p>
+          <div className="text-[10px] font-black text-[#66dd8b] uppercase tracking-widest">Active: VPC Peering</div>
+        </div>
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 shadow-2xl group hover:border-[#66dd8b]/30 transition-all">
+          <h3 className="text-xl font-black mb-6 uppercase tracking-widest text-gray-400">Compliance</h3>
+          <p className="text-gray-500 leading-relaxed text-lg mb-8">QueryFlow Vault is SOC2 Type II ready, GDPR compliant, and adheres to ISO 27001 standards for financial data handling.</p>
+          <div className="text-[10px] font-black text-[#66dd8b] uppercase tracking-widest">Certified: 2026 AUDIT</div>
+        </div>
+      </div>
+
+      <div className="mt-20 bg-[#131313] p-16 rounded-[5rem] border border-white/5 inline-block">
+        <h4 className="text-2xl font-black mb-6">Our Security Stack</h4>
+        <div className="flex flex-wrap justify-center gap-10 text-gray-600 font-black uppercase text-[10px] tracking-widest">
+          <span>Supabase Auth</span>
+          <span>•</span>
+          <span>End-to-End SSL</span>
+          <span>•</span>
+          <span>Biometric Sync</span>
+          <span>•</span>
+          <span>Isolated PostgreSQL</span>
         </div>
       </div>
     </div>
