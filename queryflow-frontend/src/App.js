@@ -372,10 +372,24 @@ const Vault = ({ userId, onLogout }) => {
   const [userQuery, setUserQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+const [newItem, setNewItem] = useState({ name: "", price: "", stock: "" });
   const chatEndRef = useRef(null);
 
   useEffect(() => { if (userId) fetchItems(); }, [userId]);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHistory]);
+
+  const handleAddItem = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${API_BASE_URL}/api/products`, { ...newItem, userId });
+    setItems([...items, res.data]); // Update UI instantly
+    setIsAddModalOpen(false); // Close modal
+    setNewItem({ name: "", price: "", stock: "" }); // Reset form
+  } catch (err) {
+    alert("Failed to vault asset. Check connection.");
+  }
+};
 
   const fetchItems = async () => {
     try {
@@ -460,7 +474,17 @@ const Vault = ({ userId, onLogout }) => {
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="min-h-16 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center p-4 md:px-10 bg-[#131313]/50 backdrop-blur-md gap-4">
   <div className="flex justify-between items-center w-full md:w-auto gap-4">
+ <div className="flex items-center gap-4">
   <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
+  {activeTab === "inventory" && (
+    <button 
+      onClick={() => setIsAddModalOpen(true)}
+      className="bg-[#4182ff] text-white p-2 rounded-lg flex items-center justify-center material-symbols-outlined"
+    >
+      add
+    </button>
+  )}
+</div>
   
   <div className="flex items-center gap-2">
     {/* LOGOUT ICON */}
@@ -609,6 +633,42 @@ const Vault = ({ userId, onLogout }) => {
   <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] tracking-widest">
     AI Advisor
   </div>
+
+  {isAddModalOpen && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="bg-[#1c1b1b] w-full max-w-md p-10 rounded-[3rem] border border-white/10 shadow-2xl animate-in zoom-in duration-300">
+      <h3 className="text-3xl font-black font-['Manrope'] mb-8">Vault New Asset</h3>
+      <form onSubmit={handleAddItem} className="space-y-6">
+        <input 
+          className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
+          placeholder="Asset Name (e.g. Vintage Rolex)" 
+          onChange={(e) => setNewItem({...newItem, name: e.target.value})}
+          required 
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <input 
+            type="number"
+            className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
+            placeholder="Price ($)" 
+            onChange={(e) => setNewItem({...newItem, price: e.target.value})}
+            required 
+          />
+          <input 
+            type="number"
+            className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
+            placeholder="Units" 
+            onChange={(e) => setNewItem({...newItem, stock: e.target.value})}
+            required 
+          />
+        </div>
+        <div className="flex gap-4 pt-4">
+          <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-4 text-gray-500 font-bold uppercase text-xs tracking-widest">Cancel</button>
+          <button type="submit" className="flex-1 bg-[#4182ff] py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-[#4182ff]/20">Initialize Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
   {/* The rest of your code (chatHistory.map, etc.) continues below... */}
         <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] tracking-widest">AI Advisor</div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
