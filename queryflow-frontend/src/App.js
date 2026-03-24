@@ -265,16 +265,7 @@ const Vault = ({ userId, onLogout }) => {
   const safeItems = items || [];
   const totalValuation = safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0);
   const totalInvestment = totalValuation * 0.7;
-  const estimatedTax = totalValuation * 0.18;
-  const realizableProfit = totalValuation - totalInvestment - estimatedTax;
-
-  // --- MISSING LOGIC 1: STATUS GENERATOR ---
-  const getStatus = () => {
-    if (realizableProfit > 1000000) return { bg: "bg-[#66dd8b]", text: "text-[#003115]", label: "Institutional Profit", icon: "trending_up", desc: "Yield optimized." };
-    if (realizableProfit < 0) return { bg: "bg-[#ffb4ab]", text: "text-[#680003]", label: "Liquidity Deficit", icon: "warning", desc: "High investment detected." };
-    return { bg: "bg-[#adc7ff]", text: "text-[#002e68]", label: "Neutral Position", icon: "sync", desc: "System synchronized." };
-  };
-  const status = getStatus();
+  const realizableProfit = totalValuation - totalInvestment - (totalValuation * 0.18);
 
   const handleChat = async (e) => {
     e.preventDefault();
@@ -284,9 +275,9 @@ const Vault = ({ userId, onLogout }) => {
     setUserQuery("");
     setIsAnalyzing(true);
     setTimeout(() => {
-        setChatHistory([...newHistory, { role: 'assistant', text: `Audit complete. Realizable profit: $${Math.floor(realizableProfit).toLocaleString()}` }]);
+        setChatHistory([...newHistory, { role: 'assistant', text: `Audit complete. Projected profit: $${Math.floor(realizableProfit).toLocaleString()}` }]);
         setIsAnalyzing(false);
-    }, 1000);
+    }, 800);
   };
 
   if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-bold animate-pulse">BOOTING TERMINAL...</div>;
@@ -294,7 +285,7 @@ const Vault = ({ userId, onLogout }) => {
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white font-['Inter'] overflow-hidden fixed inset-0">
       <aside className="w-64 border-r border-white/5 bg-[#131313] flex flex-col p-6 shrink-0 shadow-2xl">
-        <div className="mb-10 font-['Manrope']"><span className="text-xl font-black">QueryFlow Vault</span></div>
+        <div className="mb-10 font-['Manrope'] text-xl font-black">QueryFlow Vault</div>
         <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black transition-all capitalize ${activeTab === tab ? 'bg-[#adc7ff]/10 text-[#adc7ff]' : 'text-gray-500 hover:text-white'}`}>
@@ -302,95 +293,77 @@ const Vault = ({ userId, onLogout }) => {
             </button>
           ))}
         </nav>
-        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit Terminal</button>
+        <button onClick={onLogout} className="mt-auto bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">Exit Terminal</button>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <header className="h-16 border-b border-white/5 flex justify-between items-center px-10 bg-[#131313]/50 backdrop-blur-md">
           <h2 className="text-xl font-black font-['Manrope'] capitalize">{activeTab} Overview</h2>
-          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white font-['Inter']" placeholder="Search ledger..." onChange={(e) => setSearchTerm(e.target.value)} />
+          <input className="bg-[#1c1b1b] border-none rounded-xl px-12 py-2 text-sm w-80 outline-none text-white" placeholder="Search assets..." onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
 
-        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-[#0e0e0e]">
           {activeTab === "dashboard" && (
-            <div className="space-y-8 animate-in fade-in duration-500">
-              {/* TOP CARDS */}
-              <div className="grid grid-cols-4 gap-4">
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden"><span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span><h3 className="text-2xl font-black font-['Manrope'] truncate">${totalValuation.toLocaleString()}</h3></div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#fbbc00] shadow-xl overflow-hidden"><span className="text-[10px] text-gray-500 uppercase block mb-1">Tax Provision</span><h3 className="text-2xl font-black truncate">-${Math.floor(estimatedTax).toLocaleString()}</h3></div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl overflow-hidden"><span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span><h3 className="text-2xl font-black text-[#66dd8b] truncate">${Math.floor(realizableProfit).toLocaleString()}</h3></div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-gray-700 shadow-xl overflow-hidden"><span className="text-[10px] text-gray-500 uppercase block mb-1">SKU Alerts</span><h3 className="text-2xl font-black text-red-500">{safeItems.filter(i => i.stock <= 5).length}</h3></div>
-              </div>
-
-              {/* MIDDLE SECTION: CONCENTRATION & STATUS */}
-              <div className="grid grid-cols-3 gap-6">
-                <div className="col-span-2 bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-lg">
-                  <h4 className="font-black font-['Manrope'] uppercase tracking-widest text-[10px] text-gray-400 mb-8">Capital Concentration</h4>
-                  <div className="space-y-6">
-                    {safeItems.slice(0, 4).map((item, idx) => (
-                      <div key={idx} className="group">
-                        <div className="flex justify-between text-[11px] mb-2 font-bold font-['Inter']"><span>{item.name}</span><span>${Math.floor(item.price * item.stock).toLocaleString()}</span></div>
-                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[#adc7ff]" style={{ width: `${Math.min(100, (item.price * item.stock / (totalValuation || 1)) * 100)}%` }}></div></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className={`${status.bg} ${status.text} p-8 rounded-[2.5rem] flex flex-col justify-between shadow-2xl transition-all duration-500`}><span className="material-symbols-outlined text-4xl">{status.icon}</span><div><h4 className="text-2xl font-black font-['Manrope'] leading-tight">{status.label}</h4><p className="text-[10px] font-bold uppercase mt-4 tracking-widest opacity-60">{status.desc}</p></div></div>
-              </div>
-
-              {/* RECENT INTERACTION */}
-              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
-                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Interaction</h4>
-                <div className="space-y-2">
-                  {ledger.map((entry) => (
-                    <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
-                      <div><p className="font-bold text-sm font-['Inter']">{entry.action}</p><p className="text-[9px] text-gray-500 uppercase tracking-widest">{entry.entity} | {entry.time}</p></div>
-                      <span className={`font-black text-sm font-['Manrope'] ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+             <div className="grid grid-cols-2 gap-4">
+               <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#adc7ff] shadow-xl">
+                 <span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span>
+                 <h3 className="text-4xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3>
+               </div>
+               <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#66dd8b] shadow-xl">
+                 <span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span>
+                 <h3 className="text-4xl font-black text-[#66dd8b] font-['Manrope']">${Math.floor(realizableProfit).toLocaleString()}</h3>
+               </div>
+             </div>
           )}
 
           {activeTab === "inventory" && (
              <div className="grid grid-cols-2 gap-6 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
-                 <div key={item.id} className="bg-[#1c1b1b] p-8 rounded-[3rem] border border-white/5 hover:border-[#adc7ff]/30 transition-all shadow-xl">
-                   <h4 className="font-black text-2xl mb-8 font-['Manrope'] truncate">{item.name}</h4>
+                 <div key={item.id} className={`bg-[#1c1b1b] p-8 rounded-[3rem] border transition-all duration-300 ${item.stock <= 5 ? 'border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.05)]' : 'border-white/5 shadow-xl'}`}>
+                   <div className="flex justify-between items-start mb-6">
+                     <h4 className="font-black text-2xl font-['Manrope'] truncate max-w-[180px]">{item.name}</h4>
+                     {item.stock <= 5 && (
+                       <span className="bg-red-500/10 text-red-500 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse border border-red-500/20">Low Stock Alert</span>
+                     )}
+                   </div>
+                   
+                   {/* Pricing & Unit Info Grid */}
+                   <div className="grid grid-cols-2 gap-3 mb-8">
+                     <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
+                        <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Cost (Avg)</span>
+                        <span className="text-lg font-bold text-gray-400 font-['Manrope']">${Math.floor((item.price || 0) * 0.7).toLocaleString()}</span>
+                     </div>
+                     <div className="bg-black/30 p-4 rounded-2xl border border-white/5">
+                        <span className="text-[9px] text-gray-600 block uppercase font-black tracking-widest mb-1">Market Price</span>
+                        <span className="text-lg font-black text-white font-['Manrope']">${Math.floor(item.price || 0).toLocaleString()}</span>
+                     </div>
+                     <div className="bg-black/30 p-4 rounded-2xl border border-white/5 col-span-2 flex justify-between items-center">
+                        <span className="text-[9px] text-gray-500 uppercase font-black tracking-widest">Vaulted Units</span>
+                        <span className={`text-2xl font-black ${item.stock <= 5 ? 'text-red-500' : 'text-[#adc7ff]'}`}>{item.stock}</span>
+                     </div>
+                   </div>
+
                    <div className="flex gap-4">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#adc7ff]/10">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500/10">Mark Sold</button>
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-[#adc7ff]/10 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-red-500/10 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all">Mark Sold</button>
                    </div>
                  </div>
                ))}
-             </div>
-          )}
-
-          {activeTab === "reports" && (
-             <div className="max-w-2xl mx-auto bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
-                <h3 className="text-3xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
-                <div className="space-y-6 font-['Inter']">
-                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-2xl">${totalValuation.toLocaleString()}</span></div>
-                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested</span><span className="font-black text-2xl text-red-400">-${Math.floor(totalInvestment).toLocaleString()}</span></div>
-                  <div className="flex justify-between bg-[#66dd8b]/10 p-10 rounded-3xl mt-12 border border-[#66dd8b]/20"><span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span><span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</span></div>
-                </div>
              </div>
           )}
         </div>
       </main>
 
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
-        <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] font-['Manrope'] tracking-widest">AI Advisor</div>
+        <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] tracking-widest">AI Advisor</div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
           {chatHistory.map((msg, i) => (
-            <div key={i} className={`p-4 rounded-2xl text-[11px] leading-relaxed font-['Inter'] ${msg.role === 'assistant' ? 'bg-black/30 border-l-2 border-[#adc7ff] text-gray-400' : 'bg-[#adc7ff]/10 text-[#adc7ff] text-right'}`}>{msg.text}</div>
+            <div key={i} className={`p-4 rounded-2xl text-[11px] leading-relaxed ${msg.role === 'assistant' ? 'bg-black/30 text-gray-400' : 'bg-[#adc7ff]/10 text-[#adc7ff] text-right'}`}>{msg.text}</div>
           ))}
-          {isAnalyzing && <div className="p-3 text-[10px] text-[#adc7ff] animate-pulse">CFO AI is auditing ledger...</div>}
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
-          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all font-['Inter']" />
+          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all" />
           <button type="submit" className="absolute right-3 top-2.5 text-[#adc7ff] material-symbols-outlined text-lg">send</button>
         </form>
       </aside>
