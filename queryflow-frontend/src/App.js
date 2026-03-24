@@ -264,7 +264,9 @@ const Vault = ({ userId, onLogout }) => {
 
   const safeItems = items || [];
   const totalValuation = safeItems.reduce((acc, i) => acc + ((Number(i?.price) || 0) * (Number(i?.stock) || 0)), 0);
-  const realizableProfit = totalValuation - (totalValuation * 0.7) - (totalValuation * 0.18);
+  const totalInvestment = totalValuation * 0.7;
+  const estimatedTax = totalValuation * 0.18;
+  const realizableProfit = totalValuation - totalInvestment - estimatedTax;
 
   const handleChat = async (e) => {
     e.preventDefault();
@@ -273,11 +275,8 @@ const Vault = ({ userId, onLogout }) => {
     setChatHistory(newHistory);
     setUserQuery("");
     setIsAnalyzing(true);
-
     setTimeout(() => {
-        let reply = "Audit complete. Realizable profit projected at $" + Math.floor(realizableProfit).toLocaleString();
-        const q = userQuery.toLowerCase();
-        if (q.includes("tax")) reply = "Current tax provision is 18%. Applying R&D credits could save up to $250k.";
+        let reply = `Audit complete. Realizable profit projected at $${Math.floor(realizableProfit).toLocaleString()}`;
         setChatHistory([...newHistory, { role: 'assistant', text: reply }]);
         setIsAnalyzing(false);
     }, 1000);
@@ -307,40 +306,61 @@ const Vault = ({ userId, onLogout }) => {
 
         <div className="flex-1 overflow-y-auto p-10 custom-scrollbar">
           {activeTab === "dashboard" && (
-            <div className="space-y-8">
-              <div className="grid grid-cols-4 gap-4">
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#adc7ff] shadow-xl overflow-hidden"><span className="text-[10px] text-gray-500 uppercase block mb-1">Valuation</span><h3 className="text-2xl font-black font-['Manrope'] truncate">${totalValuation.toLocaleString()}</h3></div>
-                <div className="bg-[#1c1b1b] p-7 rounded-3xl border-l-4 border-[#66dd8b] shadow-xl overflow-hidden"><span className="text-[10px] text-gray-500 uppercase block mb-1">Net Profit</span><h3 className="text-2xl font-black text-[#66dd8b] truncate">${Math.floor(realizableProfit).toLocaleString()}</h3></div>
+            <div className="space-y-8 animate-in fade-in duration-500">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#adc7ff] shadow-xl overflow-hidden">
+                    <span className="text-[10px] text-gray-500 uppercase block mb-1 font-['Manrope'] font-bold">Valuation</span>
+                    <h3 className="text-4xl font-black font-['Manrope']">${totalValuation.toLocaleString()}</h3>
+                </div>
+                <div className="bg-[#1c1b1b] p-10 rounded-[2.5rem] border-l-4 border-[#66dd8b] shadow-xl overflow-hidden">
+                    <span className="text-[10px] text-gray-500 uppercase block mb-1 font-['Manrope'] font-bold">Net Profit</span>
+                    <h3 className="text-4xl font-black text-[#66dd8b] font-['Manrope']">${Math.floor(realizableProfit).toLocaleString()}</h3>
+                </div>
               </div>
-              <div className="bg-[#1c1b1b] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
-                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest">Recent Interaction</h4>
-                {ledger.map(entry => (
+              <div className="bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5 shadow-2xl">
+                <h4 className="font-black uppercase text-[10px] text-gray-400 mb-6 tracking-widest font-['Manrope']">Recent Interaction</h4>
+                <div className="space-y-4">
+                  {ledger.map((entry) => (
                     <div key={entry.id} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
-                        <div><p className="font-bold text-sm">{entry.action}</p><p className="text-[9px] text-gray-500 uppercase">{entry.entity} | {entry.time}</p></div>
-                        <span className={`font-black ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
+                      <div><p className="font-bold text-lg font-['Inter']">{entry.action}</p><p className="text-xs text-gray-500 uppercase tracking-widest font-['Manrope']">{entry.entity} | {entry.time}</p></div>
+                      <span className={`font-black text-xl ${entry.value >= 0 ? 'text-[#66dd8b]' : 'text-red-500'}`}>{entry.value >= 0 ? '+' : '-'}${Math.floor(Math.abs(entry.value)).toLocaleString()}</span>
                     </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}
+
           {activeTab === "inventory" && (
-             <div className="grid grid-cols-2 gap-5">
+             <div className="grid grid-cols-2 gap-6 animate-in fade-in duration-500">
                {safeItems.filter(i => (i.name||"").toLowerCase().includes(searchTerm.toLowerCase())).map(item => (
-                 <div key={item.id} className="bg-[#1c1b1b] p-7 rounded-[2.5rem] border border-white/5 shadow-xl">
-                   <h4 className="font-black text-xl mb-6 truncate">{item.name}</h4>
-                   <div className="flex gap-3">
-                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 hover:bg-red-500/20 py-3 rounded-xl text-[10px] font-black uppercase">Restock</button>
-                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 hover:bg-[#66dd8b]/20 py-3 rounded-xl text-[10px] font-black uppercase">Mark Sold</button>
+                 <div key={item.id} className="bg-[#1c1b1b] p-8 rounded-[3rem] border border-white/5 hover:border-[#adc7ff]/30 transition-all shadow-xl">
+                   <h4 className="font-black text-2xl mb-8 font-['Manrope'] truncate">{item.name}</h4>
+                   <div className="flex gap-4">
+                     <button onClick={() => updateStock(item.id, 1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#adc7ff]/10 transition-all">Restock</button>
+                     <button onClick={() => updateStock(item.id, -1)} className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500/10 transition-all">Mark Sold</button>
                    </div>
                  </div>
                ))}
+             </div>
+          )}
+
+          {activeTab === "reports" && (
+             <div className="max-w-2xl mx-auto bg-[#1c1b1b] p-16 rounded-[4rem] border border-white/5 shadow-2xl animate-in slide-in-from-bottom duration-500">
+                <h3 className="text-3xl font-black font-['Manrope'] mb-12 border-b border-white/5 pb-6">Ledger Performance Summary</h3>
+                <div className="space-y-6 font-['Inter']">
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Total Asset Value</span><span className="font-black text-2xl">${totalValuation.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Capital Invested</span><span className="font-black text-2xl text-red-400">-${Math.floor(totalInvestment).toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center pb-4 border-b border-white/5"><span className="text-gray-400 font-medium">Tax Provision (18%)</span><span className="font-black text-2xl text-[#fbbc00]">-${Math.floor(estimatedTax).toLocaleString()}</span></div>
+                  <div className="flex justify-between bg-[#66dd8b]/10 p-10 rounded-3xl mt-12 border border-[#66dd8b]/20"><span className="text-[#66dd8b] font-black uppercase tracking-widest text-xs">Projected Realizable Profit</span><span className="font-black font-['Manrope'] text-4xl text-[#66dd8b]">${Math.floor(realizableProfit).toLocaleString()}</span></div>
+                </div>
              </div>
           )}
         </div>
       </main>
 
       <aside className="w-80 bg-[#1c1b1b] border-l border-white/5 p-6 flex flex-col h-full shrink-0 shadow-2xl">
-        <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px]">AI Advisor</div>
+        <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4 uppercase font-black text-[11px] font-['Manrope'] tracking-widest">AI Advisor</div>
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
           {chatHistory.map((msg, i) => (
             <div key={i} className={`p-4 rounded-2xl text-[11px] leading-relaxed font-['Inter'] ${msg.role === 'assistant' ? 'bg-black/30 border-l-2 border-[#adc7ff] text-gray-400' : 'bg-[#adc7ff]/10 text-[#adc7ff] text-right'}`}>{msg.text}</div>
@@ -349,7 +369,7 @@ const Vault = ({ userId, onLogout }) => {
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
-          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all" />
+          <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Query fiscal data..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-white outline-none focus:border-[#adc7ff]/50 transition-all font-['Inter']" />
           <button type="submit" className="absolute right-3 top-2.5 text-[#adc7ff] material-symbols-outlined text-lg">send</button>
         </form>
       </aside>
