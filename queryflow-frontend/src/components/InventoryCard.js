@@ -1,30 +1,46 @@
 import React from "react";
 
 const InventoryCard = ({ item, onUpdateStock }) => {
+  const isLowStock = (item.stock || 0) <= 5;
+
   return (
-    <div className="bg-[#131313] p-5 rounded-[2rem] border border-white/5 hover:bg-[#181818] transition-all flex flex-col justify-between">
-      <div>
-        <h4 className="font-black text-base tracking-tighter mb-4 truncate uppercase border-b border-white/5 pb-2">{item.name}</h4>
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="bg-black/30 p-3 rounded-xl border border-white/5">
-            <span className="text-[7px] text-gray-500 block uppercase font-black mb-1">Cost</span>
-            <span className="text-xs font-black text-gray-400">${(item.cost_price || 0).toLocaleString()}</span>
-          </div>
-          <div className="bg-black/30 p-3 rounded-xl border border-white/5">
-            <span className="text-[7px] text-gray-500 block uppercase font-black mb-1">Market</span>
-            <span className="text-xs font-black text-white">${(item.price || 0).toLocaleString()}</span>
-          </div>
+    <div className={`bg-[#131313] p-6 rounded-[2.5rem] border transition-all shadow-xl group ${isLowStock ? 'border-red-500/20 shadow-red-500/5' : 'border-white/5'}`}>
+      <div className="flex justify-between items-start mb-6">
+        <h4 className="font-black text-xl tracking-tighter truncate uppercase text-white w-2/3">
+          {item.name}
+        </h4>
+        {isLowStock && (
+          <span className="bg-red-500/10 text-red-500 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse">
+            Low Stock
+          </span>
+        )}
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
+          <span className="text-[7px] text-gray-600 block uppercase font-black mb-1">Cost Point</span>
+          <span className="text-xs font-black text-gray-500 block">
+            ${(item.cost_price || 0).toLocaleString()}
+          </span>
+        </div>
+        <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
+          <span className="text-[7px] text-gray-600 block uppercase font-black mb-1">Market Point</span>
+          <span className="text-xs font-black text-white block">
+            ${(item.price || 0).toLocaleString()}
+          </span>
         </div>
       </div>
 
-      <div className="flex justify-between items-center bg-black/30 px-4 py-2 rounded-xl mb-4 border border-white/5">
-        <span className="text-[8px] text-gray-500 font-black uppercase">Units</span>
-        <span className="text-lg font-black text-[#4182ff]">{item.stock}</span>
+      <div className="flex justify-between items-center bg-black/40 px-5 py-3 rounded-2xl mb-6 border border-white/5">
+        <span className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em]">Vaulted</span>
+        <span className={`text-2xl font-black tracking-tighter ${isLowStock ? 'text-red-500' : 'text-[#4182ff]'}`}>
+          {item.stock}
+        </span>
       </div>
 
-      <div className="flex gap-2">
-        <button className="flex-1 bg-white/5 text-white py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-white/10">Restock</button>
-        <button className="flex-1 bg-white/5 text-white py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-red-500/10">Sold</button>
+      <div className="flex gap-3">
+        <button onClick={() => onUpdateStock(item.id, 1)} className="flex-1 bg-white/5 text-white py-3 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-white/10 active:scale-95 transition-all">Add</button>
+        <button onClick={() => onUpdateStock(item.id, -1)} className="flex-1 bg-white/5 text-white py-3 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-red-500/10 hover:text-red-500 active:scale-95 transition-all">Sell</button>
       </div>
     </div>
   );
