@@ -9,14 +9,14 @@ const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 const TrendGraph = ({ isProfit, isNeutral }) => {
   const color = isNeutral ? "#6b7280" : isProfit ? "#66dd8b" : "#ef4444";
   const path = isNeutral 
-    ? "M0 15 L8 14 L16 16 L24 13 L32 15 L40 14" 
+    ? "M0 12 L10 12 L20 12 L30 12 L40 12" 
     : isProfit 
-      ? "M0 20 L10 17 L20 18 L30 8 L40 2" 
-      : "M0 2 L10 5 L20 18 L30 14 L40 22";
+      ? "M0 18 L10 16 L20 10 L30 12 L40 2" 
+      : "M0 2 L10 5 L20 15 L30 12 L40 20";
 
   return (
-    <svg width="48" height="24" viewBox="0 0 40 25" fill="none" className="ml-3">
-      <path d={path} stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="40" height="20" viewBox="0 0 40 20" fill="none" className="ml-3">
+      <path d={path} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 };
@@ -29,17 +29,16 @@ const Vault = ({ userId, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   
-  // AI State
+  // AI & LEDGER STATE
   const [userQuery, setUserQuery] = useState("");
   const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
-  const chatEndRef = useRef(null);
-
-  // LEDGER STATE (Mock history for professional look)
   const [ledger] = useState([
-    { id: 1, type: 'System', action: 'Terminal Initialized', entity: 'NODE-04', val: 'Verified', time: '20:00' },
-    { id: 2, type: 'Buy', action: 'Asset Restock', entity: 'Vintage Rolex', val: '+$1.5M', time: '19:42' },
-    { id: 3, type: 'Sell', action: 'Liquidation', entity: 'Diamond Ring', val: '-$1.2M', time: '18:15' },
+    { id: 1, type: 'SYS', action: 'Terminal Sync', entity: 'NODE-04', val: 'Success', time: '20:04' },
+    { id: 2, type: 'IN', action: 'Asset Purchase', entity: 'Rolex Sub', val: '+$12.4k', time: '19:42' },
+    { id: 3, type: 'OUT', action: 'Liquidation', entity: 'Vintage Pen', val: '-$2.1k', time: '18:15' },
   ]);
+
+  const chatEndRef = useRef(null);
 
   useEffect(() => { if (userId) fetchItems(); }, [userId]);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHistory]);
@@ -56,115 +55,91 @@ const Vault = ({ userId, onLogout }) => {
   const totalInvestment = items.reduce((acc, i) => acc + (safeVal(i.cost_price) * safeVal(i.stock)), 0);
   const netProfit = totalValuation - totalInvestment;
   const isProfit = netProfit > 0;
-  const isNeutral = netProfit === 0;
 
-  const topAssets = [...items]
-    .sort((a, b) => (safeVal(b.price) - safeVal(b.cost_price)) - (safeVal(a.price) - safeVal(a.cost_price)))
-    .slice(0, 5);
-
-  const handleChat = (e) => {
-    e.preventDefault();
-    if (!userQuery.trim()) return;
-    const newHist = [...chatHistory, { role: 'user', text: userQuery }];
-    setChatHistory(newHist);
-    setUserQuery("");
-    setTimeout(() => {
-      setChatHistory([...newHist, { role: 'assistant', text: `Audit Complete. Current Portfolio Health: ${isProfit ? 'Optimal' : 'Neutral'}. Realizable Net: $${(totalValuation * 0.82).toLocaleString()}.` }]);
-    }, 800);
-  };
-
-  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-black animate-pulse uppercase tracking-[0.4em]">Decrypting Vault...</div>;
+  if (isLoading) return <div className="h-screen w-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-black animate-pulse">TERMINAL ENCRYPTING...</div>;
 
   return (
-    <div className="flex h-screen w-screen bg-[#0e0e0e] text-white fixed inset-0 overflow-hidden font-['Inter'] selection:bg-[#4182ff]">
+    <div className="flex h-screen w-screen bg-[#0e0e0e] text-white fixed inset-0 overflow-hidden font-['Inter']">
       
-      {/* LEFT NAVIGATION */}
-      <aside className="w-72 border-r border-white/5 flex flex-col p-10 shrink-0">
-        <div className="mb-16 font-black text-2xl font-['Manrope'] tracking-tighter italic text-white flex items-center gap-2">
-          <span className="w-2 h-2 bg-[#4182ff] rounded-full"></span> Vault
-        </div>
-        <nav className="flex-1 space-y-3">
+      {/* SIDEBAR */}
+      <aside className="w-64 border-r border-white/5 bg-[#0e0e0e] flex flex-col p-8 shrink-0">
+        <div className="mb-12 font-black text-xl tracking-tighter italic text-[#4182ff]">Vault</div>
+        <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-5 px-6 py-5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all ${activeTab === tab ? 'bg-[#1c1b1b] text-white shadow-xl shadow-black' : 'text-gray-600 hover:text-white hover:bg-white/5'}`}>
-               <span className="material-symbols-outlined text-lg">{tab === 'dashboard' ? 'grid_view' : tab === 'inventory' ? 'account_balance_wallet' : 'analytics'}</span> {tab}
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-[#1c1b1b] text-white' : 'text-gray-600 hover:text-white'}`}>
+               <span className="material-symbols-outlined text-sm">{tab === 'dashboard' ? 'grid_view' : tab === 'inventory' ? 'account_balance_wallet' : 'analytics'}</span> {tab}
             </button>
           ))}
         </nav>
-        <button onClick={onLogout} className="mt-auto text-red-900/40 py-4 text-[10px] font-black tracking-[0.5em] uppercase hover:text-red-500 transition-colors">Terminate</button>
+        <button onClick={onLogout} className="mt-auto text-red-900/40 text-[9px] font-black tracking-[0.3em] uppercase hover:text-red-500">Terminate</button>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden bg-[#0a0a0a]">
-        {/* TOP BAR */}
-        <header className="min-h-24 border-b border-white/5 flex justify-between items-center px-12">
-          <div className="flex items-center gap-10">
-            <h2 className="text-3xl font-black uppercase font-['Manrope'] tracking-tight">{activeTab}</h2>
-            <div className={`flex items-center px-5 py-2.5 rounded-2xl border border-white/5 bg-[#131313]`}>
-              <span className={`text-[10px] font-black tracking-[0.3em] ${isNeutral ? 'text-gray-600' : isProfit ? 'text-[#66dd8b]' : 'text-red-500'}`}>
-                {isNeutral ? 'STABLE' : isProfit ? 'BULLISH' : 'BEARISH'}
-              </span>
-              <TrendGraph isProfit={isProfit} isNeutral={isNeutral} />
+        <header className="min-h-20 border-b border-white/5 flex justify-between items-center px-10">
+          <div className="flex items-center gap-6">
+            <h2 className="text-xl font-black uppercase tracking-tighter">{activeTab}</h2>
+            <div className="flex items-center px-3 py-1 rounded-lg border border-white/5 bg-[#131313]">
+              <span className={`text-[9px] font-black tracking-widest ${isProfit ? 'text-[#66dd8b]' : 'text-red-500'}`}>{isProfit ? 'BULLISH' : 'BEARISH'}</span>
+              <TrendGraph isProfit={isProfit} isNeutral={netProfit === 0} />
             </div>
           </div>
-          <input className="bg-[#131313] border border-white/5 rounded-2xl px-6 py-3 text-[10px] w-80 outline-none uppercase font-black tracking-[0.2em] text-gray-400 focus:border-[#4182ff]/50 transition-all" placeholder="Global Search..." onChange={e => setSearchTerm(e.target.value)} />
+          <input className="bg-[#131313] border border-white/5 rounded-xl px-4 py-2 text-[10px] w-64 outline-none uppercase font-black tracking-widest text-gray-400" placeholder="Global Search..." onChange={e => setSearchTerm(e.target.value)} />
         </header>
 
-        {/* DASHBOARD CONTENT */}
-        <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-10 space-y-6 custom-scrollbar">
           {activeTab === "dashboard" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
+            <div className="animate-in fade-in duration-500 space-y-6">
               
-              {/* TOP STATS */}
-              <div className="grid grid-cols-4 gap-6">
+              {/* TOP STATS - Corrected font sizes */}
+              <div className="grid grid-cols-4 gap-4">
                 {[
                   { label: "Gross Valuation", val: `$${totalValuation.toLocaleString()}`, color: "text-white" },
                   { label: "Net Gain", val: `${isProfit ? '+' : ''}$${netProfit.toLocaleString()}`, color: isProfit ? "text-[#66dd8b]" : "text-red-500" },
                   { label: "Tax Provision", val: `-$${Math.floor(totalValuation * 0.18).toLocaleString()}`, color: "text-red-900/50" },
-                  { label: "Assets Vaulted", val: items.reduce((acc, i) => acc + safeVal(i.stock), 0), color: "text-white" }
+                  { label: "Assets", val: items.length, color: "text-white" }
                 ].map((stat, i) => (
-                  <div key={i} className="bg-[#131313] p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
-                    <span className="text-[10px] text-gray-600 uppercase font-black tracking-[0.2em] block mb-3">{stat.label}</span>
-                    <h3 className={`text-3xl font-black tracking-tighter ${stat.color}`}>{stat.val}</h3>
+                  <div key={i} className="bg-[#131313] p-6 rounded-3xl border border-white/5">
+                    <span className="text-[9px] text-gray-600 uppercase font-black tracking-widest block mb-2">{stat.label}</span>
+                    <h3 className={`text-xl font-black tracking-tight truncate ${stat.color}`}>{stat.val}</h3>
                   </div>
                 ))}
               </div>
 
-              {/* MAIN REVENUE & TOP YIELDS */}
-              <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/10 relative overflow-hidden flex flex-col justify-between h-[28rem] shadow-2xl">
-                  <span className="text-[11px] text-gray-500 uppercase font-black tracking-[0.4em]">Realizable Institutional Net</span>
-                  <h3 className="text-9xl font-black tracking-tighter leading-none text-white">${(totalValuation * 0.82).toLocaleString()}</h3>
-                  <div className={`absolute bottom-0 left-0 h-1.5 w-[80%] shadow-[0_0_25px_#4182ff] ${isProfit ? 'bg-[#4182ff]' : 'bg-red-500'}`}></div>
+              {/* MAIN CONTENT GRID */}
+              <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5 relative overflow-hidden flex flex-col justify-between h-80">
+                  <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Realizable Institutional Net</span>
+                  {/* Fixed font size here to prevent overflow */}
+                  <h3 className="text-7xl font-black tracking-tighter leading-none text-white">${(totalValuation * 0.82).toLocaleString()}</h3>
+                  <div className={`absolute bottom-0 left-0 h-1 w-[80%] ${isProfit ? 'bg-[#4182ff]' : 'bg-red-500'}`}></div>
                 </div>
 
-                <div className="bg-[#131313] p-10 rounded-[4rem] border border-white/5 shadow-2xl">
-                   <h4 className="text-[10px] text-gray-600 uppercase font-black tracking-[0.3em] mb-10 pb-4 border-b border-white/5">High-Yield Index</h4>
-                   <div className="space-y-6">
-                     {topAssets.map((asset, i) => (
-                       <div key={i} className="flex justify-between items-center group cursor-pointer">
-                         <span className="text-xs font-bold text-gray-500 group-hover:text-white transition-colors truncate w-32">{asset.name}</span>
-                         <span className="text-[#66dd8b] font-black text-xs tracking-tighter">↑ ${(safeVal(asset.price) - safeVal(asset.cost_price)).toLocaleString()}</span>
+                <div className="bg-[#131313] p-8 rounded-[3rem] border border-white/5">
+                   <h4 className="text-[9px] text-gray-600 uppercase font-black tracking-widest mb-6">High-Yield Index</h4>
+                   <div className="space-y-4">
+                     {[...items].sort((a,b)=> (b.price-b.cost_price)-(a.price-a.cost_price)).slice(0,5).map((asset, i) => (
+                       <div key={i} className="flex justify-between items-center text-[10px] font-bold">
+                         <span className="text-gray-500 truncate w-24">{asset.name}</span>
+                         <span className="text-[#66dd8b]">↑ ${(asset.price-asset.cost_price).toLocaleString()}</span>
                        </div>
                      ))}
                    </div>
                 </div>
               </div>
 
-              {/* RECENT INTERACTIONS LEDGER */}
-              <div className="bg-[#131313] rounded-[3.5rem] border border-white/5 overflow-hidden shadow-2xl">
-                <div className="px-10 py-7 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Live Transaction Ledger</span>
-                  <div className="flex gap-4">
-                    <span className="w-2 h-2 bg-[#66dd8b] rounded-full animate-pulse"></span>
-                    <span className="text-[9px] font-black text-gray-700 tracking-widest uppercase italic">Node-04 Active</span>
-                  </div>
+              {/* RECENT INTERACTIONS - Restored & Cleaned */}
+              <div className="bg-[#131313] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
+                <div className="px-8 py-4 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600">Terminal Ledger</span>
+                  <span className="text-[8px] text-gray-700 uppercase font-black tracking-widest animate-pulse italic">Live Node Active</span>
                 </div>
-                <div className="p-4 space-y-2">
+                <div className="p-2 space-y-1">
                   {ledger.map(entry => (
-                    <div key={entry.id} className="grid grid-cols-5 items-center p-5 hover:bg-white/[0.03] rounded-3xl transition-all group">
-                      <span className="text-[11px] font-black text-gray-700 group-hover:text-gray-500 transition-colors">{entry.time}</span>
-                      <span className="text-[9px] w-fit bg-white/5 px-4 py-1.5 rounded-full font-black text-gray-600 uppercase tracking-widest">{entry.type}</span>
-                      <span className="text-xs font-black uppercase tracking-tight col-span-2">{entry.action} <span className="text-[#4182ff] ml-2 italic">[{entry.entity}]</span></span>
-                      <span className="text-right text-xs font-black text-gray-400">{entry.val}</span>
+                    <div key={entry.id} className="grid grid-cols-4 items-center p-3 hover:bg-white/[0.01] rounded-xl transition-all">
+                      <span className="text-[10px] font-black text-gray-700">{entry.time}</span>
+                      <span className="text-[9px] w-fit bg-white/5 px-2 py-0.5 rounded text-gray-600 uppercase font-black tracking-widest">{entry.type}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-tight truncate">{entry.action} <span className="text-[#4182ff] ml-1">[{entry.entity}]</span></span>
+                      <span className="text-right text-[10px] font-black text-gray-500">{entry.val}</span>
                     </div>
                   ))}
                 </div>
@@ -175,25 +150,20 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* AI ANALYTICS SIDEBAR */}
-      <aside className="w-[22rem] border-l border-white/5 bg-[#0e0e0e] flex flex-col p-10 shrink-0 shadow-2xl">
-        <div className="text-[11px] font-black uppercase tracking-[0.4em] text-gray-700 mb-12 border-b border-white/5 pb-6">CFO AI Analysis</div>
-        <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
+      {/* AI SIDEBAR - Fixed Scaling */}
+      <aside className="w-80 border-l border-white/5 bg-[#0e0e0e] p-8 flex flex-col h-full shadow-2xl">
+        <div className="text-[10px] font-black uppercase tracking-widest text-gray-700 mb-8 border-b border-white/5 pb-4">CFO AI Analysis</div>
+        <div className="flex-1 overflow-y-auto space-y-4 custom-scrollbar mb-4">
           {chatHistory.map((msg, i) => (
-            <div key={i} className={`p-7 rounded-[2.5rem] text-[11px] leading-relaxed shadow-xl transition-all ${msg.role === 'assistant' ? 'bg-[#131313] border border-white/5 text-gray-400' : 'bg-[#4182ff]/10 text-[#4182ff] ml-6 border border-[#4182ff]/20'}`}>
+            <div key={i} className={`p-5 rounded-2xl text-[10px] leading-relaxed ${msg.role === 'assistant' ? 'bg-[#131313] border border-white/5 text-gray-400' : 'bg-[#4182ff]/10 text-[#4182ff]'}`}>
               {msg.text}
             </div>
           ))}
           <div ref={chatEndRef} />
         </div>
-        <form onSubmit={handleChat} className="mt-8 relative group">
-          <input 
-            className="w-full bg-[#131313] border border-white/5 rounded-2xl px-6 py-4 text-[11px] text-white outline-none focus:border-[#4182ff]/30 transition-all placeholder:text-gray-800" 
-            placeholder="Query terminal data..." 
-            value={userQuery}
-            onChange={(e) => setUserQuery(e.target.value)}
-          />
-          <button type="submit" className="absolute right-4 top-3.5 text-[#4182ff] material-symbols-outlined text-lg opacity-50 group-hover:opacity-100 transition-opacity">send</button>
+        <form onSubmit={(e)=>e.preventDefault()} className="relative mt-auto">
+          <input className="w-full bg-[#131313] border border-white/5 rounded-xl px-4 py-3 text-[10px] text-white outline-none" placeholder="Query ledger..." />
+          <button className="absolute right-3 top-2.5 text-[#4182ff] material-symbols-outlined text-base">send</button>
         </form>
       </aside>
 
