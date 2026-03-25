@@ -5,26 +5,72 @@ import Footer from "../components/Footer";
 const SolutionsPage = () => (
   <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white font-['Inter']">
     <Navbar />
-    <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
-      <h1 className="text-5xl md:text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">
-        Tailored for<br/><span className="italic text-gray-600 font-light">Complex Treasury</span>
+    <div className="max-w-[1400px] mx-auto px-10 pb-40">
+      <h1 className="text-6xl md:text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">
+        Industry<br/><span className="text-[#4182ff]">Verticals</span>
       </h1>      
-      <div className="space-y-10">
-        <div className="bg-[#1c1b1b] p-12 md:p-20 rounded-[5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="max-w-xl">
-            <div className="bg-[#4182ff]/10 text-[#4182ff] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 inline-block border border-[#4182ff]/20">Enterprise</div>
-            <h3 className="text-4xl md:text-5xl font-black mb-8 tracking-tight text-white">E-Commerce Conglomerates</h3>
-            <p className="text-lg text-gray-400 leading-relaxed mb-8">Unify fragmented logistics data across global nodes. QueryFlow Vault handles currency conversions and tax provisioning automatically.</p>
-            <ul className="grid grid-cols-2 gap-4 text-[10px] font-black uppercase text-gray-600 tracking-widest">
-              <li>✓ Multi-Currency</li>
-              <li>✓ Automated VAT</li>
-              <li>✓ SKU Risk Scoring</li>
-              <li>✓ Liquidity Forecasting</li>
-            </ul>
+
+      <div className="grid lg:grid-cols-2 gap-12">
+        {/* Solution 1: E-Commerce */}
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 group hover:border-[#4182ff]/30 transition-all">
+          <div className="flex justify-between items-start mb-10">
+            <span className="material-symbols-outlined text-4xl text-[#4182ff]">shopping_cart</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">High Volume</span>
           </div>
-          <div className="w-64 h-64 bg-gradient-to-br from-[#1c1b1b] to-black rounded-full border border-white/5 flex items-center justify-center">
-             <span className="material-symbols-outlined text-[#4182ff] text-8xl animate-pulse">hub</span>
+          <h3 className="text-3xl font-black mb-6">Global E-Commerce</h3>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            Manage thousands of SKUs across multiple warehouses. QueryFlow automatically reconciles shipping costs, returns, and platform fees (Shopify/Amazon) into a single net-profit view.
+          </p>
+          <ul className="space-y-3 text-sm font-bold text-gray-500">
+            <li className="flex items-center gap-2">✓ Multi-currency settlement</li>
+            <li className="flex items-center gap-2">✓ Inventory burn-rate alerts</li>
+            <li className="flex items-center gap-2">✓ Automated VAT/GST logic</li>
+          </ul>
+        </div>
+
+        {/* Solution 2: Real Estate */}
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 group hover:border-[#adc7ff]/30 transition-all">
+          <div className="flex justify-between items-start mb-10">
+            <span className="material-symbols-outlined text-4xl text-[#adc7ff]">domain</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Fixed Assets</span>
           </div>
+          <h3 className="text-3xl font-black mb-6">Asset Management</h3>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            Track property valuations, rental yields, and maintenance liabilities. Our vault treats physical assets with the same precision as liquid cash, providing a true Total Net Worth.
+          </p>
+          <ul className="space-y-3 text-sm font-bold text-gray-500">
+            <li className="flex items-center gap-2">✓ Depreciation scheduling</li>
+            <li className="flex items-center gap-2">✓ Mortgage interest tracking</li>
+            <li className="flex items-center gap-2">✓ Capital gain forecasting</li>
+          </ul>
+        </div>
+
+        {/* Solution 3: Digital Agencies */}
+        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 group hover:border-[#66dd8b]/30 transition-all">
+          <div className="flex justify-between items-start mb-10">
+            <span className="material-symbols-outlined text-4xl text-[#66dd8b]">ads_click</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Service Based</span>
+          </div>
+          <h3 className="text-3xl font-black mb-6">Scale Agencies</h3>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            Monitor client retainers, contractor payouts, and project margins. Predict your runway based on recurring revenue vs. operational overhead in real-time.
+          </p>
+          <ul className="space-y-3 text-sm font-bold text-gray-500">
+            <li className="flex items-center gap-2">✓ Subscription MRR tracking</li>
+            <li className="flex items-center gap-2">✓ Contractor margin analysis</li>
+            <li className="flex items-center gap-2">✓ Cash-flow runway modeling</li>
+          </ul>
+        </div>
+
+        {/* Solution 4: Institutional Treasury */}
+        <div className="bg-[#131313] p-12 rounded-[4rem] border border-[#4182ff]/20">
+          <h3 className="text-3xl font-black mb-6 italic text-[#4182ff]">Custom Enterprise</h3>
+          <p className="text-gray-400 leading-relaxed mb-8">
+            For organizations with bespoke fiscal requirements, we offer API-first integration to sync QueryFlow Vault with your existing ERP or internal accounting software.
+          </p>
+          <button className="bg-[#4182ff] text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all">
+            Talk to Engineering
+          </button>
         </div>
       </div>
     </div>
