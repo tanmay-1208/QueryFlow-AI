@@ -12,7 +12,6 @@ public class ChatController {
     private final ChatClient chatClient;
 
     public ChatController(ChatClient.Builder builder) {
-        // Safety wrapper to ensure the app starts even if API key is missing
         ChatClient temp = null;
         try {
             temp = builder.build();
@@ -22,29 +21,29 @@ public class ChatController {
         this.chatClient = temp;
     }
 
-    // This will now be reachable at /test (No /api prefix needed)
+    // Health Check at the ROOT level
     @GetMapping("/test")
     public String test() {
-        return "Vault AI Core is ONLINE. Status: " + (chatClient != null ? "READY" : "OFFLINE");
+        return "VAULT_API_CORE_ONLINE_V5";
     }
 
     @PostMapping("/api/chat")
     public String handleChat(@RequestBody ChatRequest request) {
-        if (chatClient == null) return "[AGENT_ERR]: AI Configuration Error on Railway.";
+        if (chatClient == null) return "[AGENT_ERR]: AI Configuration missing in Railway.";
         
         try {
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
-            String inventorySummary = products.stream()
+            String summary = products.stream()
                 .map(p -> p.getName() + ": $" + p.getPrice())
                 .collect(Collectors.joining(", "));
 
             return chatClient.prompt()
-                .system("You are a Senior CA. Inventory context: " + inventorySummary)
+                .system("You are a Senior CA. Inventory context: " + summary)
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI Request failed. Verify your Groq API Key.";
+            return "[AGENT_ERR]: Connection to Groq failed.";
         }
     }
 
