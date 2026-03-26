@@ -18,12 +18,13 @@ public class ChatController {
 
     @GetMapping("/test")
     public String test() {
-        return "VAULT_SERVICE_FINAL_FIX_V14";
+        return "VAULT_FINAL_STABLE_V15";
     }
 
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
+            // Build inside the method so a bad key doesn't crash the WHOLE server
             ChatClient client = chatClientBuilder.build();
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
             String summary = products.stream()
@@ -31,12 +32,12 @@ public class ChatController {
                 .collect(Collectors.joining(", "));
 
             return client.prompt()
-                .system("You are a Senior CA. Audit this: " + (summary.isEmpty() ? "No data" : summary))
+                .system("You are a Senior CA. Inventory: " + (summary.isEmpty() ? "Empty" : summary))
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: Your assets are safe, but the AI link failed. Check your API Key name.";
+            return "[AGENT_OFFLINE]: Your assets are safe, but the AI link failed. Check your API Key.";
         }
     }
 
