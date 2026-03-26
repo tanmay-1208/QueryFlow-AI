@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "products")
-public class _02_Product {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,13 +13,28 @@ public class _02_Product {
     private Double price;
     private Integer stock;
 
-    // Getters and Setters
+    @Column(name = "cost_price")
+    private Double cost_price;
+
+    @Column(name = "\"userId\"") // This matches the Supabase column exactly
+    private String userId;
+
+    // --- GETTERS & SETTERS (Required to fix red lines in Controller) ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
+
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+
+    public Double getCost_price() { return cost_price; }
+    public void setCost_price(Double cost_price) { this.cost_price = cost_price; }
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 }

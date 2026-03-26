@@ -8,13 +8,13 @@ import java.util.List;
 public class _04_ProductService {
     
     @Autowired
-    private _03_ProductRepository repository;
+    private ProductRepository repository;
 
-    public _02_Product saveProduct(_02_Product product) {
+    public Product saveProduct(Product product) {
         return repository.save(product);
     }
 
-    public List<_02_Product> getAllProducts() {
+    public List<Product> getAllProducts() {
         return repository.findAll();
     }
 }
