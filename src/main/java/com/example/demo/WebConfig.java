@@ -14,10 +14,16 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://query-flow-ai-uq5t.vercel.app") // Your Vercel URL
+                        // Use allowedOriginPatterns to prevent the "*" error
+                        .allowedOriginPatterns(
+                            "https://query-flow-ai-uq5t.vercel.app", 
+                            "http://localhost:3000",
+                            "https://*.vercel.app" // Allows all Vercel preview branches
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .maxAge(3600); // Cache the preflight response for 1 hour
             }
         };
     }
