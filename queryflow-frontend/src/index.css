@@ -1,101 +1,93 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* --- 1. CORE VARIABLES --- */
+:root {
+  --neon-blue: #4182ff;
+  --neon-green: #00ff88;
+  --neon-red: #ff3366;
+  --bg-deep: #050505;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+/* --- 2. GLOBAL RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: 'JetBrains Mono', monospace;
-}
-
-body {
-  margin: 0;
-  background-color: #0b0b0b;
-  font-family: 'Playfair Display', serif; /* Use a Serif font for that Old Money feel */
-}
-
-
-body {
-  background-color: #0b0b0b !important;
-  color: white !important; /* Forces text to be visible */
-}
-
-.text-gold {
-  color: #d4af37 !important; /* Custom gold color */
-}
-/* 1. Define Luxury Theme Variables (Tailwind v4 style) */
-@theme {
-  --color-gold: #d4af37;
-  --color-dark: #1a1a1a;
-  --color-luxury-black: #0b0b0b;
-}
-
-/* 2. Global Styling to fix the "Dark Screen" issue */
-:root {
-  background-color: #0b0b0b;
-  color: white; /* Ensures all text is visible by default */
-}
-
-body {
-  margin: 0;
-  font-family: 'Playfair Display', serif; /* Or any luxury font you prefer */
+  background-color: var(--bg-deep);
+  background: radial-gradient(circle at top right, #0a0c12, #050505);
+  color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Prevent body scroll, use container scroll */
 }
 
-/* 3. Custom Utility Classes used in your App.js */
-@layer components {
-  /* Glowing Gold Border for headers */
-  .border-gold {
-    border-color: #d4af37;
-    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
-  }
-
-  /* Luxury Input Styling */
-  .focus\:border-gold:focus {
-    border-color: #d4af37;
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-  }
-
-  /* Making sure the "No Data" and "Chart" placeholders are visible */
-  .text-stone-400, .text-stone-300 {
-    color: #666 !important;
-  }
-  
-  /* Gold text for prices */
-  .text-gold {
-    color: #d4af37;
-  }
-  
-  /* Table Row Hover effect */
-  .hover\:bg-stone-50:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
+/* --- 3. CUSTOM SCROLLBAR (Aesthetic) --- */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
 
-/* Styling for your working data table */
-table {
-  width: 100%;
-  margin-top: 2rem;
-  border-collapse: collapse;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-th {
-  color: #d4af37; /* Luxury Gold */
-  text-align: left;
-  border-bottom: 2px solid #d4af37;
-  padding: 10px;
+::-webkit-scrollbar-thumb {
+  background: rgba(65, 130, 255, 0.2);
+  border-radius: 10px;
 }
 
-td {
-  padding: 12px 10px;
-  border-bottom: 1px solid #333;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
 }
 
-/* Make the price column stand out in gold */
-td:nth-child(2) {
-  color: #d4af37;
-  font-weight: bold;
+/* --- 4. GLASSMORPHISM UTILITIES --- */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(65, 130, 255, 0.3);
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- 5. ANIMATIONS --- */
+@keyframes neonPulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+.animate-neon {
+  animation: neonPulse 2s infinite ease-in-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+/* --- 6. TAILWIND CUSTOM CLASSES --- */
+@layer utilities {
+  .text-glow-blue {
+    text-shadow: 0 0 10px rgba(65, 130, 255, 0.5);
+  }
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  }
 }

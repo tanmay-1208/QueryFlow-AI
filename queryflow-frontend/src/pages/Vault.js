@@ -9,7 +9,7 @@ const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [chatMessage, setChatMessage] = useState("");
+  const [aiResponse, setAiResponse] = useState("Awaiting command...");
 
   const fetchItems = useCallback(async () => {
     if (!userId) return;
@@ -21,102 +21,123 @@ const Vault = ({ userId, onLogout }) => {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  // --- CALCULATIONS ---
   const safeVal = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
   const grossVal = items.reduce((acc, i) => acc + (safeVal(i.price) * safeVal(i.stock)), 0);
   const costVal = items.reduce((acc, i) => acc + (safeVal(i.cost_price) * safeVal(i.stock)), 0);
-  const totalStock = items.reduce((acc, i) => acc + safeVal(i.stock), 0);
   const tax = grossVal * 0.18;
   const net = grossVal - costVal - tax;
-
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
 
   return (
-    <div className="flex h-screen bg-[#050505] text-white font-['JetBrains_Mono']">
-      {/* SIDEBAR */}
-      <aside className="w-64 border-r border-white/5 p-6 flex flex-col">
-        <h1 className="text-xl font-black italic mb-10 text-[#4182ff] tracking-tighter">VAULT.v2</h1>
-        <nav className="flex-1 space-y-2">
+    <div className="flex h-screen overflow-hidden">
+      {/* GLITCH SIDEBAR */}
+      <aside className="w-20 lg:w-64 border-r border-white/5 flex flex-col items-center py-10 bg-black/40 backdrop-blur-xl">
+        <div className="mb-16">
+          <div className="h-10 w-10 bg-[#4182ff] rounded-lg shadow-[0_0_20px_#4182ff] flex items-center justify-center font-black text-xl italic">V</div>
+        </div>
+        <nav className="flex-1 space-y-8">
           {["dashboard", "inventory"].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full text-left p-3 rounded-lg text-[10px] uppercase font-bold tracking-widest ${activeTab === tab ? "bg-white/5 text-[#4182ff]" : "text-gray-500"}`}>
-              {tab}
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab)} 
+              className={`flex items-center gap-4 w-full px-8 group transition-all`}
+            >
+              <div className={`h-2 w-2 rounded-full ${activeTab === tab ? 'bg-[#4182ff] shadow-[0_0_10px_#4182ff]' : 'bg-white/10'}`} />
+              <span className={`hidden lg:block text-[10px] font-bold uppercase tracking-[0.3em] ${activeTab === tab ? 'text-white' : 'text-white/20 group-hover:text-white/50'}`}>
+                {tab}
+              </span>
             </button>
           ))}
         </nav>
-        <button onClick={onLogout} className="text-red-900/40 text-[9px] font-bold uppercase hover:text-red-500 transition-colors">Terminate_Session</button>
+        <button onClick={onLogout} className="text-[8px] font-bold text-white/20 hover:text-red-500 uppercase tracking-widest rotate-180 lg:rotate-0">
+          [ Terminate ]
+        </button>
       </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 border-b border-white/5 flex justify-between items-center px-10">
-          <h2 className="text-sm font-black uppercase tracking-widest text-gray-400">/{activeTab}</h2>
-          {activeTab === "inventory" && (
-            <button onClick={() => setIsAddModalOpen(true)} className="bg-[#4182ff] w-10 h-10 rounded-full text-xl hover:scale-105 active:scale-95 transition-all">+</button>
-          )}
+      {/* MAIN VIEWPORT */}
+      <main className="flex-1 flex flex-col relative">
+        <header className="h-24 px-12 flex justify-between items-center border-b border-white/5">
+          <div>
+            <p className="text-[9px] text-[#4182ff] font-bold tracking-[0.5em] mb-1">SYSTEM_ACCESS_GRANTED</p>
+            <h2 className="text-xl font-black uppercase italic tracking-tighter">Terminal / {activeTab}</h2>
+          </div>
+          <div className="flex items-center gap-6">
+             <div className="text-right hidden sm:block">
+                <p className="text-[8px] text-white/30 uppercase font-bold">Node_Active</p>
+                <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0,8)}...f3</p>
+             </div>
+             {activeTab === "inventory" && (
+                <button onClick={() => setIsAddModalOpen(true)} className="bg-[#4182ff] h-12 w-12 rounded-full hover:shadow-[0_0_30px_#4182ff] transition-all text-2xl font-bold">+</button>
+             )}
+          </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-10 space-y-10">
+        <div className="p-12 overflow-y-auto space-y-10 custom-scrollbar">
           {activeTab === "dashboard" ? (
             <>
-              {/* TOP ROW STATS */}
-              <div className="grid grid-cols-4 gap-4">
-                <StatCard title="Valuation" value={`$${grossVal.toLocaleString()}`} />
-                <StatCard title="Net Gain" value={`$${net.toLocaleString()}`} color="#66dd8b" />
-                <StatCard title="Est. Tax (18%)" value={`-$${tax.toLocaleString()}`} color="#ef4444" />
-                <StatCard title="Total Inventory" value={totalStock.toLocaleString()} />
+              {/* METRIC CARDS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
+                <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
+                <GlassCard label="Tax Provision" value={`-$${tax.toLocaleString()}`} accent="#ff3366" />
+                <GlassCard label="Units Held" value={items.reduce((a,b) => a + safeVal(b.stock), 0)} accent="#ffffff" />
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
-                {/* REPORT WINDOW / GRAPH AREA */}
-                <div className="col-span-2 bg-[#0c0c0c] border border-white/5 rounded-3xl p-8 h-80 relative overflow-hidden">
-                   <p className="text-[10px] font-bold uppercase text-gray-600 mb-4">Live Performance Report</p>
-                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                      <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#4182ff] to-transparent animate-pulse" />
+              {/* CENTER ANALYTICS */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-2 bg-white/5 border border-white/10 rounded-[2rem] p-8 min-h-[400px] flex flex-col justify-between">
+                   <div className="flex justify-between items-start">
+                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Performance_Metric_Live</p>
+                      <span className="text-[10px] text-[#00ff88] animate-pulse">● LIVE_STREAM</span>
                    </div>
-                   <div className="h-full flex items-end gap-2">
-                      {/* Visual representation of profit/loss */}
-                      <div className="flex-1 bg-[#4182ff]/20 rounded-t-lg" style={{height: '40%'}}></div>
-                      <div className="flex-1 bg-[#4182ff]/40 rounded-t-lg" style={{height: '70%'}}></div>
-                      <div className="flex-1 bg-[#66dd8b]/40 rounded-t-lg" style={{height: net > 0 ? '90%' : '20%'}}></div>
+                   <div className="flex items-end gap-3 h-48 px-4">
+                      {/* Dynamic Bar Graph */}
+                      {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
+                        <div key={i} className="flex-1 bg-gradient-to-t from-[#4182ff]/10 to-[#4182ff]/40 rounded-t-lg transition-all hover:to-[#00ff88]" style={{height: `${h}%`}} />
+                      ))}
+                   </div>
+                   <div className="flex justify-between text-[9px] text-white/20 font-bold uppercase pt-6 border-t border-white/5">
+                      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                    </div>
                 </div>
 
-                {/* AI ASSISTANT WINDOW */}
-                <div className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-6 flex flex-col">
-                  <p className="text-[10px] font-bold uppercase text-[#4182ff] mb-4 tracking-tighter">QueryFlow AI Assistant</p>
-                  <div className="flex-1 text-[11px] text-gray-400 font-mono leading-relaxed bg-black/40 p-4 rounded-xl mb-4 border border-white/5">
-                    {net > 0 ? "Performance Optimal. Consider re-investing profit into low-stock assets." : "Margin Alert: High cost basis detected. Review inventory pricing."}
+                {/* AI INTERFACE */}
+                <div className="bg-[#4182ff]/5 border border-[#4182ff]/20 rounded-[2rem] p-8 flex flex-col shadow-[inset_0_0_50px_rgba(65,130,255,0.05)]">
+                  <p className="text-[10px] font-bold text-[#4182ff] uppercase tracking-widest mb-6 underline decoration-dotted">AI_Asst_QueryFlow</p>
+                  <div className="flex-1 font-mono text-[11px] text-white/60 leading-relaxed bg-black/40 p-5 rounded-2xl border border-white/5 mb-6">
+                     {">"} {net > 0 ? "Portfolio health: CRITICAL_SUCCESS. Profit margins exceeding projections." : "Caution: Cost basis elevated. Advise immediate price adjustment."}
                   </div>
-                  <input 
-                    className="bg-[#1a1a1a] p-3 rounded-xl text-[10px] text-white outline-none border border-white/5" 
-                    placeholder="Ask QueryFlow..."
-                    value={chatMessage}
-                    onChange={(e) => setChatMessage(e.target.value)}
-                  />
+                  <div className="relative">
+                    <input className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] outline-none focus:border-[#4182ff] transition-all pr-12" placeholder="Send prompt..." />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4182ff] font-bold">↵</div>
+                  </div>
                 </div>
               </div>
 
-              {/* TOP 5 STOCKS & RECENT ACTIVITY */}
-              <div className="grid grid-cols-2 gap-6 pb-10">
-                <div className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-8">
-                  <p className="text-[10px] font-bold uppercase text-gray-600 mb-6 tracking-widest">Top 5 Holdings</p>
-                  <div className="space-y-4">
-                    {topFive.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="text-[11px] uppercase font-black">{item.name}</span>
-                        <span className="text-[11px] text-[#4182ff]">${(item.price * item.stock).toLocaleString()}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-8">
-                  <p className="text-[10px] font-bold uppercase text-gray-600 mb-6 tracking-widest">Recent System Interactions</p>
-                  <div className="space-y-2 text-[10px] font-mono text-gray-500">
-                    <p>{">"} DB Sync Success: User UUID Validated</p>
-                    <p>{">"} Inventory Update: {items.length} records parsed</p>
-                    <p>{">"} Tax Calculation: 18.00% Applied</p>
-                  </div>
-                </div>
+              {/* BOTTOM FEEDS */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
+                 <div className="bg-white/5 border border-white/5 rounded-[2rem] p-8">
+                    <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6">Top_Holdings</p>
+                    <div className="space-y-4">
+                      {topFive.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center group cursor-crosshair">
+                           <span className="text-[11px] font-bold text-white/70 group-hover:text-white transition-colors uppercase">{item.name}</span>
+                           <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
+                           <span className="text-[11px] font-mono text-[#4182ff]">${(item.price * item.stock).toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                 </div>
+                 <div className="bg-white/5 border border-white/5 rounded-[2rem] p-8 overflow-hidden relative">
+                    <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6">Terminal_Output</p>
+                    <div className="space-y-2 font-mono text-[10px] text-white/30">
+                       <p className="text-[#00ff88]">[OK] DB_SYNC_SUCCESS_STABLE</p>
+                       <p>[INF] CACHE_CLEARED_V2</p>
+                       <p>[INF] HANDSHAKE_ESTABLISHED_RAILWAY</p>
+                       <p className="text-[#ff3366]">[WRN] HIGH_COST_BASIS_ALERT</p>
+                       <div className="h-2 w-full bg-white/5 rounded animate-pulse mt-4" />
+                    </div>
+                 </div>
               </div>
             </>
           ) : (
@@ -125,15 +146,16 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      <AddAssetModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={(newItem) => setItems([newItem, ...items])} userId={userId} />
+      <AddAssetModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={(n) => setItems([n, ...items])} userId={userId} />
     </div>
   );
 };
 
-const StatCard = ({ title, value, color = "white" }) => (
-  <div className="bg-[#0c0c0c] border border-white/5 p-6 rounded-2xl">
-    <p className="text-[8px] font-black uppercase text-gray-600 mb-1 tracking-widest">{title}</p>
-    <p className="text-xl font-black truncate" style={{color}}>{value}</p>
+const GlassCard = ({ label, value, accent }) => (
+  <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/[0.07] transition-all cursor-default relative overflow-hidden group">
+    <div className="absolute top-0 left-0 w-1 h-full transition-all group-hover:w-2" style={{ backgroundColor: accent }} />
+    <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">{label}</p>
+    <p className="text-2xl font-black tracking-tighter" style={{ color: value.includes('-') ? '#ff3366' : 'white' }}>{value}</p>
   </div>
 );
 
