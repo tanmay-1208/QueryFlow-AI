@@ -6,36 +6,42 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*") // Allows your Vercel frontend to connect
+@RequestMapping("/api")
+@CrossOrigin(origins = "*") 
 public class ChatController {
 
     private final ChatClient chatClient;
 
+    // Use a try-catch in the constructor so a missing API key doesn't crash the server
     public ChatController(ChatClient.Builder builder) {
-        this.chatClient = builder.build();
+        ChatClient temp = null;
+        try {
+            temp = builder.build();
+        } catch (Exception e) {
+            System.err.println("AI System initialized in OFFLINE mode: " + e.getMessage());
+        }
+        this.chatClient = temp;
     }
 
-    // Try moving the test to the root to see if it responds
-    @GetMapping("/test")
-    public String test() {
-        return "Vault AI Core: ONLINE";
-    }
-
-    @PostMapping("/api/chat")
+    @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
+        if (chatClient == null) {
+            return "[AGENT_ERR]: AI Core is offline. Check SPRING_AI_GROQ_API_KEY in Railway.";
+        }
+
         try {
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
-            String inventorySummary = products.stream()
+            String summary = products.stream()
                 .map(p -> p.getName() + ": $" + p.getPrice())
                 .collect(Collectors.joining(", "));
 
             return chatClient.prompt()
-                .system("You are a Senior CA. Audit this: " + (inventorySummary.isEmpty() ? "Empty" : inventorySummary))
+                .system("You are a Senior CA. Audit this inventory: " + summary)
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI authentication failed. Check Railway Keys.";
+            return "[AGENT_ERR]: Connection to Groq failed. Verify API quota.";
         }
     }
 
