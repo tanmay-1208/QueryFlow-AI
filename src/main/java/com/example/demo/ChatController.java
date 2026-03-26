@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*")
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -17,32 +17,30 @@ public class ChatController {
         this.chatClient = builder.build();
     }
 
+    // --- ADD THIS TO TEST IF THE API IS ALIVE ---
+    @GetMapping("/test")
+    public String test() {
+        return "API is Online and Reachable";
+    }
+
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
-            // Safety: Ensure products list isn't null
-            List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
-            
-            // Format inventory for the AI
-            String inventorySummary = products.stream()
-                .map(p -> p.getName() + ": $" + p.getPrice() + " (Stock: " + p.getStock() + ")")
+            List<Product> items = request.getItems() != null ? request.getItems() : new ArrayList<>();
+            String summary = items.stream()
+                .map(p -> p.getName() + ": $" + p.getPrice())
                 .collect(Collectors.joining(", "));
 
-            String systemMsg = "You are a Senior Chartered Accountant. Audit this data: " + 
-                               (inventorySummary.isEmpty() ? "No assets currently vaulted." : inventorySummary);
-
             return chatClient.prompt()
-                .system(systemMsg)
+                .system("You are a Senior CA. Inventory: " + summary)
                 .user(request.getUserQuery())
                 .call()
                 .content();
-
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI Link Offline. Verify GROQ_API_KEY in Railway Variables.";
+            return "[AGENT_ERR]: AI Link Offline. Check Railway Variables.";
         }
     }
 
-    // Consolidated inner class - prevents "Class not found" errors
     public static class ChatRequest {
         private String userQuery;
         private List<Product> items;
