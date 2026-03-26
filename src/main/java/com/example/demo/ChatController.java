@@ -2,13 +2,11 @@ package com.example.demo;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*") // Allows your Vercel frontend to connect
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -17,13 +15,13 @@ public class ChatController {
         this.chatClient = builder.build();
     }
 
-    // A simple GET to verify the service is up
-    @GetMapping("/health")
-    public String health() {
-        return "Vault AI Service: ONLINE";
+    // Try moving the test to the root to see if it responds
+    @GetMapping("/test")
+    public String test() {
+        return "Vault AI Core: ONLINE";
     }
 
-    @PostMapping("/chat")
+    @PostMapping("/api/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
@@ -32,12 +30,12 @@ public class ChatController {
                 .collect(Collectors.joining(", "));
 
             return chatClient.prompt()
-                .system("You are a Senior CA. Audit this: " + (inventorySummary.isEmpty() ? "Empty Vault" : inventorySummary))
+                .system("You are a Senior CA. Audit this: " + (inventorySummary.isEmpty() ? "Empty" : inventorySummary))
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI Link Offline. Verify GROQ_API_KEY in Railway.";
+            return "[AGENT_ERR]: AI authentication failed. Check Railway Keys.";
         }
     }
 
