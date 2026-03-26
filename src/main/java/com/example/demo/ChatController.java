@@ -6,8 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api") // This MUST be here to match your frontend /api/products path
-@CrossOrigin(origins = "*") 
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -17,7 +17,6 @@ public class ChatController {
         try {
             temp = builder.build();
         } catch (Exception e) {
-            // This prevents the whole app from crashing if the AI key is missing
             System.err.println("AI System offline: " + e.getMessage());
         }
         this.chatClient = temp;
@@ -25,7 +24,7 @@ public class ChatController {
 
     @GetMapping("/test")
     public String test() {
-        return "VAULT_CORE_STABILIZED_V8";
+        return "VAULT_CORE_STABILIZED_V9";
     }
 
     @PostMapping("/chat")
@@ -48,7 +47,6 @@ public class ChatController {
         }
     }
 
-    // Static inner class to ensure it's always available
     public static class ChatRequest {
         private String userQuery;
         private List<Product> items;
