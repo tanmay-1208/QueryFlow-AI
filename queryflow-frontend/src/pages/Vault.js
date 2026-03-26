@@ -12,10 +12,11 @@ const Vault = ({ userId, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   
+  // Terminal States
   const [userQuery, setUserQuery] = useState("");
-  const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
+  const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. AI standing by." }]);
   const [ledger, setLedger] = useState([
-    { id: 1, type: 'SYS', action: 'Terminal Sync', entity: 'NODE-04', val: 'Success', time: '08:21' }
+    { id: 1, type: 'SYS', action: 'Terminal Sync', entity: 'NODE-04', val: 'Success', time: '08:25' }
   ]);
 
   const chatEndRef = useRef(null);
@@ -27,53 +28,43 @@ const Vault = ({ userId, onLogout }) => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
       setItems(Array.isArray(res.data) ? res.data : []);
-    } catch (err) { setItems([]); } finally { setIsLoading(false); }
+    } catch (err) { 
+      console.error("Fetch Failure:", err);
+      setItems([]); 
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
-  const safeVal = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
-  const totalValuation = items.reduce((acc, i) => acc + (safeVal(i.price) * safeVal(i.stock)), 0);
-  const totalInvestment = items.reduce((acc, i) => acc + (safeVal(i.cost_price) * safeVal(i.stock)), 0);
-  const taxReserve = totalValuation * 0.18;
-  const netProfit = totalValuation - totalInvestment - taxReserve;
-
-  const topAssets = [...items]
-    .sort((a, b) => (safeVal(b.price) - safeVal(b.cost_price)) - (safeVal(a.price) - safeVal(a.cost_price)))
-    .slice(0, 5);
+  // --- ACTIONS ---
+  const handleOnAdd = () => {
+    fetchItems(); // Reload data
+    setIsAddModalOpen(false); // Close modal
+    setLedger(prev => [{ id: Date.now(), type: 'SYS', action: 'Asset Created', entity: 'VAULT', val: 'NEW', time: 'Now' }, ...prev.slice(0, 4)]);
+  };
 
   const updateStock = async (id, delta) => {
     const item = items.find(i => i.id === id);
     if (!item) return;
-    const newStock = Math.max(0, safeVal(item.stock) + delta);
+    const newStock = Math.max(0, (item.stock || 0) + delta);
     setItems(prev => prev.map(i => i.id === id ? { ...i, stock: newStock } : i));
-    setLedger(prev => [{ id: Date.now(), type: delta > 0 ? 'IN' : 'OUT', action: delta > 0 ? 'Restock' : 'Sale', entity: item.name, val: `${delta > 0 ? '+' : ''}${delta}`, time: 'Now' }, ...prev.slice(0, 4)]);
     try { await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId }); } catch (err) { console.error(err); }
   };
 
   const deleteAsset = async (id) => {
-    if (!window.confirm("Permanent Liquidation: Are you sure?")) return;
+    if (!window.confirm("Confirm Liquidation?")) return;
     setItems(prev => prev.filter(i => i.id !== id));
     try { await axios.delete(`${API_BASE_URL}/api/products/${id}?userId=${userId}`); } catch (err) { console.error(err); }
   };
 
-  // REFRESH HANDLER FOR THE MODAL
-  const handleOnAdd = () => {
-    fetchItems(); // Reload data from server
-    setIsAddModalOpen(false); // Close modal
-    setLedger(prev => [{ id: Date.now(), type: 'SYS', action: 'Asset Added', entity: 'TERMINAL', val: 'NEW', time: 'Now' }, ...prev.slice(0, 4)]);
-  };
+  // --- MATH ---
+  const safeVal = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+  const totalValuation = items.reduce((acc, i) => acc + (safeVal(i.price) * safeVal(i.stock)), 0);
+  const totalInvestment = items.reduce((acc, i) => acc + (safeVal(i.cost_price) * safeVal(i.stock)), 0);
+  const tax = totalValuation * 0.18;
+  const net = totalValuation - totalInvestment - tax;
 
-  const handleChat = (e) => {
-    e.preventDefault();
-    if (!userQuery.trim()) return;
-    const newHist = [...chatHistory, { role: 'user', text: userQuery }];
-    setChatHistory(newHist);
-    setUserQuery("");
-    setTimeout(() => {
-      setChatHistory([...newHist, { role: 'assistant', text: `Audit Complete. Current Liquidity: $${totalValuation.toLocaleString()}.` }]);
-    }, 800);
-  };
-
-  if (isLoading) return <div className="h-screen bg-[#0e0e0e] flex items-center justify-center text-[#adc7ff] font-black animate-pulse uppercase tracking-[0.3em]">Decrypting Vault...</div>;
+  if (isLoading) return <div className="h-screen bg-[#0e0e0e] flex items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-xs">Syncing Terminal...</div>;
 
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white fixed inset-0 overflow-hidden font-['Inter']">
@@ -83,12 +74,12 @@ const Vault = ({ userId, onLogout }) => {
         <div className="mb-12 font-black text-xl italic text-[#4182ff]">Vault</div>
         <nav className="flex-1 space-y-2">
           {['dashboard', 'inventory', 'reports'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-[#1c1b1b] text-white shadow-xl' : 'text-gray-600 hover:text-white'}`}>
-               <span className="material-symbols-outlined text-sm">{tab === 'dashboard' ? 'grid_view' : tab === 'inventory' ? 'account_balance_wallet' : 'analytics'}</span> {tab}
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-[#1c1b1b] text-white' : 'text-gray-600 hover:text-white'}`}>
+               <span className="material-symbols-outlined text-sm">{tab === 'dashboard' ? 'grid_view' : tab === 'inventory' ? 'payments' : 'analytics'}</span> {tab}
             </button>
           ))}
         </nav>
-        <button onClick={onLogout} className="mt-auto text-red-900/40 text-[9px] font-black uppercase tracking-[0.3em] hover:text-red-500">Terminate</button>
+        <button onClick={onLogout} className="mt-auto text-red-900/40 text-[9px] font-black uppercase hover:text-red-500">Terminate</button>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden bg-[#0a0a0a]">
@@ -98,118 +89,65 @@ const Vault = ({ userId, onLogout }) => {
             {activeTab === "inventory" && (
               <button 
                 onClick={() => setIsAddModalOpen(true)} 
-                className="bg-[#4182ff] w-8 h-8 rounded-full flex items-center justify-center material-symbols-outlined text-sm hover:scale-110 transition-transform cursor-pointer"
+                className="bg-[#4182ff] w-8 h-8 rounded-full flex items-center justify-center material-symbols-outlined text-sm hover:scale-110 cursor-pointer"
               >
                 add
               </button>
             )}
           </div>
-          <input className="bg-[#131313] border border-white/5 rounded-xl px-4 py-2 text-[10px] w-64 outline-none uppercase font-black text-gray-400" placeholder="Search Terminal..." onChange={e => setSearchTerm(e.target.value)} />
+          <input className="bg-[#131313] border border-white/5 rounded-xl px-4 py-2 text-[10px] w-64 outline-none uppercase font-black text-gray-500" placeholder="Search..." onChange={e => setSearchTerm(e.target.value)} />
         </header>
 
-        <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-10 space-y-8">
           {activeTab === "dashboard" && (
-            <div className="animate-in fade-in space-y-10">
+            <div className="animate-in fade-in space-y-8">
+              {/* STATS */}
               <div className="grid grid-cols-4 gap-4">
                 {[
-                  { label: "Valuation", val: `$${totalValuation.toLocaleString()}`, col: "text-white" },
-                  { label: "Projected Profit", val: `$${Math.floor(netProfit).toLocaleString()}`, col: "text-[#66dd8b]" },
-                  { label: "Tax Provision", val: `-$${Math.floor(taxReserve).toLocaleString()}`, col: "text-red-900/40" },
-                  { label: "Active Assets", val: items.length, col: "text-white" }
-                ].map((stat, i) => (
-                  <div key={i} className="bg-[#131313] p-6 rounded-3xl border border-white/5 shadow-2xl overflow-hidden">
-                    <span className="text-[9px] text-gray-600 uppercase font-black tracking-widest block mb-2">{stat.label}</span>
-                    <h3 className={`text-xl font-black truncate tracking-tight ${stat.col}`}>{stat.val}</h3>
+                  { l: "Valuation", v: `$${totalValuation.toLocaleString()}`, c: "text-white" },
+                  { l: "Net Profit", v: `$${Math.floor(net).toLocaleString()}`, c: "text-[#66dd8b]" },
+                  { l: "Tax (18%)", v: `-$${Math.floor(tax).toLocaleString()}`, c: "text-red-900/40" },
+                  { l: "Assets", v: items.length, c: "text-white" }
+                ].map((s, i) => (
+                  <div key={i} className="bg-[#131313] p-6 rounded-3xl border border-white/5">
+                    <span className="text-[9px] text-gray-600 uppercase font-black block mb-2 tracking-widest">{s.l}</span>
+                    <h3 className={`text-xl font-black truncate ${s.c}`}>{s.v}</h3>
                   </div>
                 ))}
               </div>
 
-              <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5 relative overflow-hidden flex flex-col justify-between h-80 shadow-2xl">
-                  <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Realizable Institutional Net</span>
-                  <h3 className="text-7xl font-black tracking-tighter leading-none text-white truncate max-w-full">${(totalValuation - taxReserve).toLocaleString()}</h3>
-                  <div className="absolute bottom-0 left-0 h-1.5 w-[80%] bg-[#4182ff] shadow-[0_0_20px_#4182ff]"></div>
-                </div>
-
-                <div className="bg-[#131313] p-8 rounded-[3rem] border border-white/5 shadow-xl">
-                   <h4 className="text-[9px] text-gray-600 uppercase font-black tracking-widest mb-6 border-b border-white/5 pb-2">High-Yield Index</h4>
-                   <div className="space-y-4">
-                     {topAssets.map((asset, i) => (
-                       <div key={i} className="flex justify-between items-center text-[10px] font-bold">
-                         <span className="text-gray-400 truncate w-24">{asset.name}</span>
-                         <span className="text-[#66dd8b]">↑ ${(safeVal(asset.price)-safeVal(asset.cost_price)).toLocaleString()}</span>
-                       </div>
-                     ))}
-                   </div>
-                </div>
-              </div>
-
-              <div className="bg-[#131313] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
-                <div className="px-8 py-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600">Terminal Ledger</span>
-                  <span className="text-[8px] text-[#66dd8b] uppercase font-black tracking-widest animate-pulse italic">Live Node Active</span>
-                </div>
-                <div className="p-2 space-y-1">
-                  {ledger.map(entry => (
-                    <div key={entry.id} className="grid grid-cols-4 items-center p-4 hover:bg-white/[0.01] rounded-xl transition-all">
-                      <span className="text-[10px] font-black text-gray-700">{entry.time}</span>
-                      <span className="text-[9px] w-fit bg-white/5 px-2 py-0.5 rounded text-gray-600 uppercase font-black">{entry.type}</span>
-                      <span className="text-[10px] font-bold uppercase truncate">{entry.action} <span className="text-[#4182ff] ml-1">[{entry.entity}]</span></span>
-                      <span className="text-right text-[10px] font-black text-gray-500">{entry.val}</span>
-                    </div>
-                  ))}
-                </div>
+              {/* REVENUE */}
+              <div className="bg-[#1c1b1b] p-10 rounded-[4rem] border border-white/5 relative overflow-hidden flex flex-col justify-between h-80 shadow-2xl">
+                <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Realizable Portfolio Net</span>
+                <h3 className="text-7xl font-black tracking-tighter leading-none text-white">${(totalValuation - tax).toLocaleString()}</h3>
+                <div className="absolute bottom-0 left-0 h-1.5 w-[80%] bg-[#4182ff] shadow-[0_0_20px_#4182ff]"></div>
               </div>
             </div>
           )}
           {activeTab === "inventory" && <InventoryContainer items={items} searchTerm={searchTerm} onUpdateStock={updateStock} onDeleteAsset={deleteAsset} />}
-          
-          {activeTab === "reports" && (
-            <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-4">
-               <div className="bg-[#131313] p-16 rounded-[4rem] border border-white/5 shadow-2xl text-center">
-                  <h3 className="text-4xl font-black mb-12 uppercase tracking-tighter">Fiscal Audit</h3>
-                  <div className="space-y-6 border-t border-white/5 pt-12 text-left">
-                     <div className="flex justify-between items-center text-gray-400 text-xs font-bold uppercase tracking-widest">
-                       <span>Gross Asset Value</span>
-                       <span className="text-white text-2xl tracking-tighter">${totalValuation.toLocaleString()}</span>
-                     </div>
-                     <div className="flex justify-between items-center text-gray-400 text-xs font-bold uppercase tracking-widest">
-                       <span>Calculated Tax Liability (18%)</span>
-                       <span className="text-red-900/40 text-2xl tracking-tighter">-${Math.floor(taxReserve).toLocaleString()}</span>
-                     </div>
-                     <div className="bg-[#66dd8b]/5 p-10 rounded-[3rem] mt-10 border border-[#66dd8b]/10 flex justify-between items-center">
-                       <span className="text-[#66dd8b] font-black text-[10px] uppercase tracking-[0.3em]">Net Realizable Yield</span>
-                       <span className="font-black text-5xl tracking-tighter text-[#66dd8b]">${Math.floor(netProfit).toLocaleString()}</span>
-                     </div>
-                  </div>
-               </div>
-            </div>
-          )}
         </div>
       </main>
 
       {/* AI SIDEBAR */}
-      <aside className="w-80 border-l border-white/5 bg-[#0e0e0e] flex flex-col p-8 shrink-0 shadow-2xl">
-        <div className="text-[10px] font-black uppercase tracking-widest text-gray-700 mb-8 border-b border-white/5 pb-4">CFO AI Analysis</div>
-        <div className="flex-1 overflow-y-auto space-y-4 custom-scrollbar mb-4">
+      <aside className="w-80 border-l border-white/5 bg-[#0e0e0e] flex flex-col p-8 shrink-0">
+        <div className="text-[10px] font-black uppercase text-gray-700 mb-8 border-b border-white/5 pb-4">CFO AI Analysis</div>
+        <div className="flex-1 overflow-y-auto space-y-4">
           {chatHistory.map((msg, i) => (
-            <div key={i} className={`p-5 rounded-2xl text-[10px] leading-relaxed ${msg.role === 'assistant' ? 'bg-[#131313] border border-white/5 text-gray-400' : 'bg-[#4182ff]/10 text-[#adc7ff]'}`}>{msg.text}</div>
+            <div key={i} className={`p-5 rounded-2xl text-[10px] leading-relaxed ${msg.role === 'assistant' ? 'bg-[#131313] text-gray-400' : 'bg-[#4182ff]/10 text-[#4182ff]'}`}>{msg.text}</div>
           ))}
           <div ref={chatEndRef} />
         </div>
-        <form onSubmit={handleChat} className="relative mt-auto">
-          <input className="w-full bg-[#131313] border border-white/5 rounded-xl px-4 py-3 text-[10px] text-white outline-none focus:border-[#4182ff]/30" placeholder="Query terminal..." value={userQuery} onChange={(e) => setUserQuery(e.target.value)} />
-          <button type="submit" className="absolute right-3 top-2.5 text-[#4182ff] material-symbols-outlined text-base">send</button>
-        </form>
       </aside>
 
-      {/* CRITICAL FIX: Ensure all props are passed correctly to AddAssetModal */}
-      <AddAssetModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
-        onAdd={handleOnAdd} 
-        userId={userId} 
-      />
+      {/* THE MODAL CALL - MUST MATCH PROPS EXACTLY */}
+      {isAddModalOpen && (
+        <AddAssetModal 
+          isOpen={isAddModalOpen} 
+          onClose={() => setIsAddModalOpen(false)} 
+          onAdd={handleOnAdd} 
+          userId={userId} 
+        />
+      )}
     </div>
   );
 };

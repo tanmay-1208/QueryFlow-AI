@@ -1,49 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 
-const AddAssetModal = ({ isOpen, onClose, onAdd, newItem, setNewItem }) => {
+const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
+
+const AddAssetModal = ({ isOpen, onClose, onAdd, userId }) => {
+  const [newItem, setNewItem] = useState({ name: "", cost_price: "", price: "", stock: "" });
+
   if (!isOpen) return null;
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API_BASE_URL}/api/products`, { ...newItem, userId });
+      onAdd(); // This calls the function in Vault.js to refresh data
+    } catch (err) {
+      alert("Submission Error. Terminal connection lost.");
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in">
-      <div className="bg-[#1c1b1b] w-full max-w-md p-10 rounded-[3rem] border border-white/10 shadow-2xl animate-in zoom-in">
-        <h3 className="text-3xl font-black mb-8 text-white font-['Manrope']">Vault New Asset</h3>
-        <form onSubmit={onAdd} className="space-y-4">
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
+      <div className="bg-[#1c1b1b] w-full max-w-md p-10 rounded-[3rem] border border-white/10 shadow-2xl">
+        <h3 className="text-3xl font-black uppercase tracking-tighter mb-8 italic">Vault New Asset</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input 
-            className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
+            className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-sm" 
             placeholder="Asset Name" 
-            value={newItem.name}
             onChange={(e) => setNewItem({...newItem, name: e.target.value})} 
             required 
           />
           <div className="grid grid-cols-2 gap-4">
             <input 
-              type="number" 
-              className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
-              placeholder="Cost ($)" 
-              value={newItem.cost_price}
+              className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-sm" 
+              placeholder="Cost Price" 
+              type="number"
               onChange={(e) => setNewItem({...newItem, cost_price: e.target.value})} 
               required 
             />
             <input 
-              type="number" 
-              className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
-              placeholder="Market ($)" 
-              value={newItem.market_price}
-              onChange={(e) => setNewItem({...newItem, market_price: e.target.value})} 
+              className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-sm" 
+              placeholder="Market Price" 
+              type="number"
+              onChange={(e) => setNewItem({...newItem, price: e.target.value})} 
               required 
             />
           </div>
           <input 
-            type="number" 
-            className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-[#4182ff]" 
-            placeholder="Units" 
-            value={newItem.stock}
+            className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-sm" 
+            placeholder="Initial Stock" 
+            type="number"
             onChange={(e) => setNewItem({...newItem, stock: e.target.value})} 
             required 
           />
-          <div className="flex gap-4 pt-6">
-            <button type="button" onClick={onClose} className="flex-1 py-4 text-gray-500 font-bold uppercase text-[10px] tracking-widest">Cancel</button>
-            <button type="submit" className="flex-1 bg-[#4182ff] text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest">Initialize</button>
+          <div className="flex gap-4 pt-4">
+            <button type="button" onClick={onClose} className="flex-1 bg-white/5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Cancel</button>
+            <button type="submit" className="flex-1 bg-[#4182ff] py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Execute</button>
           </div>
         </form>
       </div>
