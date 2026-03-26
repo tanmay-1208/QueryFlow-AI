@@ -6,60 +6,74 @@ import AddAssetModal from "../components/AddAssetModal";
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
 const Vault = ({ userId, onLogout }) => {
+  // --- STATE MANAGEMENT ---
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
-  // AI States
+  // AI Agent States
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [chatLog, setChatLog] = useState([
-    { role: "agent", text: "[OK] Interface recalibrated. Ready for command." }
+    { role: "agent", text: "[SYSTEM]: Neural link stable. QueryFlow Agent v5.0 initialized. Ready for audit." }
   ]);
 
+  // --- DATA SYNC ---
   const fetchItems = useCallback(async () => {
     if (!userId) return;
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
       setItems(Array.isArray(res.data) ? res.data : []);
-    } catch (err) { console.error("Sync Error:", err); }
+    } catch (err) {
+      console.error("Vault Retrieval Error:", err);
+    }
   }, [userId]);
 
-  useEffect(() => { fetchItems(); }, [fetchItems]);
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
-  // --- AI LOGIC: Handle Enter Key ---
+  const handleOnAdd = (newAsset) => {
+    setItems((prev) => [newAsset, ...prev]);
+  };
+
+  // --- AI LOGIC (The "Enter" Fix) ---
   const handleAiSubmit = async (e) => {
     if (e.key === "Enter" && aiQuery.trim() !== "") {
       const userMessage = aiQuery.trim();
       setAiQuery(""); // Clear input immediately
       
-      // Add user message to log
+      // Add user message to UI
       setChatLog(prev => [...prev, { role: "user", text: userMessage }]);
 
       try {
-        // Calling your Java Backend Chat endpoint
-        const res = await axios.post(`${API_BASE_URL}/api/chat`, userMessage, {
-          headers: { "Content-Type": "text/plain" }
+        // Sending query + current items for CA-level analysis
+        const res = await axios.post(`${API_BASE_URL}/api/chat`, {
+          userQuery: userMessage,
+          items: items 
         });
         
-        // Add AI response to log
+        // Add AI response to UI
         setChatLog(prev => [...prev, { role: "agent", text: res.data }]);
       } catch (err) {
-        setChatLog(prev => [...prev, { role: "agent", text: "[ERR] Backend link severed. Retrying..." }]);
+        console.error("AI Sync Error:", err);
+        setChatLog(prev => [...prev, { role: "agent", text: "[ERR]: Connection to Groq Core timed out. Verify API Key." }]);
       }
     }
   };
 
-  const safeVal = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
-  const grossVal = items.reduce((acc, i) => acc + (safeVal(i.price) * safeVal(i.stock)), 0);
-  const costVal = items.reduce((acc, i) => acc + (safeVal(i.cost_price) * safeVal(i.stock)), 0);
+  // --- CALCULATIONS (Terminal Math) ---
+  const safeVal = (v) => (isNaN(parseFloat(v)) ? 0 : parseFloat(v));
+  const grossVal = items.reduce((acc, i) => acc + safeVal(i.price) * safeVal(i.stock), 0);
+  const costVal = items.reduce((acc, i) => acc + safeVal(i.cost_price) * safeVal(i.stock), 0);
   const totalStock = items.reduce((acc, i) => acc + safeVal(i.stock), 0);
   const tax = grossVal * 0.18;
   const net = grossVal - costVal - tax;
+
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
 
   return (
-    <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden">
+    <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
       
       {/* 1. SIDEBAR */}
       <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
@@ -68,9 +82,16 @@ const Vault = ({ userId, onLogout }) => {
             <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
             <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff]">Vault.v5</span>
           </div>
+          
           <nav className="space-y-3">
-            {["dashboard", "inventory"].map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full text-left p-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === tab ? "bg-white/5 text-white border border-white/10" : "text-white/20 hover:text-white/50"}`}>
+            {["dashboard", "inventory"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`w-full text-left p-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${
+                  activeTab === tab ? "bg-white/5 text-white border border-white/10" : "text-white/20 hover:text-white/50"
+                }`}
+              >
                 {tab}
               </button>
             ))}
@@ -83,20 +104,29 @@ const Vault = ({ userId, onLogout }) => {
             <span className={`${isAiOpen ? 'text-[#00ff88]' : 'animate-pulse text-[#4182ff]'}`}>●</span> Agent_Interface
           </button>
         </div>
-        <button onClick={onLogout} className="text-red-900/40 text-[9px] font-bold uppercase hover:text-red-500 transition-colors tracking-widest">[ Terminate ]</button>
+
+        <button onClick={onLogout} className="text-red-900/40 text-[9px] font-bold uppercase hover:text-red-500 transition-colors tracking-widest">
+          [ Terminate ]
+        </button>
       </aside>
 
-      {/* 2. MAIN VIEWPORT */}
+      {/* 2. MAIN VIEWPORT (Flexible width - pushes when AI opens) */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
         <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Terminal / {activeTab}</h2>
+          
           <div className="flex items-center gap-6">
             <div className="text-right">
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
-              <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0,8)}</p>
+              <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
             </div>
             {activeTab === "inventory" && (
-              <button onClick={() => setIsAddModalOpen(true)} className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold">+</button>
+              <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold"
+              >
+                +
+              </button>
             )}
           </div>
         </header>
@@ -104,6 +134,7 @@ const Vault = ({ userId, onLogout }) => {
         <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
           {activeTab === "dashboard" ? (
             <div className="space-y-10">
+              {/* TOP METRICS */}
               <div className="grid grid-cols-4 gap-6">
                 <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
                 <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
@@ -111,15 +142,17 @@ const Vault = ({ userId, onLogout }) => {
                 <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
               </div>
 
+              {/* PERFORMANCE GRAPH AREA */}
               <div className="glass-panel p-10 h-[400px] flex flex-col justify-between">
                 <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Performance_Report_Live</p>
                 <div className="flex items-end gap-3 h-56 px-4 opacity-30">
                   {[40, 70, 45, 90, 65, 80, 100, 50, 85, 60].map((h, i) => (
-                    <div key={i} className="flex-1 bg-gradient-to-t from-[#4182ff]/5 to-[#4182ff]/60 rounded-t-sm" style={{height: `${h}%`}} />
+                    <div key={i} className="flex-1 bg-gradient-to-t from-[#4182ff]/5 to-[#4182ff]/60 rounded-t-sm" style={{ height: `${h}%` }} />
                   ))}
                 </div>
               </div>
 
+              {/* BOTTOM DATA */}
               <div className="grid grid-cols-2 gap-8 pb-10">
                 <div className="glass-panel p-10">
                   <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
@@ -137,7 +170,7 @@ const Vault = ({ userId, onLogout }) => {
                   <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
                   <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
                   <p>{">"} DB Sync: {items.length} assets integrated</p>
-                  <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation: Active</p>
+                  <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
                 </div>
               </div>
             </div>
@@ -147,29 +180,29 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* 3. THE AI AGENT DRAWER */}
+      {/* 3. AI AGENT DRAWER (Push Layout) */}
       <div 
-        className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 ${
-          isAiOpen ? 'w-[400px] opacity-100' : 'w-0 opacity-0 border-none'
+        className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 z-30 ${
+          isAiOpen ? 'w-[450px] opacity-100' : 'w-0 opacity-0 border-none'
         }`}
       >
-        <div className="w-[400px] p-10 h-full flex flex-col">
-          <div className="flex justify-between items-center mb-12">
+        <div className="w-[450px] p-10 h-full flex flex-col">
+          <div className="flex justify-between items-center mb-10">
              <div>
                <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
-               <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_Unit_v5.0</p>
+               <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
              </div>
              <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
           </div>
           
-          {/* CHAT LOG AREA */}
-          <div className="flex-1 font-mono text-[10px] text-white/50 leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
+          {/* TERMINAL CHAT LOG */}
+          <div className="flex-1 font-mono text-[10px] leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
              {chatLog.map((msg, i) => (
-               <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-                  <span className={`${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
-                    {msg.role === 'user' ? '[YOU]: ' : '[AGENT]: '}
+               <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
+                  <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
+                    {msg.role === 'user' ? '[OPERATOR]: ' : '[AGENT]: '}
                   </span>
-                  {msg.text}
+                  <p className="whitespace-pre-wrap mt-1 text-white/70 inline-block">{msg.text}</p>
                </div>
              ))}
           </div>
@@ -177,7 +210,7 @@ const Vault = ({ userId, onLogout }) => {
           <div className="mt-8 relative">
              <input 
                 className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold" 
-                placeholder="Execute command..." 
+                placeholder="Execute command (e.g., Audit Portfolio)..." 
                 value={aiQuery}
                 onChange={(e) => setAiQuery(e.target.value)}
                 onKeyDown={handleAiSubmit}
@@ -187,16 +220,23 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </div>
 
-      <AddAssetModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={(n) => setItems([n, ...items])} userId={userId} />
+      {/* MODAL */}
+      <AddAssetModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onAdd={handleOnAdd} 
+        userId={userId} 
+      />
     </div>
   );
 };
 
+// Reusable Stat Component
 const GlassCard = ({ label, value, accent }) => (
   <div className="glass-panel p-8 group hover:bg-white/[0.05] transition-all relative overflow-hidden">
     <div className="absolute top-0 left-0 w-1 h-full transition-all group-hover:w-2" style={{ backgroundColor: accent }} />
     <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-3">{label}</p>
-    <p className="text-xl font-black tracking-tighter truncate" style={{color: value.includes('-') ? '#ff3366' : 'white'}}>{value}</p>
+    <p className="text-xl font-black tracking-tighter truncate" style={{ color: value.includes('-') ? '#ff3366' : 'white' }}>{value}</p>
   </div>
 );
 
