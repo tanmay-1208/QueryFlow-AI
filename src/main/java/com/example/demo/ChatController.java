@@ -20,37 +20,26 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
-            // Safety check: if items are null, create an empty list
-            List<Product> items = request.getItems() != null ? request.getItems() : new ArrayList<>();
-
-            // 1. Create a data summary for the AI
-            String inventorySummary = items.stream()
-                .map(p -> p.getName() + ": $" + p.getPrice() + " (Stock: " + p.getStock() + ")")
+            // Context Builder
+            List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
+            String inventorySummary = products.stream()
+                .map(p -> p.getName() + ": $" + p.getPrice())
                 .collect(Collectors.joining(", "));
 
-            // 2. The CA-Level System Prompt
-            String systemMessage = "You are a Senior Chartered Accountant. " +
-                                 "Audit this data: " + (inventorySummary.isEmpty() ? "No data available" : inventorySummary) + ". " +
-                                 "Answer the user professionally using accounting terms (GST, ROI, Margins).";
-
-            // 3. Call the AI
             return chatClient.prompt()
-                .system(systemMessage)
+                .system("You are a Senior CA. Audit this: " + inventorySummary)
                 .user(request.getUserQuery())
                 .call()
                 .content();
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return "[AGENT_ERR]: AI Link Failed. Verify SPRING_AI_GROQ_API_KEY in Railway.";
+            return "[AGENT_ERR]: AI Link Offline. Check Railway Variables.";
         }
     }
 
-    // Consolidated Request Class inside the controller
     public static class ChatRequest {
         private String userQuery;
         private List<Product> items;
-
         public String getUserQuery() { return userQuery; }
         public void setUserQuery(String userQuery) { this.userQuery = userQuery; }
         public List<Product> getItems() { return items; }
