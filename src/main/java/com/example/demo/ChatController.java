@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -17,9 +17,10 @@ public class ChatController {
         this.chatClient = builder.build();
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Vault API is LIVE";
+    // A simple GET to verify the service is up
+    @GetMapping("/health")
+    public String health() {
+        return "Vault AI Service: ONLINE";
     }
 
     @PostMapping("/chat")
@@ -31,13 +32,11 @@ public class ChatController {
                 .collect(Collectors.joining(", "));
 
             return chatClient.prompt()
-                .system("You are a Senior CA. Audit this inventory data: " + 
-                        (inventorySummary.isEmpty() ? "No current data." : inventorySummary))
+                .system("You are a Senior CA. Audit this: " + (inventorySummary.isEmpty() ? "Empty Vault" : inventorySummary))
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            e.printStackTrace();
             return "[AGENT_ERR]: AI Link Offline. Verify GROQ_API_KEY in Railway.";
         }
     }
