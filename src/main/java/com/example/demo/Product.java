@@ -16,10 +16,10 @@ public class Product {
     @Column(name = "cost_price")
     private Double cost_price;
 
-    @Column(name = "\"userId\"") // This matches the Supabase column exactly
+    @Column(name = "\"userId\"") 
     private String userId;
 
-    // --- GETTERS & SETTERS (Required to fix red lines in Controller) ---
+    // --- GETTERS & SETTERS (This removes the red lines in ChatController) ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
