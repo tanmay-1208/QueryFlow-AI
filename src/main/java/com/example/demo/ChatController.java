@@ -6,7 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*") 
+@RequestMapping("/api")
+// Remove @CrossOrigin here because your WebConfig.java is now handling it globally
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -14,22 +15,22 @@ public class ChatController {
     public ChatController(ChatClient.Builder builder) {
         ChatClient temp = null;
         try {
+            // We use a safe build to prevent a startup crash
             temp = builder.build();
         } catch (Exception e) {
-            System.err.println("AI Builder failed: " + e.getMessage());
+            System.err.println("AI System offline: " + e.getMessage());
         }
         this.chatClient = temp;
     }
 
-    // Health Check at the ROOT level
     @GetMapping("/test")
     public String test() {
-        return "VAULT_API_CORE_ONLINE_V5";
+        return "VAULT_API_READY_V6";
     }
 
-    @PostMapping("/api/chat")
+    @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
-        if (chatClient == null) return "[AGENT_ERR]: AI Configuration missing in Railway.";
+        if (chatClient == null) return "[ERR]: AI Link Offline.";
         
         try {
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
@@ -43,7 +44,7 @@ public class ChatController {
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_ERR]: Connection to Groq failed.";
+            return "[ERR]: AI Request Timeout.";
         }
     }
 
