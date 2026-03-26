@@ -9,7 +9,7 @@ const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isAiOpen, setIsAiOpen] = useState(false); // NEW: Side Drawer State
+  const [isAiOpen, setIsAiOpen] = useState(false);
 
   const fetchItems = useCallback(async () => {
     if (!userId) return;
@@ -30,14 +30,14 @@ const Vault = ({ userId, onLogout }) => {
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
 
   return (
-    <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden relative">
+    <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden">
       
-      {/* SIDEBAR */}
-      <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl z-20">
+      {/* 1. SIDEBAR (Shrink-0 prevents it from getting squished) */}
+      <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
         <div>
           <div className="mb-12 flex items-center gap-3">
             <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
-            <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff]">Vault.v4</span>
+            <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff]">Vault.v5</span>
           </div>
           <nav className="space-y-3">
             {["dashboard", "inventory"].map(tab => (
@@ -47,25 +47,24 @@ const Vault = ({ userId, onLogout }) => {
             ))}
           </nav>
           
-          {/* TRIGGER FOR AI AGENT */}
           <button 
             onClick={() => setIsAiOpen(true)}
             className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#4182ff]/20 bg-[#4182ff]/5 text-[#4182ff] text-[9px] font-black uppercase tracking-widest hover:bg-[#4182ff]/10 transition-all"
           >
-            <span className="animate-pulse">●</span> QueryFlow_Agent
+            <span className={`${isAiOpen ? 'text-[#00ff88]' : 'animate-pulse text-[#4182ff]'}`}>●</span> Agent_Interface
           </button>
         </div>
         <button onClick={onLogout} className="text-red-900/40 text-[9px] font-bold uppercase hover:text-red-500 transition-colors tracking-widest">[ Terminate ]</button>
       </aside>
 
-      {/* MAIN VIEWPORT */}
-      <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="h-24 border-b border-white/5 flex justify-between items-center px-12">
+      {/* 2. MAIN VIEWPORT (flex-1 allows it to expand/shrink dynamically) */}
+      <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
+        <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Terminal / {activeTab}</h2>
           <div className="flex items-center gap-6">
             <div className="text-right">
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
-              <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0,8)}...f3</p>
+              <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0,8)}</p>
             </div>
             {activeTab === "inventory" && (
               <button onClick={() => setIsAddModalOpen(true)} className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold">+</button>
@@ -76,28 +75,22 @@ const Vault = ({ userId, onLogout }) => {
         <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
           {activeTab === "dashboard" ? (
             <div className="space-y-10">
-              {/* TOP STATS */}
               <div className="grid grid-cols-4 gap-6">
                 <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
                 <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
                 <GlassCard label="Tax Provision" value={`-$${tax.toLocaleString()}`} accent="#ff3366" />
-                <GlassCard label="Total Units" value={totalStock.toLocaleString()} accent="#ffffff" />
+                <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
               </div>
 
-              {/* FULL WIDTH PERFORMANCE REPORT */}
-              <div className="glass-panel p-10 h-[450px] flex flex-col justify-between">
+              <div className="glass-panel p-10 h-[400px] flex flex-col justify-between">
                 <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Performance_Report_Live</p>
-                <div className="flex items-end gap-3 h-64 px-4 opacity-30">
-                  {[40, 70, 45, 90, 65, 80, 100, 50, 85, 60, 95].map((h, i) => (
-                    <div key={i} className="flex-1 bg-gradient-to-t from-[#4182ff]/5 to-[#4182ff]/60 rounded-t-sm hover:to-[#00ff88] transition-all" style={{height: `${h}%`}} />
+                <div className="flex items-end gap-3 h-56 px-4 opacity-30">
+                  {[40, 70, 45, 90, 65, 80, 100, 50, 85, 60].map((h, i) => (
+                    <div key={i} className="flex-1 bg-gradient-to-t from-[#4182ff]/5 to-[#4182ff]/60 rounded-t-sm" style={{height: `${h}%`}} />
                   ))}
                 </div>
-                <div className="flex justify-between text-[8px] text-white/20 font-bold uppercase pt-6 border-t border-white/5">
-                  <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                </div>
               </div>
 
-              {/* BOTTOM DATA FEEDS */}
               <div className="grid grid-cols-2 gap-8 pb-10">
                 <div className="glass-panel p-10">
                   <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
@@ -113,9 +106,9 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
                 <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
                   <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
-                  <p className="text-[#00ff88]">{">"} Handshake: Session_Active_0x{userId?.slice(0,5)}</p>
+                  <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
                   <p>{">"} DB Sync: {items.length} assets integrated</p>
-                  <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
+                  <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation: Active</p>
                 </div>
               </div>
             </div>
@@ -125,29 +118,29 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* --- AI SIDE DRAWER --- */}
+      {/* 3. THE AI AGENT DRAWER (Push Layout) */}
       <div 
-        className={`fixed top-0 right-0 h-full w-[400px] bg-[#080808] border-l border-white/10 shadow-[-30px_0_60px_rgba(0,0,0,0.8)] z-[200] transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isAiOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 ${
+          isAiOpen ? 'w-[400px] opacity-100' : 'w-0 opacity-0 border-none'
+        }`}
       >
-        <div className="p-10 h-full flex flex-col">
+        {/* We use a fixed-width inner wrapper to prevent text "squishing" while the drawer opens */}
+        <div className="w-[400px] p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-12">
              <div>
                <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
-               <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_Unit_v4.2</p>
+               <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_Unit_v5.0</p>
              </div>
              <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
           </div>
           
           <div className="flex-1 font-mono text-[11px] text-white/50 leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner">
-             <p className="mb-4 text-[#00ff88]">[OK] Agent initialized.</p>
-             <p className="mb-4 text-white/70 leading-loose">
-               {net > 0 
-                 ? `> ANALYSIS: Portfolio is performing at ${((net/grossVal)*100).toFixed(2)}% efficiency. No immediate threats detected.` 
-                 : "> ALERT: Low liquidity detected. Suggest reviewing high-cost assets for liquidation."
-               }
+             <p className="mb-4 text-[#00ff88]">[OK] Interface recalibrated.</p>
+             <p className="text-white/70 leading-loose">
+               {">"} ANALYSIS: Adaptive viewport engaged. All inventory sub-processes remain visible within primary terminal window.
              </p>
              <div className="w-full h-[1px] bg-white/5 my-6" />
-             <p className="text-[9px] text-white/20 animate-pulse italic">_ waiting_for_operator_input...</p>
+             <p className="text-[9px] text-white/20 animate-pulse italic">_ awaiting_input...</p>
           </div>
 
           <div className="mt-8 relative">
