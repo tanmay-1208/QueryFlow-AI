@@ -13,23 +13,28 @@ public class Product {
     private Double price;
     private Integer stock;
 
-    @Column(name = "cost_price") 
+    @Column(name = "cost_price") // Matches your SQL RENAME
     private Double cost_price;
 
-    @Column(name = "\"userId\"") // The escaped quotes are mandatory for camelCase
+    @Column(name = "\"userId\"") // CRITICAL: Matches camelCase in Supabase
     private String userId;
 
-    // --- GETTERS & SETTERS ---
+    // --- GETTERS & SETTERS (Required for ChatController) ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
+
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+
     public Double getCost_price() { return cost_price; }
     public void setCost_price(Double cost_price) { this.cost_price = cost_price; }
+
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 }
