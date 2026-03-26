@@ -13,13 +13,13 @@ public class Product {
     private Double price;
     private Integer stock;
 
-    @Column(name = "cost_price") // Matches your SQL RENAME
+    @Column(name = "cost_price")
     private Double cost_price;
 
-    @Column(name = "\"userId\"") // CRITICAL: Matches camelCase in Supabase
+    @Column(name = "\"userId\"") // CRITICAL: Matches camelCase in Supabase exactly
     private String userId;
 
-    // --- GETTERS & SETTERS (Required for ChatController) ---
+    // --- GETTERS & SETTERS (Must match the variable names exactly) ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
