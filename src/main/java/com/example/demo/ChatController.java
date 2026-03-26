@@ -20,23 +20,29 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
-            // Context Builder
+            // Safety: Ensure products list isn't null
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
+            
+            // Format inventory for the AI
             String inventorySummary = products.stream()
-                .map(p -> p.getName() + ": $" + p.getPrice())
+                .map(p -> p.getName() + ": $" + p.getPrice() + " (Stock: " + p.getStock() + ")")
                 .collect(Collectors.joining(", "));
 
+            String systemMsg = "You are a Senior Chartered Accountant. Audit this data: " + 
+                               (inventorySummary.isEmpty() ? "No assets currently vaulted." : inventorySummary);
+
             return chatClient.prompt()
-                .system("You are a Senior CA. Audit this: " + inventorySummary)
+                .system(systemMsg)
                 .user(request.getUserQuery())
                 .call()
                 .content();
 
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI Link Offline. Check Railway Variables.";
+            return "[AGENT_ERR]: AI Link Offline. Verify GROQ_API_KEY in Railway Variables.";
         }
     }
 
+    // Consolidated inner class - prevents "Class not found" errors
     public static class ChatRequest {
         private String userQuery;
         private List<Product> items;
