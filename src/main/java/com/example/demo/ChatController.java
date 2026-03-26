@@ -3,7 +3,6 @@ package com.example.demo;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -18,27 +17,20 @@ public class ChatController {
 
     @GetMapping("/test")
     public String test() {
-        return "VAULT_BACKEND_STABILIZED_V10";
+        return "VAULT_SERVICE_ALIGNED_V12";
     }
 
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
-            // Build the client on-demand to prevent startup crashes
+            // Build the client inside the request to prevent startup crashes
             ChatClient client = chatClientBuilder.build();
-            
-            List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
-            String summary = products.stream()
-                .map(p -> p.getName() + ": $" + p.getPrice())
-                .collect(Collectors.joining(", "));
-
             return client.prompt()
-                .system("You are a Senior CA. Audit this: " + (summary.isEmpty() ? "No data" : summary))
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI Link Offline. Your Vault data is safe, but the Agent is unavailable.";
+            return "[AGENT_OFFLINE]: Your assets are safe, but the AI is misconfigured. Check the API Key name.";
         }
     }
 
