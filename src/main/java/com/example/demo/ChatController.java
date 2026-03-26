@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") // Ensures Vercel can talk to Railway
+@CrossOrigin(origins = "*") // CRITICAL: This allows your Vercel app to fetch data
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -18,38 +18,35 @@ public class ChatController {
 
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
-        // 1. Log to Railway console so you can see it working
-        System.out.println("AI AUDIT REQUEST RECEIVED: " + request.getUserQuery());
-
         try {
-            // 2. Prepare the data for the CA
-            String inventoryData = request.getItems().stream()
-                .map(p -> "- " + p.getName() + ": Price $" + p.getPrice() + ", Stock " + p.getStock())
+            // 1. Build context from the items sent by the frontend
+            String inventoryContext = request.getItems().stream()
+                .map(p -> String.format("- %s: Price $%s, Cost $%s, Stock %s", 
+                    p.getName(), p.getPrice(), p.getCost_price(), p.getStock()))
                 .collect(Collectors.joining("\n"));
 
-            // 3. The Professional Prompt
-            String systemMessage = "ACT AS A SENIOR CHARTERED ACCOUNTANT. " +
-                "Analyze this inventory:\n" + inventoryData + "\n\n" +
-                "Instructions: Answer the operator's query with high financial accuracy. " +
-                "Use terms like Net Margin, GST, and Liquidity.";
+            // 2. The CA System Prompt
+            String systemInstruction = "ACT AS A SENIOR CHARTERED ACCOUNTANT (CA). " +
+                "Here is the inventory data:\n" + inventoryContext + "\n\n" +
+                "Answer the user's query professionally with financial precision.";
 
-            // 4. THE ACTUAL AI CALL (This replaces the placeholder)
+            // 3. Call Groq
             return chatClient.prompt()
-                .system(systemMessage)
+                .system(systemInstruction)
                 .user(request.getUserQuery())
                 .call()
                 .content();
 
         } catch (Exception e) {
-            System.err.println("Groq AI Error: " + e.getMessage());
-            return "[AGENT_ERR]: Neural link severed. Verify 'SPRING_AI_GROQ_API_KEY' in Railway Variables.";
+            e.printStackTrace();
+            return "[AGENT_ERR]: AI authentication failed. Check SPRING_AI_GROQ_API_KEY in Railway.";
         }
     }
 
-    // Consolidated Request Class
+    // Consolidated Inner Class
     public static class ChatRequest {
         private String userQuery;
-        private List<Product> items;
+        private List<Product> items; // Ensure this matches your Product.java class name
 
         public String getUserQuery() { return userQuery; }
         public void setUserQuery(String userQuery) { this.userQuery = userQuery; }
