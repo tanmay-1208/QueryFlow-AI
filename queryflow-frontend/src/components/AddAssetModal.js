@@ -5,62 +5,39 @@ const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
 const AddAssetModal = ({ isOpen, onClose, onAdd, userId }) => {
   const [form, setForm] = useState({ name: "", cost_price: "", price: "", stock: "" });
-  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    
-    // SYNCED PAYLOAD: Matches the SQL RENAME commands you just ran
     const payload = {
       name: form.name,
-      cost_price: parseFloat(form.cost_price) || 0, 
-      price: parseFloat(form.price) || 0,
-      stock: parseInt(form.stock) || 0,
-      userId: userId // Sends the UUID string
+      cost_price: parseFloat(form.cost_price),
+      price: parseFloat(form.price),
+      stock: parseInt(form.stock),
+      userId: userId // Sent to Java Backend
     };
 
     try {
       const res = await axios.post(`${API_BASE_URL}/api/products`, payload);
-      
-      // If server confirms, use their data; if it returns [] or blank, use our payload
-      const finalAsset = (res.data && !Array.isArray(res.data)) ? res.data : { ...payload, id: Date.now() };
-      
-      onAdd(finalAsset);
+      onAdd(res.data); // Confirms success and updates UI
       onClose();
     } catch (err) {
-      console.error("Sync Error:", err);
-      // Demo-Mode Fallback: If backend fails, we still show it in the UI
-      onAdd({ ...payload, id: Date.now() });
-      onClose();
-    } finally {
-      setLoading(false);
+      console.error("Execute Failed:", err);
+      alert("Failed to sync with Vault. check Railway logs.");
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-6 font-['Inter']">
-      <form onSubmit={handleSubmit} className="bg-[#1c1b1b] w-full max-w-md p-10 rounded-[3rem] border border-white/10 shadow-2xl">
-        <h2 className="text-2xl font-black uppercase tracking-tighter mb-8 italic text-white text-center">Execute Vault Entry</h2>
-        
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-6 z-50">
+      <form onSubmit={handleSubmit} className="bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/10 w-full max-w-md">
+        <h2 className="text-white font-black uppercase text-center mb-8">Execute Entry</h2>
         <div className="space-y-4">
-          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Asset Name" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
-          
-          <div className="grid grid-cols-2 gap-4">
-            <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Cost (Buy)" type="number" value={form.cost_price} onChange={e => setForm({...form, cost_price: e.target.value})} required />
-            <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Price (Sell)" type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} required />
-          </div>
-          
-          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Units in Stock" type="number" value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} required />
-          
-          <div className="flex gap-4 pt-6">
-            <button type="button" onClick={onClose} className="flex-1 bg-white/5 py-4 rounded-2xl text-[9px] font-black uppercase text-gray-500">Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 bg-[#4182ff] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white hover:brightness-110 active:scale-95 transition-all">
-              {loading ? "Vaulting..." : "Execute"}
-            </button>
-          </div>
+          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl text-white outline-none" placeholder="Asset Name" onChange={e => setForm({...form, name: e.target.value})} required />
+          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl text-white outline-none" placeholder="Cost Price" type="number" onChange={e => setForm({...form, cost_price: e.target.value})} required />
+          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl text-white outline-none" placeholder="Market Price" type="number" onChange={e => setForm({...form, price: e.target.value})} required />
+          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl text-white outline-none" placeholder="Units" type="number" onChange={e => setForm({...form, stock: e.target.value})} required />
+          <button className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase">Execute</button>
         </div>
       </form>
     </div>
