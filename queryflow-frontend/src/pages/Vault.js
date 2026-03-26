@@ -9,7 +9,13 @@ const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
+  // AI States
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [aiQuery, setAiQuery] = useState("");
+  const [chatLog, setChatLog] = useState([
+    { role: "agent", text: "[OK] Interface recalibrated. Ready for command." }
+  ]);
 
   const fetchItems = useCallback(async () => {
     if (!userId) return;
@@ -20,6 +26,29 @@ const Vault = ({ userId, onLogout }) => {
   }, [userId]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
+
+  // --- AI LOGIC: Handle Enter Key ---
+  const handleAiSubmit = async (e) => {
+    if (e.key === "Enter" && aiQuery.trim() !== "") {
+      const userMessage = aiQuery.trim();
+      setAiQuery(""); // Clear input immediately
+      
+      // Add user message to log
+      setChatLog(prev => [...prev, { role: "user", text: userMessage }]);
+
+      try {
+        // Calling your Java Backend Chat endpoint
+        const res = await axios.post(`${API_BASE_URL}/api/chat`, userMessage, {
+          headers: { "Content-Type": "text/plain" }
+        });
+        
+        // Add AI response to log
+        setChatLog(prev => [...prev, { role: "agent", text: res.data }]);
+      } catch (err) {
+        setChatLog(prev => [...prev, { role: "agent", text: "[ERR] Backend link severed. Retrying..." }]);
+      }
+    }
+  };
 
   const safeVal = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
   const grossVal = items.reduce((acc, i) => acc + (safeVal(i.price) * safeVal(i.stock)), 0);
@@ -32,7 +61,7 @@ const Vault = ({ userId, onLogout }) => {
   return (
     <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden">
       
-      {/* 1. SIDEBAR (Shrink-0 prevents it from getting squished) */}
+      {/* 1. SIDEBAR */}
       <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
         <div>
           <div className="mb-12 flex items-center gap-3">
@@ -57,7 +86,7 @@ const Vault = ({ userId, onLogout }) => {
         <button onClick={onLogout} className="text-red-900/40 text-[9px] font-bold uppercase hover:text-red-500 transition-colors tracking-widest">[ Terminate ]</button>
       </aside>
 
-      {/* 2. MAIN VIEWPORT (flex-1 allows it to expand/shrink dynamically) */}
+      {/* 2. MAIN VIEWPORT */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
         <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Terminal / {activeTab}</h2>
@@ -118,13 +147,12 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </main>
 
-      {/* 3. THE AI AGENT DRAWER (Push Layout) */}
+      {/* 3. THE AI AGENT DRAWER */}
       <div 
         className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 ${
           isAiOpen ? 'w-[400px] opacity-100' : 'w-0 opacity-0 border-none'
         }`}
       >
-        {/* We use a fixed-width inner wrapper to prevent text "squishing" while the drawer opens */}
         <div className="w-[400px] p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-12">
              <div>
@@ -134,17 +162,26 @@ const Vault = ({ userId, onLogout }) => {
              <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
           </div>
           
-          <div className="flex-1 font-mono text-[11px] text-white/50 leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner">
-             <p className="mb-4 text-[#00ff88]">[OK] Interface recalibrated.</p>
-             <p className="text-white/70 leading-loose">
-               {">"} ANALYSIS: Adaptive viewport engaged. All inventory sub-processes remain visible within primary terminal window.
-             </p>
-             <div className="w-full h-[1px] bg-white/5 my-6" />
-             <p className="text-[9px] text-white/20 animate-pulse italic">_ awaiting_input...</p>
+          {/* CHAT LOG AREA */}
+          <div className="flex-1 font-mono text-[10px] text-white/50 leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
+             {chatLog.map((msg, i) => (
+               <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+                  <span className={`${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
+                    {msg.role === 'user' ? '[YOU]: ' : '[AGENT]: '}
+                  </span>
+                  {msg.text}
+               </div>
+             ))}
           </div>
 
           <div className="mt-8 relative">
-             <input className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold" placeholder="Execute command..." />
+             <input 
+                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold" 
+                placeholder="Execute command..." 
+                value={aiQuery}
+                onChange={(e) => setAiQuery(e.target.value)}
+                onKeyDown={handleAiSubmit}
+             />
              <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#4182ff] font-bold text-lg opacity-50">↵</div>
           </div>
         </div>
