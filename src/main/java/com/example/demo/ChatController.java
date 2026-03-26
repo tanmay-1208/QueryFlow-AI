@@ -1,51 +1,59 @@
 package com.example.demo;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-// Remove @CrossOrigin(origins = "*") because WebConfig handles it now
+@CrossOrigin(origins = "*") // Ensures Vercel can talk to Railway
 public class ChatController {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ChatClient chatClient;
 
-    // --- 1. GET ASSETS: Filters by the UUID sent from Vercel ---
-    @GetMapping("/products")
-    public List<Product> getProducts(@RequestParam String userId) {
-        System.out.println("Terminal Sync: Fetching assets for UUID: " + userId);
-        return productRepository.findByUserId(userId);
+    public ChatController(ChatClient.Builder builder) {
+        this.chatClient = builder.build();
     }
 
-    // --- 2. EXECUTE ENTRY: Saves new asset to Supabase ---
-    @PostMapping("/products")
-    public Product addProduct(@RequestBody Product product) {
-        System.out.println("Vaulting Asset: " + product.getName() + " for User: " + product.getUserId());
-        return productRepository.save(product);
-    }
-
-    // --- 3. LIQUIDATE: Deletes asset by ID ---
-    @DeleteMapping("/products/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        System.out.println("Liquidating Asset ID: " + id);
-        productRepository.deleteById(id);
-    }
-
-    // --- 4. UPDATE STOCK: Handles Add/Sell logic ---
-    @PutMapping("/products/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
-        
-        product.setStock(productDetails.getStock());
-        return productRepository.save(product);
-    }
-
-    // --- EXISTING AI LOGIC ---
     @PostMapping("/chat")
-    public String chat(@RequestBody String message) {
-        return "CFO AI Analysis: Secure connection established. Processing query...";
+    public String handleChat(@RequestBody ChatRequest request) {
+        // 1. Log to Railway console so you can see it working
+        System.out.println("AI AUDIT REQUEST RECEIVED: " + request.getUserQuery());
+
+        try {
+            // 2. Prepare the data for the CA
+            String inventoryData = request.getItems().stream()
+                .map(p -> "- " + p.getName() + ": Price $" + p.getPrice() + ", Stock " + p.getStock())
+                .collect(Collectors.joining("\n"));
+
+            // 3. The Professional Prompt
+            String systemMessage = "ACT AS A SENIOR CHARTERED ACCOUNTANT. " +
+                "Analyze this inventory:\n" + inventoryData + "\n\n" +
+                "Instructions: Answer the operator's query with high financial accuracy. " +
+                "Use terms like Net Margin, GST, and Liquidity.";
+
+            // 4. THE ACTUAL AI CALL (This replaces the placeholder)
+            return chatClient.prompt()
+                .system(systemMessage)
+                .user(request.getUserQuery())
+                .call()
+                .content();
+
+        } catch (Exception e) {
+            System.err.println("Groq AI Error: " + e.getMessage());
+            return "[AGENT_ERR]: Neural link severed. Verify 'SPRING_AI_GROQ_API_KEY' in Railway Variables.";
+        }
+    }
+
+    // Consolidated Request Class
+    public static class ChatRequest {
+        private String userQuery;
+        private List<Product> items;
+
+        public String getUserQuery() { return userQuery; }
+        public void setUserQuery(String userQuery) { this.userQuery = userQuery; }
+        public List<Product> getItems() { return items; }
+        public void setItems(List<Product> items) { this.items = items; }
     }
 }
