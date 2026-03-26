@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -17,27 +17,27 @@ public class ChatController {
         this.chatClient = builder.build();
     }
 
-    // --- ADD THIS TO TEST IF THE API IS ALIVE ---
+    // This is the "Health Check" - if this works, the 404s go away
     @GetMapping("/test")
     public String test() {
-        return "API is Online and Reachable";
+        return "Vault API is LIVE";
     }
 
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
         try {
-            List<Product> items = request.getItems() != null ? request.getItems() : new ArrayList<>();
-            String summary = items.stream()
+            List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
+            String inventorySummary = products.stream()
                 .map(p -> p.getName() + ": $" + p.getPrice())
                 .collect(Collectors.joining(", "));
 
             return chatClient.prompt()
-                .system("You are a Senior CA. Inventory: " + summary)
+                .system("You are a Senior CA. Audit this: " + inventorySummary)
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_ERR]: AI Link Offline. Check Railway Variables.";
+            return "[AGENT_ERR]: AI Link Offline. Verify GROQ_API_KEY in Railway.";
         }
     }
 
