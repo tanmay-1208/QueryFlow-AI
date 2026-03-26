@@ -6,8 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
-// Remove @CrossOrigin here because your WebConfig.java is now handling it globally
+@RequestMapping("/api") // This is CRITICAL for your products to reappear
+@CrossOrigin(origins = "*") 
 public class ChatController {
 
     private final ChatClient chatClient;
@@ -15,36 +15,36 @@ public class ChatController {
     public ChatController(ChatClient.Builder builder) {
         ChatClient temp = null;
         try {
-            // We use a safe build to prevent a startup crash
             temp = builder.build();
         } catch (Exception e) {
-            System.err.println("AI System offline: " + e.getMessage());
+            System.err.println("AI System Offline: " + e.getMessage());
         }
         this.chatClient = temp;
     }
 
+    // Reachable at /api/test
     @GetMapping("/test")
     public String test() {
-        return "VAULT_API_READY_V6";
+        return "VAULT_API_ALIGNED_V7";
     }
 
     @PostMapping("/chat")
     public String handleChat(@RequestBody ChatRequest request) {
-        if (chatClient == null) return "[ERR]: AI Link Offline.";
+        if (chatClient == null) return "[ERR]: AI link missing in Railway.";
         
         try {
             List<Product> products = request.getItems() != null ? request.getItems() : new ArrayList<>();
-            String summary = products.stream()
+            String inventorySummary = products.stream()
                 .map(p -> p.getName() + ": $" + p.getPrice())
                 .collect(Collectors.joining(", "));
 
             return chatClient.prompt()
-                .system("You are a Senior CA. Inventory context: " + summary)
+                .system("You are a Senior CA. Inventory: " + (inventorySummary.isEmpty() ? "None" : inventorySummary))
                 .user(request.getUserQuery())
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[ERR]: AI Request Timeout.";
+            return "[ERR]: Connection to Groq timed out.";
         }
     }
 
