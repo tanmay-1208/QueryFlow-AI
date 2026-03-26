@@ -12,17 +12,22 @@ const Vault = ({ userId, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   
-  // Terminal Logic States
+  // AI & Ledger States
   const [userQuery, setUserQuery] = useState("");
   const [chatHistory, setChatHistory] = useState([{ role: 'assistant', text: "Terminal Secure. CFO AI standing by." }]);
   const [ledger, setLedger] = useState([
-    { id: 1, type: 'SYS', action: 'Terminal Sync', entity: 'NODE-04', val: 'Success', time: '08:35' }
+    { id: 1, type: 'SYS', action: 'Terminal Sync', entity: 'NODE-04', val: 'Success', time: '08:40' }
   ]);
 
   const chatEndRef = useRef(null);
 
-  useEffect(() => { if (userId) fetchItems(); }, [userId]);
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHistory]);
+  useEffect(() => { 
+    if (userId) fetchItems(); 
+  }, [userId]);
+
+  useEffect(() => { 
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
+  }, [chatHistory]);
 
   const fetchItems = async () => {
     try {
@@ -36,11 +41,23 @@ const Vault = ({ userId, onLogout }) => {
     }
   };
 
-  // --- REFRESH HANDLER ---
-  const handleOnAdd = async () => {
-    await fetchItems();
+  // --- REFRESH HANDLER (The Fix for Execute) ---
+  const handleOnAdd = (newlyCreatedAsset) => {
+    // 1. Update items state immediately with the new object from backend
+    setItems(prev => [newlyCreatedAsset, ...prev]);
+    
+    // 2. Log to Ledger
+    setLedger(prev => [{ 
+      id: Date.now(), 
+      type: 'IN', 
+      action: 'Asset Vaulted', 
+      entity: newlyCreatedAsset.name.toUpperCase(), 
+      val: `+${newlyCreatedAsset.stock}`, 
+      time: 'Now' 
+    }, ...prev.slice(0, 4)]);
+
+    // 3. Close the modal
     setIsAddModalOpen(false);
-    setLedger(prev => [{ id: Date.now(), type: 'SYS', action: 'New Asset Vaulted', entity: 'DATABASE', val: 'SUCCESS', time: 'Now' }, ...prev.slice(0, 4)]);
   };
 
   // --- ACTIONS ---
@@ -48,30 +65,35 @@ const Vault = ({ userId, onLogout }) => {
     const item = items.find(i => i.id === id);
     if (!item) return;
     const newStock = Math.max(0, (item.stock || 0) + delta);
+    
+    // Optimistic UI update
     setItems(prev => prev.map(i => i.id === id ? { ...i, stock: newStock } : i));
     
-    setLedger(prev => [{ 
-      id: Date.now(), 
-      type: delta > 0 ? 'IN' : 'OUT', 
-      action: delta > 0 ? 'Restock' : 'Liquidation', 
-      entity: item.name, 
-      val: `${delta > 0 ? '+' : ''}${delta}`, 
-      time: 'Now' 
-    }, ...prev.slice(0, 4)]);
-
-    try { await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId }); } catch (err) { console.error(err); }
+    try { 
+      await axios.put(`${API_BASE_URL}/api/products/${id}`, { stock: newStock, userId }); 
+    } catch (err) { 
+      console.error("Update failed:", err);
+      fetchItems(); // Rollback on error
+    }
   };
 
   const deleteAsset = async (id) => {
     if (!window.confirm("Confirm Permanent Liquidation?")) return;
     const itemToDelete = items.find(i => i.id === id);
+    
+    // UI update
     setItems(prev => prev.filter(i => i.id !== id));
     
     setLedger(prev => [{ 
-      id: Date.now(), type: 'OUT', action: 'Asset Deleted', entity: itemToDelete?.name || 'Unknown', val: 'DEL', time: 'Now' 
+      id: Date.now(), type: 'OUT', action: 'Asset Deleted', entity: itemToDelete?.name || '---', val: 'DEL', time: 'Now' 
     }, ...prev.slice(0, 4)]);
 
-    try { await axios.delete(`${API_BASE_URL}/api/products/${id}?userId=${userId}`); } catch (err) { console.error(err); }
+    try { 
+      await axios.delete(`${API_BASE_URL}/api/products/${id}?userId=${userId}`); 
+    } catch (err) { 
+      console.error("Delete failed:", err);
+      fetchItems(); 
+    }
   };
 
   // --- CALCULATIONS ---
@@ -92,11 +114,15 @@ const Vault = ({ userId, onLogout }) => {
     setChatHistory(newHist);
     setUserQuery("");
     setTimeout(() => {
-      setChatHistory([...newHist, { role: 'assistant', text: `Audit Complete. Current Liquidity: $${totalValuation.toLocaleString()}.` }]);
+      setChatHistory([...newHist, { role: 'assistant', text: `Audit Complete. Asset Valuation: $${totalValuation.toLocaleString()}. System status Bullish.` }]);
     }, 800);
   };
 
-  if (isLoading) return <div className="h-screen bg-[#0e0e0e] flex items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-xs">Syncing Terminal...</div>;
+  if (isLoading) return (
+    <div className="h-screen bg-[#0e0e0e] flex flex-col items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-xs tracking-[0.5em]">
+      Decrypting Vault Terminal
+    </div>
+  );
 
   return (
     <div className="flex h-screen w-screen bg-[#0e0e0e] text-white fixed inset-0 overflow-hidden font-['Inter']">
@@ -147,7 +173,7 @@ const Vault = ({ userId, onLogout }) => {
               <div className="grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 bg-[#1c1b1b] p-10 rounded-[3rem] border border-white/5 relative overflow-hidden flex flex-col justify-between h-80 shadow-2xl">
                   <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest">Realizable Institutional Net</span>
-                  <h3 className="text-6xl font-black tracking-tighter leading-none text-white">${(totalValuation - tax).toLocaleString()}</h3>
+                  <h3 className="text-6xl font-black tracking-tighter leading-none text-white truncate max-w-full">${(totalValuation - tax).toLocaleString()}</h3>
                   <div className="absolute bottom-0 left-0 h-1.5 w-[80%] bg-[#4182ff] shadow-[0_0_20px_#4182ff]"></div>
                 </div>
 
@@ -183,7 +209,15 @@ const Vault = ({ userId, onLogout }) => {
               </div>
             </div>
           )}
-          {activeTab === "inventory" && <InventoryContainer items={items} searchTerm={searchTerm} onUpdateStock={updateStock} onDeleteAsset={deleteAsset} />}
+
+          {activeTab === "inventory" && (
+            <InventoryContainer 
+              items={items} 
+              searchTerm={searchTerm} 
+              onUpdateStock={updateStock} 
+              onDeleteAsset={deleteAsset} 
+            />
+          )}
           
           {activeTab === "reports" && (
             <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-4">
@@ -219,12 +253,16 @@ const Vault = ({ userId, onLogout }) => {
           <div ref={chatEndRef} />
         </div>
         <form onSubmit={handleChat} className="relative mt-auto">
-          <input className="w-full bg-[#131313] border border-white/5 rounded-xl px-4 py-3 text-[10px] text-white outline-none focus:border-[#4182ff]/30" placeholder="Query terminal..." value={userQuery} onChange={(e) => setUserQuery(e.target.value)} />
+          <input 
+            className="w-full bg-[#131313] border border-white/5 rounded-xl px-4 py-3 text-[10px] text-white outline-none focus:border-[#4182ff]/30" 
+            placeholder="Query terminal..." 
+            value={userQuery} 
+            onChange={(e) => setUserQuery(e.target.value)} 
+          />
           <button type="submit" className="absolute right-3 top-2.5 text-[#4182ff] material-symbols-outlined text-base">send</button>
         </form>
       </aside>
 
-      {/* --- IMPORTANT: MODAL RENDERING --- */}
       {isAddModalOpen && (
         <AddAssetModal 
           isOpen={isAddModalOpen} 
