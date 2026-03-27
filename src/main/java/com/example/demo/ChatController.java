@@ -18,29 +18,33 @@ public class ChatController {
     @PostMapping("/chat")
 public String handleChat(@RequestBody Map<String, Object> payload) {
     try {
-        // Capture the user message (e.g., "Give me an audit report of vintage clock")
+        // 1. Get your specific command (e.g., "Vintage Clock")
         String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
         
-        // Clean the inventory data
+        // 2. Clean the vault data
         String rawItems = payload.getOrDefault("items", "[]").toString();
         String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
         return builder.build()
             .prompt()
             .system(s -> s.text(
-                "You are a professional Chartered Accountant (CA). \n\n" +
-                "YOUR JOB: Create a simple audit based on the user's specific request using the provided VAULT_DATA. \n" +
-                "1. If the user asks for 'Vintage Clock', focus ONLY on that. Ignore all other items. \n" +
-                "2. DO NOT look for a report in the data. You ARE the report generator. \n" +
-                "3. Use plain, simple English. \n\n" +
-                "VAULT_DATA (Your Source Material): " + safeItems
+                "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
+                "STRICT TASK: Audit ONLY the specific item the user asks for. \n" +
+                "1. If the user mentions 'Vintage Clock', ignore 'gsh' and all other data. \n" +
+                "2. If no specific item is mentioned, only then summarize the whole vault. \n" +
+                "3. Use 'Straight Talk': Simple English, no jargon, no long intros. \n\n" +
+                "REQUIRED FORMAT: \n" +
+                "**AUDIT STATUS**: [Status of requested item] \n" +
+                "**VALUATION**: [Quantity x Price = Total for requested item] \n" +
+                "**CA ADVICE**: [One simple tip for this specific item.] \n\n" +
+                "VAULT_DATA (Search here): " + safeItems
             ))
-            .user("Perform this audit for me: " + userMsg) 
+            .user("Perform a focused audit for: " + userMsg) 
             .call()
             .content();
 
     } catch (Exception e) {
-        return "[CA_OFFLINE]: " + e.getMessage();
+        return "[CA_OFFLINE]: I hit a snag. " + e.getMessage();
     }
 }
 }
