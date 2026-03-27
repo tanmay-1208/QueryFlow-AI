@@ -8,12 +8,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String name;
     private Double price;
     private Integer stock;
     private String category;
+    private String userId;
+
+    @Column(name = "cost_price")
+    private Double costPrice;
 }
