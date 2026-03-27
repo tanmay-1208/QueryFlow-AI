@@ -18,21 +18,21 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Frontend sends data as { "message": "...", "items": [...] }
-            String userQuery = payload.containsKey("message") ? 
-                               payload.get("message").toString() : 
-                               payload.get("query").toString();
+            // Frontend sends 'message' and 'items'
+            String userMsg = payload.get("message") != null ? 
+                             payload.get("message").toString() : 
+                             payload.get("query").toString();
             
-            Object inventory = payload.get("items");
+            Object items = payload.get("items");
 
             return builder.build()
                 .prompt()
-                .system("You are QueryFlow Agent v5.0. User Vault: " + inventory)
-                .user(userQuery)
+                .system("You are QueryFlow Agent v5.0. User Vault Assets: " + items)
+                .user(userMsg)
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: Backend is stable, but Groq connection was refused. Check your API key for hidden spaces.";
+            return "[AGENT_OFFLINE]: Backend is stable, but the AI connection timed out. Check the base-url in properties.";
         }
     }
 }
