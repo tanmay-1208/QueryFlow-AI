@@ -16,33 +16,31 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-    public String handleChat(@RequestBody Map<String, Object> payload) {
-        try {
-            // Aggressive extraction of your command
-            String userMsg = payload.getOrDefault("message", 
-                             payload.getOrDefault("query", "Audit report")).toString();
-            
-            // Clean inventory data
-            String rawItems = payload.getOrDefault("items", "[]").toString();
-            String safeItems = rawItems.replace("{", "[").replace("}", "]");
+public String handleChat(@RequestBody Map<String, Object> payload) {
+    try {
+        // Capture the user message (e.g., "Give me an audit report of vintage clock")
+        String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
+        
+        // Clean the inventory data
+        String rawItems = payload.getOrDefault("items", "[]").toString();
+        String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
-            return builder.build()
-                .prompt()
-                .system(s -> s.text(
-                    "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
-                    "STRICT TASK: Create a 'Straight Talk' audit for the item requested. \n" +
-                    "1. Scan VAULT_DATA for the requested item only. \n" +
-                    "2. If 'Vintage Clock' is mentioned, ignore GSH and all other assets. \n" +
-                    "3. Format with: **AUDIT STATUS**, **VALUATION**, and **CA ADVICE**. \n\n" +
-                    "VAULT_DATA: " + safeItems
-                ))
-                .user("Please audit this specifically: " + userMsg) 
-                .call()
-                .content();
+        return builder.build()
+            .prompt()
+            .system(s -> s.text(
+                "You are a professional Chartered Accountant (CA). \n\n" +
+                "YOUR JOB: Create a simple audit based on the user's specific request using the provided VAULT_DATA. \n" +
+                "1. If the user asks for 'Vintage Clock', focus ONLY on that. Ignore all other items. \n" +
+                "2. DO NOT look for a report in the data. You ARE the report generator. \n" +
+                "3. Use plain, simple English. \n\n" +
+                "VAULT_DATA (Your Source Material): " + safeItems
+            ))
+            .user("Perform this audit for me: " + userMsg) 
+            .call()
+            .content();
 
-        } catch (Exception e) {
-            // Now you'll see if the URL is still wrong
-            return "[CA_ERROR]: " + e.getMessage();
-        }
+    } catch (Exception e) {
+        return "[CA_OFFLINE]: " + e.getMessage();
     }
+}
 }
