@@ -15,21 +15,25 @@ public class ChatController {
         this.builder = builder;
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "QUERYFLOW_V5_STABLE_FINAL";
+    }
+
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Safe extraction of the message
+            // Extracts message from terminal
             String userMsg = payload.getOrDefault("message", 
-                             payload.getOrDefault("query", "Audit my vault")).toString();
+                             payload.getOrDefault("query", "Audit my portfolio")).toString();
 
-            // THE FIX: Clean the inventory string so Spring AI doesn't try to parse it
-            String rawItems = payload.getOrDefault("items", "Empty").toString();
+            // Sanitize JSON braces to prevent Spring AI Template errors
+            String rawItems = payload.getOrDefault("items", "[]").toString();
             String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
-            // Use .system(s -> s.text(...)) to force Spring to treat this as literal text
             return builder.build()
                 .prompt()
-                .system(s -> s.text("You are a Senior CA. User Inventory Context: " + safeItems))
+                .system(s -> s.text("You are QueryFlow Agent v5.0, a Senior CA. User Inventory: " + safeItems))
                 .user(userMsg)
                 .call()
                 .content();
