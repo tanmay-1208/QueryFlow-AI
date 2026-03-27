@@ -15,39 +15,35 @@ public class ChatController {
         this.builder = builder;
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "QUERYFLOW_V5_STABLE_HUMAN_READY";
-    }
-
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Get user question
-            String userMsg = payload.getOrDefault("message", 
-                             payload.getOrDefault("query", "Summarize my vault")).toString();
-
-            // Sanitize data so AI doesn't crash on JSON braces
+            String userMsg = payload.getOrDefault("message", "Provide an audit report").toString();
+            
+            // Sanitize inventory data for stability
             String rawItems = payload.getOrDefault("items", "[]").toString();
             String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
             return builder.build()
                 .prompt()
                 .system(s -> s.text(
-                    "You are QueryFlow v5.0. Speak in 'Straight Talk' mode. \n" +
-                    "INSTRUCTIONS: \n" +
-                    "1. BE CONCISE. Use bold headers: **THE TOTAL**, **THE GOOD**, **THE FIX**. \n" +
-                    "2. Use bullet points for items. \n" +
-                    "3. No 'Hello' or 'As an AI'. Just the data. \n" +
-                    "4. Explain values in plain English. \n" +
-                    "User Inventory: " + safeItems
+                    "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
+                    "CORE MISSION: Answer every question directly and simply. \n" +
+                    "AUDIT MODE: When asked for an audit, use these exact headers: \n" +
+                    "1. **AUDIT STATUS**: (Is the asset recorded correctly?)\n" +
+                    "2. **VALUATION**: (What is the total worth in plain numbers?)\n" +
+                    "3. **CA OBSERVATION**: (Simple advice on what to do next.)\n\n" +
+                    "STYLE RULES: \n" +
+                    "- Use 'Straight Talk' (no jargon like 'liquidity' or 'amortization'). \n" +
+                    "- Keep it brief and easy for anyone to understand. \n" +
+                    "User Inventory Data: " + safeItems
                 ))
                 .user(userMsg)
                 .call()
                 .content();
 
         } catch (Exception e) {
-            return "[OFFLINE]: I hit a snag. Check the logs. " + e.getMessage();
+            return "[CA_OFFLINE]: I couldn't reach the vault. Error: " + e.getMessage();
         }
     }
 }
