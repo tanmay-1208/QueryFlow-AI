@@ -15,10 +15,15 @@ public class ChatController {
         this.builder = builder;
     }
 
+    // This fixes the 404 on the /api/test page
+    @GetMapping("/test")
+    public String test() {
+        return "VAULT_ALIVE_STABLE_V25";
+    }
+
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Frontend sends 'message' and 'items'
             String userMsg = payload.get("message") != null ? 
                              payload.get("message").toString() : 
                              payload.get("query").toString();
@@ -27,12 +32,12 @@ public class ChatController {
 
             return builder.build()
                 .prompt()
-                .system("You are QueryFlow Agent v5.0. User Vault Assets: " + items)
+                .system("You are QueryFlow Agent v5.0. User Context: " + items)
                 .user(userMsg)
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: Backend is stable, but the AI connection timed out. Check the base-url in properties.";
+            return "[AGENT_OFFLINE]: Backend is stable, but Groq connection timed out. Check base-url suffix.";
         }
     }
 }
