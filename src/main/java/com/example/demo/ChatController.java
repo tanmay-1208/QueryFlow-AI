@@ -15,30 +15,39 @@ public class ChatController {
         this.builder = builder;
     }
 
-   @PostMapping("/chat")
-public String handleChat(@RequestBody Map<String, Object> payload) {
-    try {
-        String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
-        String rawItems = payload.getOrDefault("items", "[]").toString();
-        String safeItems = rawItems.replace("{", "[").replace("}", "]");
-
-        return builder.build()
-            .prompt()
-            .system(s -> s.text(
-                "You are QueryFlow v5.0. Speak in 'Straight Talk' mode. \n" +
-                "RULES: \n" +
-                "1. BE CONCISE. No long introductions. \n" +
-                "2. Use only 3 sections: 'THE TOTAL', 'THE GOOD', and 'THE FIX'. \n" +
-                "3. Use plain English. No financial jargon. \n" +
-                "4. If the user asks a specific question, answer it in 2 sentences max. \n" +
-                "Current Vault Data: " + safeItems
-            ))
-            .user(userMsg)
-            .call()
-            .content();
-
-    } catch (Exception e) {
-        return "[OFFLINE]: Check the connection. " + e.getMessage();
+    @GetMapping("/test")
+    public String test() {
+        return "QUERYFLOW_V5_STABLE_HUMAN_READY";
     }
-}
+
+    @PostMapping("/chat")
+    public String handleChat(@RequestBody Map<String, Object> payload) {
+        try {
+            // Get user question
+            String userMsg = payload.getOrDefault("message", 
+                             payload.getOrDefault("query", "Summarize my vault")).toString();
+
+            // Sanitize data so AI doesn't crash on JSON braces
+            String rawItems = payload.getOrDefault("items", "[]").toString();
+            String safeItems = rawItems.replace("{", "[").replace("}", "]");
+
+            return builder.build()
+                .prompt()
+                .system(s -> s.text(
+                    "You are QueryFlow v5.0. Speak in 'Straight Talk' mode. \n" +
+                    "INSTRUCTIONS: \n" +
+                    "1. BE CONCISE. Use bold headers: **THE TOTAL**, **THE GOOD**, **THE FIX**. \n" +
+                    "2. Use bullet points for items. \n" +
+                    "3. No 'Hello' or 'As an AI'. Just the data. \n" +
+                    "4. Explain values in plain English. \n" +
+                    "User Inventory: " + safeItems
+                ))
+                .user(userMsg)
+                .call()
+                .content();
+
+        } catch (Exception e) {
+            return "[OFFLINE]: I hit a snag. Check the logs. " + e.getMessage();
+        }
+    }
 }
