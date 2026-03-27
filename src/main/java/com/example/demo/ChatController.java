@@ -15,41 +15,43 @@ public class ChatController {
         this.builder = builder;
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "QUERYFLOW_CA_STABLE_V31";
-    }
-
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // 1. Capture your exact command
-            String userQuery = payload.getOrDefault("message", 
-                               payload.getOrDefault("query", "Summarize")).toString();
+            // 1. EXTRACT: Try every possible key the frontend might use
+            String rawCommand = "Audit";
+            if (payload.containsKey("message")) rawCommand = payload.get("message").toString();
+            else if (payload.containsKey("query")) rawCommand = payload.get("query").toString();
+            else if (payload.containsKey("command")) rawCommand = payload.get("command").toString();
             
-            // 2. Capture your inventory and clean it
+            final String userCommand = rawCommand;
+
+            // 2. CONTEXT: Get and clean the data
             String rawItems = payload.getOrDefault("items", "[]").toString();
             String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
-            // 3. The "Direct Directive" Prompt
+            // 3. THE "LASER" PROMPT
             return builder.build()
                 .prompt()
                 .system(s -> s.text(
                     "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
-                    "YOUR ROLE: You don't 'find' reports; you CREATE them using the VAULT_DATA provided. \n\n" +
-                    "STRICT FILTERING RULES: \n" +
-                    "1. Read the 'USER_COMMAND'. \n" +
-                    "2. If it mentions a specific item (e.g., 'Vintage Clock'), ONLY use data for that item. \n" +
-                    "3. DO NOT mention GSH or other assets if they weren't asked for. \n" +
-                    "4. Explain in very simple, easy-to-understand English. \n\n" +
-                    "VAULT_DATA (Your Source): " + safeItems
+                    "STRICT RULES: \n" +
+                    "1. Only audit the item mentioned in the 'USER_COMMAND'. \n" +
+                    "2. If the user mentions 'Vintage Clock', DO NOT mention 'GSH' or anything else. \n" +
+                    "3. If the user does not specify an item, only then audit everything. \n" +
+                    "4. Use 'Straight Talk' (Very simple English). \n\n" +
+                    "FORMAT: \n" +
+                    "**AUDIT STATUS**: [Status of requested item only] \n" +
+                    "**VALUATION**: [Quantity x Price = Total for requested item only] \n" +
+                    "**CA OBSERVATION**: [One simple tip.] \n\n" +
+                    "VAULT_DATA: " + safeItems
                 ))
-                .user("USER_COMMAND: " + userQuery) 
+                .user("USER_COMMAND: " + userCommand) 
                 .call()
                 .content();
 
         } catch (Exception e) {
-            return "[CA_OFFLINE]: System hiccup. " + e.getMessage();
+            return "[CA_OFFLINE]: " + e.getMessage();
         }
     }
 }
