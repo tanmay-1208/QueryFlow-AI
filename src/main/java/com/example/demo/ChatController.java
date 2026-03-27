@@ -18,33 +18,29 @@ public class ChatController {
     @PostMapping("/chat")
 public String handleChat(@RequestBody Map<String, Object> payload) {
     try {
-        // 1. Get your specific command (e.g., "Vintage Clock")
-        String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
-        
-        // 2. Clean the vault data
+        String userMsg = payload.getOrDefault("message", "Summarize").toString();
         String rawItems = payload.getOrDefault("items", "[]").toString();
         String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
         return builder.build()
             .prompt()
             .system(s -> s.text(
-                "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
-                "STRICT TASK: Audit ONLY the specific item the user asks for. \n" +
-                "1. If the user mentions 'Vintage Clock', ignore 'gsh' and all other data. \n" +
-                "2. If no specific item is mentioned, only then summarize the whole vault. \n" +
-                "3. Use 'Straight Talk': Simple English, no jargon, no long intros. \n\n" +
-                "REQUIRED FORMAT: \n" +
-                "**AUDIT STATUS**: [Status of requested item] \n" +
-                "**VALUATION**: [Quantity x Price = Total for requested item] \n" +
-                "**CA ADVICE**: [One simple tip for this specific item.] \n\n" +
-                "VAULT_DATA (Search here): " + safeItems
+                "You are the QueryFlow AI Chartered Accountant (CA) & Strategic Advisor. \n\n" +
+                "MODE 1: AUDIT (If user asks 'Audit X') \n" +
+                "- Provide **AUDIT STATUS**, **VALUATION**, and **CA ADVICE** for that specific item only. \n\n" +
+                "MODE 2: PROFIT STRATEGY (If user asks 'How to make X profit' or 'Strategy') \n" +
+                "- Analyze the current VAULT_DATA. \n" +
+                "- Calculate exactly how many more units or what price increase is needed to hit the target. \n" +
+                "- Use headers: **TARGET**, **REQUIRED ACTION**, and **RISK CHECK**. \n\n" +
+                "LANGUAGE: Straight Talk. Simple English. No jargon. \n" +
+                "VAULT_DATA: " + safeItems
             ))
-            .user("Perform a focused audit for: " + userMsg) 
+            .user("USER COMMAND: " + userMsg) 
             .call()
             .content();
 
     } catch (Exception e) {
-        return "[CA_OFFLINE]: I hit a snag. " + e.getMessage();
+        return "[CA_ERROR]: " + e.getMessage();
     }
 }
 }
