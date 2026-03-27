@@ -18,27 +18,31 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
+            // Aggressive capture of your command
+            String userMsg = payload.getOrDefault("message", 
+                             payload.getOrDefault("query", "Audit")).toString();
+            
+            // Clean the inventory list
             String rawItems = payload.getOrDefault("items", "[]").toString();
             String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
             return builder.build()
                 .prompt()
                 .system(s -> s.text(
-                    "You are the QueryFlow Executive CA. Do not give 'Welcome' messages. \n\n" +
-                    "DIRECTIVE: Answer the user's specific question immediately using VAULT_DATA. \n" +
-                    "1. If they ask for PROFIT: Calculate the exact price or units needed. \n" +
-                    "2. If they ask for AUDIT: Only show details for the item mentioned. \n" +
-                    "3. If they ask for STOCK: Give a simple analysis of that stock. \n\n" +
-                    "STYLE: Straight Talk. Simple English. Bullet points. \n" +
+                    "You are the QueryFlow Senior CA & Profit Strategist. \n\n" +
+                    "YOUR MISSION: Answer every user question with a simple, direct solution. \n" +
+                    "1. PROFIT MODE: If asked about profit or 'how to make money', do the math using VAULT_DATA. \n" +
+                    "2. AUDIT MODE: If asked for an audit of a specific item, ignore everything else. \n" +
+                    "3. STYLE: Use 'Straight Talk'—very simple English, bullet points, no long intros. \n" +
+                    "4. NO WELCOME MESSAGES. Go straight to the answer. \n\n" +
                     "VAULT_DATA: " + safeItems
                 ))
-                .user("EXECUTE THIS COMMAND NOW: " + userMsg) 
+                .user("USER COMMAND: " + userMsg) 
                 .call()
                 .content();
 
         } catch (Exception e) {
-            return "[CA_OFFLINE]: " + e.getMessage();
+            return "[CA_ERROR]: Neural link failed. " + e.getMessage();
         }
     }
 }
