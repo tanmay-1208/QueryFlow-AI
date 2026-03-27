@@ -16,34 +16,30 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-    public String handleChat(@RequestBody Map<String, Object> payload) {
-        try {
-            String userMsg = payload.getOrDefault("message", "Provide an audit report").toString();
-            
-            // Sanitize inventory data for stability
-            String rawItems = payload.getOrDefault("items", "[]").toString();
-            String safeItems = rawItems.replace("{", "[").replace("}", "]");
+public String handleChat(@RequestBody Map<String, Object> payload) {
+    try {
+        String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
+        String rawItems = payload.getOrDefault("items", "[]").toString();
+        String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
-            return builder.build()
-                .prompt()
-                .system(s -> s.text(
-                    "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
-                    "CORE MISSION: Answer every question directly and simply. \n" +
-                    "AUDIT MODE: When asked for an audit, use these exact headers: \n" +
-                    "1. **AUDIT STATUS**: (Is the asset recorded correctly?)\n" +
-                    "2. **VALUATION**: (What is the total worth in plain numbers?)\n" +
-                    "3. **CA OBSERVATION**: (Simple advice on what to do next.)\n\n" +
-                    "STYLE RULES: \n" +
-                    "- Use 'Straight Talk' (no jargon like 'liquidity' or 'amortization'). \n" +
-                    "- Keep it brief and easy for anyone to understand. \n" +
-                    "User Inventory Data: " + safeItems
-                ))
-                .user(userMsg)
-                .call()
-                .content();
+        return builder.build()
+            .prompt()
+            .system(s -> s.text(
+                "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
+                "STRICT RULE: Only audit the specific items the user asks for. \n" +
+                "If the user asks for 'Vintage Clock', DO NOT include 'GSH' in your report. \n\n" +
+                "FORMAT: \n" +
+                "1. **AUDIT STATUS**: Specific to the requested item. \n" +
+                "2. **VALUATION**: Calculation for the requested item only. \n" +
+                "3. **CA OBSERVATION**: One simple tip for this item. \n\n" +
+                "Full Vault Context (Filter this list): " + safeItems
+            ))
+            .user(userMsg)
+            .call()
+            .content();
 
-        } catch (Exception e) {
-            return "[CA_OFFLINE]: I couldn't reach the vault. Error: " + e.getMessage();
-        }
+    } catch (Exception e) {
+        return "[CA_OFFLINE]: " + e.getMessage();
     }
+}
 }
