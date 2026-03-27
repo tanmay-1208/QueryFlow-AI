@@ -18,18 +18,22 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            String userQuery = (String) payload.get("query");
-            List<Object> items = (List<Object>) payload.get("items");
+            // Extracts the message and the inventory items automatically
+            String userQuery = payload.get("message") != null ? 
+                               payload.get("message").toString() : 
+                               payload.get("query").toString();
+            
+            Object items = payload.get("items");
 
-            // This gives the AI the "Context" of your Vault
             return builder.build()
                 .prompt()
-                .system("You are a Senior CA. User Assets: " + items.toString())
+                .system("You are a Senior CA. Here is the user's current vault inventory: " + items)
                 .user(userQuery)
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: Backend is running, but the AI key is invalid or Groq is busy.";
+            // Logs the specific error to Railway so we can see exactly why Groq is mad
+            return "[AGENT_OFFLINE]: Backend is stable, but Groq rejected the key. Check Railway Variables.";
         }
     }
 }
