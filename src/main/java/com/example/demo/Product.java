@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data // This provides Getters and Setters automatically
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {

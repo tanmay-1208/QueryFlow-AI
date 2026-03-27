@@ -23,17 +23,17 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Extracts message from terminal
+            // Extracts message from frontend terminal
             String userMsg = payload.getOrDefault("message", 
                              payload.getOrDefault("query", "Audit my portfolio")).toString();
 
-            // Sanitize JSON braces to prevent Spring AI Template errors
+            // Sanitize inventory data to prevent Spring AI Template errors
             String rawItems = payload.getOrDefault("items", "[]").toString();
             String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
             return builder.build()
                 .prompt()
-                .system(s -> s.text("You are QueryFlow Agent v5.0, a Senior CA. User Inventory: " + safeItems))
+                .system(s -> s.text("You are QueryFlow Agent v5.0, a Senior CA. User Inventory Context: " + safeItems))
                 .user(userMsg)
                 .call()
                 .content();
