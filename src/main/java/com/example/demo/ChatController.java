@@ -16,30 +16,34 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-public String handleChat(@RequestBody Map<String, Object> payload) {
-    try {
-        String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
-        String rawItems = payload.getOrDefault("items", "[]").toString();
-        String safeItems = rawItems.replace("{", "[").replace("}", "]");
+    public String handleChat(@RequestBody Map<String, Object> payload) {
+        try {
+            String userMsg = payload.getOrDefault("message", "Audit my portfolio").toString();
+            String rawItems = payload.getOrDefault("items", "[]").toString();
+            
+            // Safety check: remove JSON braces that break the AI template
+            String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
-        return builder.build()
-            .prompt()
-            .system(s -> s.text(
-                "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
-                "STRICT RULE: Only audit the specific items the user asks for. \n" +
-                "If the user asks for 'Vintage Clock', DO NOT include 'GSH' in your report. \n\n" +
-                "FORMAT: \n" +
-                "1. **AUDIT STATUS**: Specific to the requested item. \n" +
-                "2. **VALUATION**: Calculation for the requested item only. \n" +
-                "3. **CA OBSERVATION**: One simple tip for this item. \n\n" +
-                "Full Vault Context (Filter this list): " + safeItems
-            ))
-            .user(userMsg)
-            .call()
-            .content();
+            return builder.build()
+                .prompt()
+                .system(s -> s.text(
+                    "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
+                    "CRITICAL RULE: Only report on the SPECIFIC item requested by the user. \n" +
+                    "If the user asks for 'Vintage Clock', IGNORE 'GSH' entirely. \n" +
+                    "Do not calculate the 'entire vault' unless explicitly asked. \n\n" +
+                    "REQUIRED FORMAT: \n" +
+                    "**AUDIT STATUS**: [Is the specific item recorded correctly?] \n" +
+                    "**VALUATION**: [Quantity x Price = Total for THIS item only] \n" +
+                    "**CA OBSERVATION**: [One simple, easy-to-understand tip.] \n\n" +
+                    "Language: Simple 'Straight Talk'. No jargon. \n" +
+                    "Inventory Context: " + safeItems
+                ))
+                .user(userMsg)
+                .call()
+                .content();
 
-    } catch (Exception e) {
-        return "[CA_OFFLINE]: " + e.getMessage();
+        } catch (Exception e) {
+            return "[CA_OFFLINE]: " + e.getMessage();
+        }
     }
-}
 }
