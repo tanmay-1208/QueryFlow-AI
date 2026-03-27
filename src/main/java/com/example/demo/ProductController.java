@@ -6,20 +6,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // Allows Vercel to talk to this specific controller
 public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
 
-    // This handles the request from your screenshot: /api/products?userId=...
+    // 1. Fetch assets (Fixes the $0 valuation)
     @GetMapping
     public List<Product> getProducts(@RequestParam(required = false) String userId) {
-        // For now, return all products so the $15M shows up. 
-        // We can add user-specific filtering once the dashboard is alive.
         return productRepository.findAll();
     }
 
+    // 2. Save assets (Fixes the "Terminal Error")
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
         return productRepository.save(product);

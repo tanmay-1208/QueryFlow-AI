@@ -1,8 +1,9 @@
 package com.example.demo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByUserId(String userId);
+    // This interface allows standard Database operations (Save, Find, Delete)
 }
