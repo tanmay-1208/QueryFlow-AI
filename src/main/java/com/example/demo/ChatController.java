@@ -2,11 +2,11 @@ package com.example.demo;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/api")
+@CrossOrigin(origins = "https://query-flow-ai-uq5t.vercel.app", allowCredentials = "true")
 public class ChatController {
 
     private final ChatClient.Builder builder;
