@@ -18,24 +18,21 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Frontend sends the query under "message"
-            String userMsg = payload.get("message") != null ? 
-                             payload.get("message").toString() : 
-                             payload.get("query").toString();
+            // Frontend sends data as { "message": "...", "items": [...] }
+            String userQuery = payload.containsKey("message") ? 
+                               payload.get("message").toString() : 
+                               payload.get("query").toString();
             
-            // This pulls your $1,012 GSH context into the AI's "memory"
-            Object items = payload.get("items");
+            Object inventory = payload.get("items");
 
             return builder.build()
                 .prompt()
-                .system("You are QueryFlow Agent v5.0. User Context: " + items)
-                .user(userMsg)
+                .system("You are QueryFlow Agent v5.0. User Vault: " + inventory)
+                .user(userQuery)
                 .call()
                 .content();
         } catch (Exception e) {
-            // This error will specifically show up in your Railway 'Logs' tab
-            e.printStackTrace(); 
-            return "[AGENT_OFFLINE]: The Groq connection was refused. Check Railway for hidden spaces in your API Key.";
+            return "[AGENT_OFFLINE]: Backend is stable, but Groq connection was refused. Check your API key for hidden spaces.";
         }
     }
 }
