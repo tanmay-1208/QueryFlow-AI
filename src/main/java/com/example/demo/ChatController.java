@@ -15,35 +15,40 @@ public class ChatController {
         this.builder = builder;
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "QUERYFLOW_CA_STABLE_V30";
+    }
+
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            String userMsg = payload.getOrDefault("message", "Audit my portfolio").toString();
-            String rawItems = payload.getOrDefault("items", "[]").toString();
+            // 1. Get the specific question you typed
+            String userQuery = payload.getOrDefault("message", 
+                               payload.getOrDefault("query", "Audit report")).toString();
             
-            // Safety check: remove JSON braces that break the AI template
+            // 2. Get the inventory and clean it
+            String rawItems = payload.getOrDefault("items", "[]").toString();
             String safeItems = rawItems.replace("{", "[").replace("}", "]");
 
+            // 3. The "Laser-Focus" Prompt
             return builder.build()
                 .prompt()
                 .system(s -> s.text(
                     "You are the QueryFlow AI Chartered Accountant (CA). \n\n" +
-                    "CRITICAL RULE: Only report on the SPECIFIC item requested by the user. \n" +
-                    "If the user asks for 'Vintage Clock', IGNORE 'GSH' entirely. \n" +
-                    "Do not calculate the 'entire vault' unless explicitly asked. \n\n" +
-                    "REQUIRED FORMAT: \n" +
-                    "**AUDIT STATUS**: [Is the specific item recorded correctly?] \n" +
-                    "**VALUATION**: [Quantity x Price = Total for THIS item only] \n" +
-                    "**CA OBSERVATION**: [One simple, easy-to-understand tip.] \n\n" +
-                    "Language: Simple 'Straight Talk'. No jargon. \n" +
-                    "Inventory Context: " + safeItems
+                    "CRITICAL INSTRUCTION: \n" +
+                    "1. Look at the 'USER_QUESTION' below. \n" +
+                    "2. Only audit the specific item mentioned in that question. \n" +
+                    "3. If the user asks for 'Vintage Clock', DO NOT mention 'GSH' or other items. \n" +
+                    "4. Use 'Straight Talk' (Very simple English). \n\n" +
+                    "VAULT_DATA: " + safeItems
                 ))
-                .user(userMsg)
+                .user("USER_QUESTION: " + userQuery) 
                 .call()
                 .content();
 
         } catch (Exception e) {
-            return "[CA_OFFLINE]: " + e.getMessage();
+            return "[CA_OFFLINE]: I hit a snag. " + e.getMessage();
         }
     }
 }
