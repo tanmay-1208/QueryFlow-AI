@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://query-flow-ai-uq5t.vercel.app", allowCredentials = "true")
 public class ChatController {
 
     private final ChatClient.Builder builder;
@@ -16,7 +16,7 @@ public class ChatController {
 
     @GetMapping("/test")
     public String test() {
-        return "VAULT_ALIVE_STABLE_V18";
+        return "VAULT_CORE_STABILIZED_V19";
     }
 
     @PostMapping("/chat")
@@ -24,7 +24,7 @@ public class ChatController {
         try {
             return builder.build().prompt().user(query).call().content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: Backend is running, but AI key is pending.";
+            return "[AGENT_OFFLINE]: Backend is running, but AI key check failed.";
         }
     }
 }

@@ -6,19 +6,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*") // Crucial to stop the CORS error in your screenshot
+@CrossOrigin(origins = "https://query-flow-ai-uq5t.vercel.app", allowCredentials = "true")
 public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
 
-    // Handles fetching the dashboard data
     @GetMapping
-    public List<Product> getProducts() {
+    public List<Product> getProducts(@RequestParam(required = false) String userId) {
         return productRepository.findAll();
     }
 
-    // Handles the [ EXECUTE ] button in your terminal
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
         return productRepository.save(product);
