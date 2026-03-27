@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class Product {
     private String userId;
 
     @Column(name = "cost_price")
+    @JsonProperty("cost_price")      // ← THIS is the fix
     private Double costPrice;
 }
