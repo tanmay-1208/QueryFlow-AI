@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    // This interface allows standard Database operations (Save, Find, Delete)
+    // This interface gives you save(), findAll(), and delete() for free.
 }
