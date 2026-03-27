@@ -21,6 +21,7 @@ public class ChatController {
             String userQuery = (String) payload.get("query");
             List<Object> items = (List<Object>) payload.get("items");
 
+            // This gives the AI the "Context" of your Vault
             return builder.build()
                 .prompt()
                 .system("You are a Senior CA. User Assets: " + items.toString())
@@ -28,7 +29,7 @@ public class ChatController {
                 .call()
                 .content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: System is stable, but AI API key is missing or invalid.";
+            return "[AGENT_OFFLINE]: Backend is running, but the AI key is invalid or Groq is busy.";
         }
     }
 }
