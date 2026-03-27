@@ -18,23 +18,22 @@ public class ChatController {
     @PostMapping("/chat")
     public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            // Extracts the user's question and the inventory data
-            String userMessage = payload.containsKey("message") ? 
-                                 payload.get("message").toString() : 
-                                 payload.get("query").toString();
+            // Extracts 'message' from the frontend terminal
+            String userMsg = payload.get("message") != null ? 
+                             payload.get("message").toString() : 
+                             payload.get("query").toString();
             
-            Object inventory = payload.get("items");
+            // Extracts your GSH inventory so the AI knows what you own
+            Object items = payload.get("items");
 
             return builder.build()
                 .prompt()
-                .system("You are QueryFlow Agent v5.0, a Senior CA. User Inventory Context: " + inventory)
-                .user(userMessage)
+                .system("You are QueryFlow Agent v5.0. User Inventory: " + items)
+                .user(userMsg)
                 .call()
                 .content();
         } catch (Exception e) {
-            // This will show up in your Railway logs if Groq is still mad
-            e.printStackTrace();
-            return "[AGENT_OFFLINE]: Backend is stable, but Groq rejected the key. Check for spaces in Railway Variables.";
+            return "[AGENT_OFFLINE]: The AI handshake failed. Ensure the Groq key has no hidden spaces in Railway.";
         }
     }
 }
