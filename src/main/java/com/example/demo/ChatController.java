@@ -15,30 +15,33 @@ public class ChatController {
         this.builder = builder;
     }
 
-    // This fixes the 404 on the /api/test page
     @GetMapping("/test")
     public String test() {
-        return "VAULT_ALIVE_STABLE_V25";
+        return "VAULT_FINAL_STABLE_V27";
     }
 
     @PostMapping("/chat")
-public String handleChat(@RequestBody Map<String, Object> payload) {
-    try {
-        String userMsg = payload.get("message") != null ? 
-                         payload.get("message").toString() : 
-                         payload.get("query").toString();
-        
-        Object items = payload.get("items");
+    public String handleChat(@RequestBody Map<String, Object> payload) {
+        try {
+            // Bulletproof extraction: Checks all common frontend keys
+            String userMsg = "Hello";
+            if (payload.get("message") != null) userMsg = payload.get("message").toString();
+            else if (payload.get("query") != null) userMsg = payload.get("query").toString();
+            else if (payload.get("prompt") != null) userMsg = payload.get("prompt").toString();
+            
+            // Context injection: Pulls your $1,012 GSH holding into the AI memory
+            String context = payload.getOrDefault("items", "No items in vault").toString();
 
-        return builder.build()
-            .prompt()
-            .system("You are QueryFlow Agent v5.0. User Vault Assets: " + items)
-            .user(userMsg)
-            .call()
-            .content();
-    } catch (Exception e) {
-        // This is the "Diagnostic" return - it tells us the TRUTH
-        return "[SYSTEM_ERROR]: " + e.getMessage();
+            return builder.build()
+                .prompt()
+                .system("You are QueryFlow Agent v5.0. Senior CA. User Assets: " + context)
+                .user(userMsg)
+                .call()
+                .content();
+
+        } catch (Exception e) {
+            // This will show exactly what Groq says if it fails
+            return "[AGENT_OFFLINE]: " + e.getMessage();
+        }
     }
-}
 }
