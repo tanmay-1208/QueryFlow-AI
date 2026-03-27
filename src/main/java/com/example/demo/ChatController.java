@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -14,17 +15,20 @@ public class ChatController {
         this.builder = builder;
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "VAULT_CORE_STABILIZED_V19";
-    }
-
     @PostMapping("/chat")
-    public String handleChat(@RequestBody String query) {
+    public String handleChat(@RequestBody Map<String, Object> payload) {
         try {
-            return builder.build().prompt().user(query).call().content();
+            String userQuery = (String) payload.get("query");
+            List<Object> items = (List<Object>) payload.get("items");
+
+            return builder.build()
+                .prompt()
+                .system("You are a Senior CA. User Assets: " + items.toString())
+                .user(userQuery)
+                .call()
+                .content();
         } catch (Exception e) {
-            return "[AGENT_OFFLINE]: Backend is running, but AI key check failed.";
+            return "[AGENT_OFFLINE]: System is stable, but AI API key is missing or invalid.";
         }
     }
 }

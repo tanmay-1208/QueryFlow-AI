@@ -13,7 +13,7 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping
-    public List<Product> getProducts(@RequestParam(required = false) String userId) {
+    public List<Product> getProducts() {
         return productRepository.findAll();
     }
 
