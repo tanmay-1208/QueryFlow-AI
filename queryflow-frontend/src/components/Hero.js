@@ -1,87 +1,89 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 
-// Helper component for the decoding effect
-const DecodingText = ({ text, delay = 0 }) => {
-  const [displayText, setDisplayText] = useState("");
-  const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$¥€£!@#";
+// Individual Letter Component that "Falls"
+const FallingLetter = ({ char, delay, index }) => {
+  // If it's a space, just return an empty box so the words separate
+  if (char === " ") return <span className="inline-block w-4 md:w-8"></span>;
 
-  useEffect(() => {
-    let iteration = 0;
-    const interval = setInterval(() => {
-      setDisplayText(
-        text
-          .split("")
-          .map((char, index) => {
-            if (index < iteration) return text[index];
-            return chars[Math.floor(Math.random() * chars.length)];
-          })
-          .join("")
-      );
-
-      if (iteration >= text.length) clearInterval(interval);
-      iteration += 1 / 3; // Controls the speed of "landing"
-    }, 30);
-
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return <span>{displayText}</span>;
+  return (
+    <motion.span
+      initial={{ y: -1000, opacity: 0 }} // Start far above the screen
+      animate={{ y: 0, opacity: 1 }}     // Fall to its natural position
+      transition={{
+        delay: delay,
+        duration: 0.8,
+        type: "spring",
+        stiffness: 50,
+        damping: 15
+      }}
+      className="inline-block"
+    >
+      {char}
+    </motion.span>
+  );
 };
 
 export default function Hero() {
+  const line1 = "Intelligent Finance for".split("");
+  const line2 = "Modern Entities.".split("");
+
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden pt-20">
       
-      {/* 1. THE "Xtract" Glow in background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#4182ff]/20 blur-[150px] rounded-full z-0" />
+      {/* 1. XTRACT STYLE BACKGROUND GLOW */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#4182ff]/10 blur-[150px] rounded-full z-0" />
 
-      {/* 2. MAIN AKIO CONTENT */}
-      <div className="relative z-10 text-center px-6">
+      {/* 2. THE DROPPING TEXT CONTAINER */}
+      <div className="relative z-10 text-center px-6 max-w-[90vw]">
         
-        {/* Animated Badge */}
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="mb-12 inline-block border border-white/10 rounded-full p-8"
-        >
-          <div className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">
-            Query • Flow • System
-          </div>
-        </motion.div>
-
-        {/* 3. THE "FALLING & LANDING" HEADER */}
-        <h1 className="text-[12vw] md:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase italic text-white flex flex-col items-center">
-          <span className="block">
-            <DecodingText text="INSTITUTIONAL" />
-          </span>
-          <span className="text-[#4182ff] block">
-            <DecodingText text="INTELLIGENCE" />
-          </span>
+        {/* TOP LINE: Intelligent Finance for */}
+        <h1 className="text-[7vw] md:text-[6vw] font-black text-white tracking-tighter leading-none flex flex-wrap justify-center mb-4 uppercase">
+          {line1.map((char, i) => (
+            <FallingLetter key={i} char={char} delay={i * 0.05} />
+          ))}
         </h1>
 
-        {/* Minimalist Subtext */}
-        <motion.p 
+        {/* BOTTOM LINE: Modern Entities. (Blue & Italic) */}
+        <h1 className="text-[10vw] md:text-[9vw] font-black text-[#4182ff] italic tracking-tighter leading-[0.8] flex flex-wrap justify-center uppercase">
+          {line2.map((char, i) => (
+            // Delay starts after the first line finishes falling
+            <FallingLetter key={i} char={char} delay={1.2 + (i * 0.05)} />
+          ))}
+        </h1>
+
+        {/* 3. SUBTEXT & BUTTONS (Reveal after text lands) */}
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="mt-12 text-gray-400 text-sm md:text-lg font-medium tracking-[0.3em] max-w-2xl mx-auto uppercase"
+          transition={{ delay: 2.5, duration: 1 }}
+          className="mt-12"
         >
-          Automated standard for digital asset management.
-        </motion.p>
-
-        {/* Primary Action Button */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2 }}
-          className="mt-16"
-        >
-          <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500">
-            Initialize Access
-          </button>
+          <p className="text-gray-500 text-sm md:text-lg font-medium tracking-[0.4em] uppercase mb-12">
+            Automated standard for digital asset management.
+          </p>
+          
+          <div className="flex flex-col md:flex-row gap-6 justify-center">
+            <button className="px-12 py-5 bg-[#4182ff] text-white font-black uppercase tracking-[0.3em] text-[10px] rounded-lg">
+              Get Started →
+            </button>
+            <button className="px-12 py-5 bg-transparent border border-white/10 text-white font-black uppercase tracking-[0.3em] text-[10px] rounded-lg hover:bg-white/5 transition-all">
+              View Services
+            </button>
+          </div>
         </motion.div>
       </div>
+
+      {/* Decorative Spinning Badge */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-10 right-10 opacity-20 hidden lg:block"
+      >
+        <div className="w-32 h-32 border border-white/20 rounded-full flex items-center justify-center text-[8px] font-black uppercase tracking-widest text-white text-center p-4">
+          Query • Flow • Synthesis • Terminal
+        </div>
+      </motion.div>
     </section>
   );
 }
