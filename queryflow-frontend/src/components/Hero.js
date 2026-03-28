@@ -2,29 +2,37 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const FallingLetter = ({ char }) => {
-  if (char === " ") return <span className="inline-block w-4 md:w-6"></span>;
+  if (char === " ") return <span className="inline-block w-4 md:w-8"></span>;
 
-  // Generate a random delay between 0 and 2 seconds
-  const randomDelay = Math.random() * 2;
-  // Generate a random horizontal offset so they don't fall in a perfectly straight line
-  const randomX = (Math.random() - 0.5) * 20;
+  // CHAOS MATH:
+  const randomDelay = Math.random() * 2.5; // Wider window for more chaos
+  const randomRotate = (Math.random() - 0.5) * 60; // Random tilt up to 30 degrees
+  const randomX = (Math.random() - 0.5) * 100; // Drifts left or right while falling
+  const randomDuration = 0.6 + Math.random() * 0.4; // Some fall faster than others
 
   return (
     <motion.span
-      initial={{ y: -1000, x: randomX, opacity: 0, rotate: -20 }}
-      animate={{ y: 0, x: 0, opacity: 1, rotate: 0 }}
+      initial={{ 
+        y: -1200, 
+        x: randomX, 
+        rotate: randomRotate, 
+        opacity: 0 
+      }}
+      animate={{ 
+        y: 0, 
+        x: 0, 
+        rotate: 0, 
+        opacity: 1 
+      }}
       transition={{
         delay: randomDelay,
-        duration: 0.8,
+        duration: randomDuration,
         type: "spring",
-        stiffness: 60,
-        damping: 15
+        stiffness: 80, 
+        damping: 12, // Lower damping = more "bounce" and chaotic landing
+        mass: 1
       }}
-      // This adds a subtle glow/flicker when the letter "hits" the floor
-      whileInView={{ 
-        textShadow: ["0 0 0px #4182ff", "0 0 15px #4182ff", "0 0 0px #4182ff"],
-      }}
-      className="inline-block"
+      className="inline-block origin-center"
     >
       {char}
     </motion.span>
@@ -38,48 +46,55 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden">
       
-      {/* STATIC GRID ANCHOR (Stops the "Slideshow" feel) */}
-      <div className="absolute inset-0 z-0 opacity-10">
+      {/* 1. THE FLOOR GRID (High contrast like your screenshot) */}
+      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
         <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), 
-                            linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
+          backgroundImage: `linear-gradient(to right, #333 1px, transparent 1px), 
+                            linear-gradient(to bottom, #333 1px, transparent 1px)`,
+          backgroundSize: '80px 80px'
         }} />
       </div>
 
-      {/* BACKGROUND NEBULA */}
-      <div className="absolute w-[800px] h-[800px] bg-[#4182ff]/5 blur-[150px] rounded-full z-0" />
-
-      <div className="relative z-10 text-center px-6">
-        {/* LINE 1 */}
-        <h1 className="text-[6vw] font-black text-white tracking-tighter uppercase flex flex-wrap justify-center mb-2">
+      {/* 2. CHAOTIC TEXT CONTAINER */}
+      <div className="relative z-10 text-center px-4 w-full max-w-[95vw]">
+        
+        {/* LINE 1: The White "Brutalist" Header */}
+        <h1 className="text-[8vw] md:text-[7vw] font-black text-white tracking-tighter leading-[0.85] flex flex-wrap justify-center mb-4 uppercase">
           {line1.map((char, i) => (
             <FallingLetter key={`l1-${i}`} char={char} />
           ))}
         </h1>
 
-        {/* LINE 2 */}
-        <h1 className="text-[10vw] font-black text-[#4182ff] italic tracking-tighter uppercase leading-[0.8] flex flex-wrap justify-center">
+        {/* LINE 2: The Large "Impact" Blue Header */}
+        <h1 className="text-[12vw] md:text-[11vw] font-black text-[#4182ff] italic tracking-tighter leading-[0.75] flex flex-wrap justify-center uppercase">
           {line2.map((char, i) => (
             <FallingLetter key={`l2-${i}`} char={char} />
           ))}
         </h1>
 
-        {/* SUBTEXT (Wait for the rain to finish) */}
+        {/* 3. REVEALED UI ELEMENTS (Post-Chaos) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.5 }}
-          className="mt-16 flex flex-col items-center"
+          transition={{ delay: 3.2 }}
+          className="mt-20 flex flex-col items-center"
         >
-          <p className="text-gray-500 text-xs tracking-[0.5em] uppercase mb-10">
-            Institutional Standard • Synthesis Terminal
-          </p>
-          <button className="px-12 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:invert transition-all">
-            Initialize Access
+          <div className="mb-10 px-6 py-2 border border-white/10 rounded-full backdrop-blur-md">
+            <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.6em]">
+              Institutional Standard • Terminal v4.0
+            </p>
+          </div>
+          
+          <button className="group relative px-20 py-8 bg-white overflow-hidden transition-all hover:bg-[#4182ff]">
+            <span className="relative z-10 text-black font-black uppercase tracking-[0.5em] text-xs group-hover:text-white">
+              Initialize Access
+            </span>
           </button>
         </motion.div>
       </div>
+
+      {/* Background radial glow to pop the text */}
+      <div className="absolute w-[1000px] h-[1000px] bg-[#4182ff]/5 blur-[180px] rounded-full z-0" />
     </section>
   );
 }
