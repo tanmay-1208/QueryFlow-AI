@@ -44,5 +44,6 @@ const FeaturesPage = () => (
     <Footer />
   </div>
 );
+// Note: The motion.div above is an example of how to add animation to a feature card. You can replace it with the actual feature cards in the grid for a more dynamic experience.
 
 export default FeaturesPage;
