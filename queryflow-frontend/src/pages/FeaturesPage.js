@@ -31,6 +31,16 @@ const FeaturesPage = () => (
         </div>
       </div>
     </div>
+    <motion.div 
+  initial={{ opacity: 0, x: -50 }}
+  whileInView={{ opacity: 1, x: 0 }}
+  viewport={{ once: true }} // Only animate once
+  transition={{ duration: 0.6 }}
+  className="feature-card"
+>
+  <h3>Audit Intelligence</h3>
+  <p>Real-time CA analysis of your stock and assets.</p>
+</motion.div>
     <Footer />
   </div>
 );
