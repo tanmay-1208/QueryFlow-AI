@@ -59,13 +59,7 @@ const Vault = ({ userId, onLogout }) => {
   };
 
   const handleEditAsset = (updatedItem) => {
-  // Normalize costPrice -> cost_price for display consistency
-  const normalized = {
-    ...updatedItem,
-    cost_price: updatedItem.costPrice || updatedItem.cost_price || 0
-  };
-  setItems(prev => prev.map(i => i.id === normalized.id ? normalized : i));
-};
+    setItems(prev => prev.map(i => i.id === updatedItem.id ? updatedItem : i));
   };
 
   // --- AI LOGIC ---
@@ -253,7 +247,7 @@ const Vault = ({ userId, onLogout }) => {
       />
     </div>
   );
-
+};
 
 const GlassCard = ({ label, value, accent }) => (
   <div className="glass-panel p-8 group hover:bg-white/[0.05] transition-all relative overflow-hidden">
