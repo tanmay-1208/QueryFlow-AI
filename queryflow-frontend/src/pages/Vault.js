@@ -198,7 +198,11 @@ const handleUpdateStock = async (id, change) => {
               </div>
             </div>
           ) : (
-            <InventoryContainer items={items} />
+            <InventoryContainer 
+  items={items}
+  onDeleteAsset={handleDeleteAsset}
+  onUpdateStock={handleUpdateStock}
+/>
           )}
         </div>
       </main>
