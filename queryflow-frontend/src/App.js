@@ -7,6 +7,12 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Vault from "./pages/Vault";
 
+// --- ADDED IMPORTS ---
+import FeaturesPage from "./pages/FeaturesPage";
+import SolutionsPage from "./pages/SolutionsPage";
+import PricingPage from "./pages/PricingPage";
+import SecurityPage from "./pages/SecurityPage";
+
 export default function App() {
   const [session, setSession] = useState(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
