@@ -6,12 +6,9 @@ import AddAssetModal from "../components/AddAssetModal";
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
 const Vault = ({ userId, onLogout }) => {
-  // --- STATE MANAGEMENT ---
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  
-  // AI Agent States
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [chatLog, setChatLog] = useState([
@@ -33,11 +30,11 @@ const Vault = ({ userId, onLogout }) => {
     fetchItems();
   }, [fetchItems]);
 
+  // --- HANDLERS ---
   const handleOnAdd = (newAsset) => {
     setItems((prev) => [newAsset, ...prev]);
   };
 
-  // --- DELETE & STOCK HANDLERS ---
   const handleDeleteAsset = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/api/products/${id}`);
@@ -61,6 +58,10 @@ const Vault = ({ userId, onLogout }) => {
     }
   };
 
+  const handleEditAsset = (updatedItem) => {
+    setItems(prev => prev.map(i => i.id === updatedItem.id ? updatedItem : i));
+  };
+
   // --- AI LOGIC ---
   const handleAiSubmit = async (e) => {
     if (e.key === "Enter" && aiQuery.trim() !== "") {
@@ -70,7 +71,7 @@ const Vault = ({ userId, onLogout }) => {
       try {
         const res = await axios.post(`${API_BASE_URL}/api/chat`, {
           message: userMessage,
-          items: items 
+          items: items
         });
         setChatLog(prev => [...prev, { role: "agent", text: res.data }]);
       } catch (err) {
@@ -87,12 +88,11 @@ const Vault = ({ userId, onLogout }) => {
   const totalStock = items.reduce((acc, i) => acc + safeVal(i.stock), 0);
   const tax = grossVal * 0.18;
   const net = grossVal - costVal - tax;
-
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
 
   return (
     <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
-      
+
       {/* 1. SIDEBAR */}
       <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
         <div>
@@ -100,7 +100,7 @@ const Vault = ({ userId, onLogout }) => {
             <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
             <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff]">Vault.v5</span>
           </div>
-          
+
           <nav className="space-y-3">
             {["dashboard", "inventory"].map((tab) => (
               <button
@@ -114,8 +114,8 @@ const Vault = ({ userId, onLogout }) => {
               </button>
             ))}
           </nav>
-          
-          <button 
+
+          <button
             onClick={() => setIsAiOpen(true)}
             className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#4182ff]/20 bg-[#4182ff]/5 text-[#4182ff] text-[9px] font-black uppercase tracking-widest hover:bg-[#4182ff]/10 transition-all"
           >
@@ -132,14 +132,13 @@ const Vault = ({ userId, onLogout }) => {
       <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
         <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Terminal / {activeTab}</h2>
-          
           <div className="flex items-center gap-6">
             <div className="text-right">
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
               <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
             </div>
             {activeTab === "inventory" && (
-              <button 
+              <button
                 onClick={() => setIsAddModalOpen(true)}
                 className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold"
               >
@@ -190,61 +189,61 @@ const Vault = ({ userId, onLogout }) => {
               </div>
             </div>
           ) : (
-            // ← THIS IS THE KEY FIX - passing the handlers down
-            <InventoryContainer 
+            <InventoryContainer
               items={items}
               onDeleteAsset={handleDeleteAsset}
               onUpdateStock={handleUpdateStock}
+              onEditAsset={handleEditAsset}
             />
           )}
         </div>
       </main>
 
       {/* 3. AI AGENT DRAWER */}
-      <div 
+      <div
         className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 z-30 ${
           isAiOpen ? 'w-[450px] opacity-100' : 'w-0 opacity-0 border-none'
         }`}
       >
         <div className="w-[450px] p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-10">
-             <div>
-               <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
-               <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
-             </div>
-             <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
+            <div>
+              <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
+              <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
+            </div>
+            <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
           </div>
-          
+
           <div className="flex-1 font-mono text-[10px] leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
-             {chatLog.map((msg, i) => (
-               <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
-                  <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
-                    {msg.role === 'user' ? '[OPERATOR]: ' : '[AGENT]: '}
-                  </span>
-                  <p className="whitespace-pre-wrap mt-1 text-white/70 inline-block">{msg.text}</p>
-               </div>
-             ))}
+            {chatLog.map((msg, i) => (
+              <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
+                <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
+                  {msg.role === 'user' ? '[OPERATOR]: ' : '[AGENT]: '}
+                </span>
+                <p className="whitespace-pre-wrap mt-1 text-white/70 inline-block">{msg.text}</p>
+              </div>
+            ))}
           </div>
 
           <div className="mt-8 relative">
-             <input 
-                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold" 
-                placeholder="Execute command (e.g., Audit Portfolio)..." 
-                value={aiQuery}
-                onChange={(e) => setAiQuery(e.target.value)}
-                onKeyDown={handleAiSubmit}
-             />
-             <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#4182ff] font-bold text-lg opacity-50">↵</div>
+            <input
+              className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold"
+              placeholder="Execute command (e.g., Audit Portfolio)..."
+              value={aiQuery}
+              onChange={(e) => setAiQuery(e.target.value)}
+              onKeyDown={handleAiSubmit}
+            />
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#4182ff] font-bold text-lg opacity-50">↵</div>
           </div>
         </div>
       </div>
 
       {/* MODAL */}
-      <AddAssetModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
-        onAdd={handleOnAdd} 
-        userId={userId} 
+      <AddAssetModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleOnAdd}
+        userId={userId}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import InventoryCard from "./InventoryCard";
 
-const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDeleteAsset }) => {
+const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDeleteAsset, onEditAsset }) => {
   
   // 1. CRITICAL SAFETY: Ensure items is always an array
   // This prevents the "items.filter is not a function" error
@@ -27,11 +27,12 @@ const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDele
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredItems.map((item) => (
             <InventoryCard
-              key={item.id || Math.random()} // Fallback key to prevent React errors
-              item={item}
-              onUpdateStock={onUpdateStock}
-              onDeleteAsset={onDeleteAsset}
-            />
+               key={item.id || Math.random()}
+  item={item}
+  onUpdateStock={onUpdateStock}
+  onDeleteAsset={onDeleteAsset}
+  onEditAsset={onEditAsset}
+/>
           ))}
         </div>
       )}
