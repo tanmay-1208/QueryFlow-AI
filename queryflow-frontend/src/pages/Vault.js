@@ -37,23 +37,41 @@ const Vault = ({ userId, onLogout }) => {
     setItems((prev) => [newAsset, ...prev]);
   };
 
-  // --- AI LOGIC (The "Enter" Fix) ---
+  // --- DELETE & STOCK HANDLERS ---
+  const handleDeleteAsset = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/api/products/${id}`);
+      setItems(prev => prev.filter(item => item.id !== id));
+    } catch (err) {
+      console.error("Delete Error:", err);
+    }
+  };
+
+  const handleUpdateStock = async (id, change) => {
+    try {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      const newStock = (item.stock || 0) + change;
+      if (newStock < 0) return;
+      const updated = { ...item, stock: newStock };
+      await axios.put(`${API_BASE_URL}/api/products/${id}`, updated);
+      setItems(prev => prev.map(i => i.id === id ? updated : i));
+    } catch (err) {
+      console.error("Stock Update Error:", err);
+    }
+  };
+
+  // --- AI LOGIC ---
   const handleAiSubmit = async (e) => {
     if (e.key === "Enter" && aiQuery.trim() !== "") {
       const userMessage = aiQuery.trim();
-      setAiQuery(""); // Clear input immediately
-      
-      // Add user message to UI
+      setAiQuery("");
       setChatLog(prev => [...prev, { role: "user", text: userMessage }]);
-
       try {
-        // Sending query + current items for CA-level analysis
         const res = await axios.post(`${API_BASE_URL}/api/chat`, {
           message: userMessage,
           items: items 
         });
-        
-        // Add AI response to UI
         setChatLog(prev => [...prev, { role: "agent", text: res.data }]);
       } catch (err) {
         console.error("AI Sync Error:", err);
@@ -62,7 +80,7 @@ const Vault = ({ userId, onLogout }) => {
     }
   };
 
-  // --- CALCULATIONS (Terminal Math) ---
+  // --- CALCULATIONS ---
   const safeVal = (v) => (isNaN(parseFloat(v)) ? 0 : parseFloat(v));
   const grossVal = items.reduce((acc, i) => acc + safeVal(i.price) * safeVal(i.stock), 0);
   const costVal = items.reduce((acc, i) => acc + safeVal(i.costPrice || i.cost_price) * safeVal(i.stock), 0);
@@ -71,29 +89,6 @@ const Vault = ({ userId, onLogout }) => {
   const net = grossVal - costVal - tax;
 
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
-
-  const handleDeleteAsset = async (id) => {
-  try {
-    await axios.delete(`${API_BASE_URL}/api/products/${id}`);
-    setItems(prev => prev.filter(item => item.id !== id));
-  } catch (err) {
-    console.error("Delete Error:", err);
-  }
-};
-
-const handleUpdateStock = async (id, change) => {
-  try {
-    const item = items.find(i => i.id === id);
-    if (!item) return;
-    const newStock = (item.stock || 0) + change;
-    if (newStock < 0) return;
-    const updated = { ...item, stock: newStock };
-    await axios.put(`${API_BASE_URL}/api/products/${id}`, updated);
-    setItems(prev => prev.map(i => i.id === id ? updated : i));
-  } catch (err) {
-    console.error("Stock Update Error:", err);
-  }
-};
 
   return (
     <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
@@ -133,7 +128,7 @@ const handleUpdateStock = async (id, change) => {
         </button>
       </aside>
 
-      {/* 2. MAIN VIEWPORT (Flexible width - pushes when AI opens) */}
+      {/* 2. MAIN VIEWPORT */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
         <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
           <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Terminal / {activeTab}</h2>
@@ -157,7 +152,6 @@ const handleUpdateStock = async (id, change) => {
         <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
           {activeTab === "dashboard" ? (
             <div className="space-y-10">
-              {/* TOP METRICS */}
               <div className="grid grid-cols-4 gap-6">
                 <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
                 <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
@@ -165,7 +159,6 @@ const handleUpdateStock = async (id, change) => {
                 <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
               </div>
 
-              {/* PERFORMANCE GRAPH AREA */}
               <div className="glass-panel p-10 h-[400px] flex flex-col justify-between">
                 <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Performance_Report_Live</p>
                 <div className="flex items-end gap-3 h-56 px-4 opacity-30">
@@ -175,7 +168,6 @@ const handleUpdateStock = async (id, change) => {
                 </div>
               </div>
 
-              {/* BOTTOM DATA */}
               <div className="grid grid-cols-2 gap-8 pb-10">
                 <div className="glass-panel p-10">
                   <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
@@ -198,16 +190,17 @@ const handleUpdateStock = async (id, change) => {
               </div>
             </div>
           ) : (
+            // ← THIS IS THE KEY FIX - passing the handlers down
             <InventoryContainer 
-  items={items}
-  onDeleteAsset={handleDeleteAsset}
-  onUpdateStock={handleUpdateStock}
-/>
+              items={items}
+              onDeleteAsset={handleDeleteAsset}
+              onUpdateStock={handleUpdateStock}
+            />
           )}
         </div>
       </main>
 
-      {/* 3. AI AGENT DRAWER (Push Layout) */}
+      {/* 3. AI AGENT DRAWER */}
       <div 
         className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 z-30 ${
           isAiOpen ? 'w-[450px] opacity-100' : 'w-0 opacity-0 border-none'
@@ -222,7 +215,6 @@ const handleUpdateStock = async (id, change) => {
              <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
           </div>
           
-          {/* TERMINAL CHAT LOG */}
           <div className="flex-1 font-mono text-[10px] leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
              {chatLog.map((msg, i) => (
                <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
@@ -258,7 +250,6 @@ const handleUpdateStock = async (id, change) => {
   );
 };
 
-// Reusable Stat Component
 const GlassCard = ({ label, value, accent }) => (
   <div className="glass-panel p-8 group hover:bg-white/[0.05] transition-all relative overflow-hidden">
     <div className="absolute top-0 left-0 w-1 h-full transition-all group-hover:w-2" style={{ backgroundColor: accent }} />
