@@ -1,79 +1,59 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import MatrixRain from "./MatrixRain";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#080808]">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden">
       
-      {/* --- XTRACT STARFIELD BACKGROUND --- */}
-      <div className="absolute inset-0 pointer-events-none opacity-40">
-        <div className="stars-container"></div> {/* We will add this CSS in step 2 */}
-      </div>
+      {/* FALLING TEXT LAYER */}
+      <MatrixRain />
 
-      {/* --- THE CENTER GLOW ORB (The "Planet" effect) --- */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-[500px] h-[500px] bg-[#4182ff] rounded-full blur-[120px] opacity-30 z-0"
-      />
+      {/* XTRACT NEBULA GLOW */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#4182ff]/20 blur-[150px] rounded-full z-0" />
 
-      {/* --- CONTENT (CENTRE ALIGNED) --- */}
-      <div className="relative z-10 text-center px-6 max-w-4xl">
+      {/* AKIO BRUTALIST CONTENT */}
+      <div className="relative z-10 text-center px-6">
         
-        {/* Animated Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+        {/* Spinning Badge (Akio style) */}
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          className="mb-12 inline-block"
         >
-          <span className="bg-[#4182ff]/10 text-[#4182ff] text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-full border border-[#4182ff]/20">
-            New: Automated Asset Synthesis
-          </span>
+          <div className="w-24 h-24 border border-white/10 rounded-full flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-gray-500">
+            Query • Flow
+          </div>
         </motion.div>
 
-        {/* Main Title (Centred & Massive) */}
+        {/* Massive Akio-style Header */}
         <motion.h1 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="text-[12vw] md:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase italic text-white"
         >
-          Intelligent Finance for <br/>
-          <span className="italic text-[#adc7ff]">Modern Entities.</span>
+          Institutional <br/>
+          <span className="text-[#4182ff]">Intelligence</span>
         </motion.h1>
 
-        {/* Subtext */}
+        {/* Minimalist Subtext */}
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+          transition={{ delay: 0.5 }}
+          className="mt-12 text-gray-400 text-lg md:text-xl font-medium tracking-wide max-w-xl mx-auto uppercase"
         >
-          QueryFlow brings AI-driven fiscal automation to your fingertips. 
-          Streamline your ledger, secure your vault, and automate your audit.
+          The automated standard for digital asset management and fiscal sharding.
         </motion.p>
 
-        {/* Action Buttons */}
+        {/* Primary Action */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-col md:flex-row gap-4 justify-center items-center"
+          className="mt-16"
+          whileHover={{ scale: 1.05 }}
         >
-          <Link to="/login">
-            <button className="px-10 py-4 bg-[#4182ff] text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all duration-500 rounded-lg">
-              Get Started →
-            </button>
-          </Link>
-          <Link to="/features">
-            <button className="px-10 py-4 bg-transparent border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white/5 transition-all rounded-lg">
-              View Services
-            </button>
-          </Link>
+          <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-[#4182ff] hover:text-white transition-all duration-500">
+            Initialize Access
+          </button>
         </motion.div>
       </div>
     </section>
