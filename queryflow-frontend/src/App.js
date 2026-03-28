@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "./supabaseClient";
 
 // 1. Import your New Component
-import CustomCursor from "./components/CustomCursor"; // Adjust path if needed
+
 
 // Import Pages
 import LandingPage from "./pages/LandingPage";
