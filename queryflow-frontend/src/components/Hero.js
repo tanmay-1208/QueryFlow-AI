@@ -1,38 +1,81 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-const Hero = () => {
+export default function Hero() {
   return (
-    <section className="max-w-[1400px] mx-auto px-6 md:px-10 pt-32 md:pt-48 pb-20 grid lg:grid-cols-2 gap-24 items-center">
-      <div className="animate-in fade-in slide-in-from-left duration-1000">
-        <div className="inline-flex items-center gap-2 bg-[#66dd8b]/10 border border-[#66dd8b]/20 px-4 py-2 rounded-full mb-8 md:mb-12">
-          <span className="w-2 h-2 bg-[#66dd8b] rounded-full animate-pulse"></span>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#66dd8b]">V4.0 Institutional</span>
-        </div>
-        
-        <h1 className="text-[60px] md:text-[100px] font-black font-['Manrope'] tracking-tighter leading-[0.85] mb-10 text-white">
-          The Modern <br className="hidden md:block"/>CFO's <br/><span className="text-[#adc7ff] italic">Digital Vault</span>
-        </h1>
-        
-        <p className="text-lg md:text-xl text-gray-400 max-w-lg leading-relaxed mb-12 font-medium">
-          Unify ledger integrity with algorithmic foresight. QueryFlow Vault transforms raw fiscal data into institutional intelligence.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-5">
-          <Link to="/login" className="bg-[#4182ff] text-white px-10 py-5 rounded-2xl font-black text-center text-lg shadow-2xl hover:scale-105 transition-all">
-            Access Terminal
-          </Link>
-        </div>
+    <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#080808]">
+      
+      {/* --- XTRACT STARFIELD BACKGROUND --- */}
+      <div className="absolute inset-0 pointer-events-none opacity-40">
+        <div className="stars-container"></div> {/* We will add this CSS in step 2 */}
       </div>
 
-      {/* REVENUE CARD */}
-      <div className="bg-[#1c1b1b] p-8 md:p-12 rounded-[3.5rem] border border-white/5 relative overflow-hidden shadow-2xl h-64 md:h-80 flex flex-col justify-between">
-         <span className="text-[11px] text-gray-500 uppercase font-black tracking-[0.2em]">Net Revenue at Risk</span>
-         <div className="text-5xl md:text-[80px] font-black tracking-tighter leading-none text-white">$4.2M</div>
-         <div className="absolute bottom-0 left-0 w-[75%] h-2 bg-[#4182ff]"></div>
+      {/* --- THE CENTER GLOW ORB (The "Planet" effect) --- */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-[500px] h-[500px] bg-[#4182ff] rounded-full blur-[120px] opacity-30 z-0"
+      />
+
+      {/* --- CONTENT (CENTRE ALIGNED) --- */}
+      <div className="relative z-10 text-center px-6 max-w-4xl">
+        
+        {/* Animated Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <span className="bg-[#4182ff]/10 text-[#4182ff] text-[10px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-full border border-[#4182ff]/20">
+            New: Automated Asset Synthesis
+          </span>
+        </motion.div>
+
+        {/* Main Title (Centred & Massive) */}
+        <motion.h1 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8"
+        >
+          Intelligent Finance for <br/>
+          <span className="italic text-[#adc7ff]">Modern Entities.</span>
+        </motion.h1>
+
+        {/* Subtext */}
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+        >
+          QueryFlow brings AI-driven fiscal automation to your fingertips. 
+          Streamline your ledger, secure your vault, and automate your audit.
+        </motion.p>
+
+        {/* Action Buttons */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="flex flex-col md:flex-row gap-4 justify-center items-center"
+        >
+          <Link to="/login">
+            <button className="px-10 py-4 bg-[#4182ff] text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all duration-500 rounded-lg">
+              Get Started →
+            </button>
+          </Link>
+          <Link to="/features">
+            <button className="px-10 py-4 bg-transparent border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white/5 transition-all rounded-lg">
+              View Services
+            </button>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
-};
-
-export default Hero;
+}
