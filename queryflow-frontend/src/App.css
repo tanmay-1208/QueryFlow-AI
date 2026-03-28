@@ -219,3 +219,13 @@ html {
     padding: 1rem; /* Reduce padding so content doesn't overflow */
   }
 }
+
+/* This hides the default mouse so only your custom glow shows */
+* {
+  cursor: none !important;
+}
+
+/* Optional: Bring it back for links if you want, or keep it custom */
+a, button {
+  cursor: none !important;
+}

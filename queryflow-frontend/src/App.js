@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "./supabaseClient";
 
-// 1. ALL IMPORTS MUST BE HERE
+// 1. Import your New Component
+import CustomCursor from "./components/CustomCursor"; // Adjust path if needed
+
+// Import Pages
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Vault from "./pages/Vault";
@@ -10,6 +14,45 @@ import FeaturesPage from "./pages/FeaturesPage";
 import SolutionsPage from "./pages/SolutionsPage";
 import PricingPage from "./pages/PricingPage";
 import SecurityPage from "./pages/SecurityPage";
+
+// Animation Wrapper
+const PageTransition = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -20 }}
+    transition={{ duration: 0.5 }}
+  >
+    {children}
+  </motion.div>
+);
+
+function AnimatedRoutes({ session, handleLogout }) {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+        <Route path="/features" element={<PageTransition><FeaturesPage /></PageTransition>} />
+        <Route path="/solutions" element={<PageTransition><SolutionsPage /></PageTransition>} />
+        <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
+        <Route path="/security" element={<PageTransition><SecurityPage /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route 
+          path="/vault" 
+          element={
+            session ? (
+              <PageTransition><Vault userId={session.user.id} onLogout={handleLogout} /></PageTransition>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } 
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -30,43 +73,18 @@ export default function App() {
     await supabase.auth.signOut();
     localStorage.clear();
     setSession(null);
-    window.location.replace("/");
   };
 
   if (isInitialLoading) {
-    return (
-      <div className="h-screen w-screen bg-[#0e0e0e] flex flex-col items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-xs tracking-[0.5em]">
-        Authenticating Node...
-      </div>
-    );
+    return <div className="loading">Authenticating Node...</div>;
   }
 
   return (
     <Router>
-      <Routes>
-        {/* PUBLIC ROUTES - These tell the app where to go */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/features" element={<FeaturesPage />} />
-        <Route path="/solutions" element={<SolutionsPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/security" element={<SecurityPage />} />
-        <Route path="/login" element={<Login />} />
-
-        {/* PROTECTED ROUTE */}
-        <Route 
-          path="/vault" 
-          element={
-            session ? (
-              <Vault userId={session.user.id} onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          } 
-        />
-
-        {/* CATCH-ALL - If you don't add the routes above, this kicks you to Home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      {/* 2. PASTE CURSOR HERE - It sits outside the Routes so it never unmounts */}
+      <CustomCursor />
+      
+      <AnimatedRoutes session={session} handleLogout={handleLogout} />
     </Router>
   );
 }
