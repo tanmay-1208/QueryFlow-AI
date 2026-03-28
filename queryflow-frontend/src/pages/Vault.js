@@ -49,7 +49,7 @@ const Vault = ({ userId, onLogout }) => {
       try {
         // Sending query + current items for CA-level analysis
         const res = await axios.post(`${API_BASE_URL}/api/chat`, {
-          userQuery: userMessage,
+          message: userMessage,
           items: items 
         });
         
@@ -65,7 +65,7 @@ const Vault = ({ userId, onLogout }) => {
   // --- CALCULATIONS (Terminal Math) ---
   const safeVal = (v) => (isNaN(parseFloat(v)) ? 0 : parseFloat(v));
   const grossVal = items.reduce((acc, i) => acc + safeVal(i.price) * safeVal(i.stock), 0);
-  const costVal = items.reduce((acc, i) => acc + safeVal(i.cost_price) * safeVal(i.stock), 0);
+  const costVal = items.reduce((acc, i) => acc + safeVal(i.costPrice || i.cost_price) * safeVal(i.stock), 0);
   const totalStock = items.reduce((acc, i) => acc + safeVal(i.stock), 0);
   const tax = grossVal * 0.18;
   const net = grossVal - costVal - tax;
