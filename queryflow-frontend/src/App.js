@@ -12,20 +12,19 @@ import SolutionsPage from "./pages/SolutionsPage";
 import PricingPage from "./pages/PricingPage";
 import SecurityPage from "./pages/SecurityPage";
 
-// --- 3D PAGE ENTRANCE WRAPPER ---
+// --- CLEAN FADE TRANSITION ---
+// This removes the "slideshow" movement (y and rotateX are gone)
 const PageTransition = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20, rotateX: 2 }}
-    animate={{ opacity: 1, y: 0, rotateX: 0 }}
-    exit={{ opacity: 0, y: -20, rotateX: -2 }}
-    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.4, ease: "easeInOut" }}
   >
     {children}
   </motion.div>
 );
 
-// --- ANIMATED ROUTES COMPONENT ---
-// This handles the exit/entry animations when URLs change
 function AnimatedRoutes({ session, handleLogout }) {
   const location = useLocation();
   
@@ -54,26 +53,24 @@ function AnimatedRoutes({ session, handleLogout }) {
           } 
         />
 
-        {/* Catch-all: Redirects any undefined URL back to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
   );
 }
 
-// --- MAIN APP COMPONENT ---
 export default function App() {
   const [session, setSession] = useState(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Get initial session
+    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setIsInitialLoading(false);
     });
 
-    // 2. Listen for auth changes (Login/Logout)
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
@@ -85,14 +82,12 @@ export default function App() {
     await supabase.auth.signOut();
     localStorage.clear();
     setSession(null);
-    // Force a clean redirect to home
     window.location.replace("/");
   };
 
-  // Loading State (Authenticating Node)
   if (isInitialLoading) {
     return (
-      <div className="h-screen w-screen bg-[#0e0e0e] flex flex-col items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-xs tracking-[0.5em]">
+      <div className="h-screen w-screen bg-[#080808] flex items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-[10px] tracking-[0.5em]">
         Authenticating Node...
       </div>
     );
@@ -100,8 +95,8 @@ export default function App() {
 
   return (
     <Router>
-      {/* The CustomCursor was removed from here to fix lag issues. 
-          Default system cursor is now restored.
+      {/* Note: The CustomCursor was removed to eliminate lag. 
+        Ensure index.css does NOT have 'cursor: none'.
       */}
       <AnimatedRoutes session={session} handleLogout={handleLogout} />
     </Router>
