@@ -27,8 +27,9 @@ public class ProductController {
     }
 
     // ← THIS WAS MISSING
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        productRepository.deleteById(id);
-    }
+    @PutMapping("/{id}")
+public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    product.setId(id);
+    return productRepository.save(product);
+}
 }
