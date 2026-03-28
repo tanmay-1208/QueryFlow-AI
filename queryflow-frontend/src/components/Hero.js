@@ -1,46 +1,57 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-const FallingLetter = ({ char, color = "text-white", fontSize = "text-[7vw]" }) => {
-  if (char === " ") return <span className="inline-block w-4 md:w-8"></span>;
-
-  // PHYSICS MATH
-  const randomDelay = Math.random() * 2.5; 
-  const initialRotate = (Math.random() - 0.5) * 720;
-  const initialX = (Math.random() - 0.5) * 400;
+// This component handles the falling "Capsules" that are clickable
+const NavCapsule = ({ text, path, color, delay }) => {
+  const navigate = useNavigate();
   
-  // LANDING - Tighter offsets to keep it readable but "messy"
-  const landX = (Math.random() - 0.5) * 12; 
-  const landY = (Math.random() - 0.5) * 15; 
-  const landRotate = (Math.random() - 0.5) * 20; 
+  // Random physics for the drop
+  const randomX = (Math.random() - 0.5) * 400;
+  const randomRotate = (Math.random() - 0.5) * 45;
 
   return (
-    <motion.span
-      initial={{ y: -1200, x: initialX, rotate: initialRotate, opacity: 0 }}
-      animate={{ y: landY, x: landX, rotate: landRotate, opacity: 1 }}
-      transition={{
-        delay: randomDelay,
-        duration: 0.9,
-        type: "spring",
-        stiffness: 60, 
-        damping: 12,
+    <motion.div
+      drag
+      dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+      initial={{ y: -1000, x: randomX, rotate: randomRotate, opacity: 0 }}
+      animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
+      transition={{ 
+        delay: delay, 
+        type: "spring", 
+        stiffness: 40, 
+        damping: 10,
+        mass: 1 
       }}
-      className={`inline-block font-black uppercase tracking-[-0.08em] ${fontSize} ${color} leading-[0.8] drop-shadow-2xl`}
+      whileHover={{ scale: 1.1, cursor: "pointer" }}
+      whileTap={{ scale: 0.9 }}
+      onClick={() => navigate(path)}
+      className={`absolute px-8 py-3 rounded-full border border-white/20 bg-black/80 backdrop-blur-lg z-50 flex items-center gap-3 group shadow-2xl`}
+      style={{ 
+        top: `${20 + Math.random() * 40}%`, 
+        left: `${15 + Math.random() * 70}%` 
+      }}
     >
-      {char}
-    </motion.span>
+      <div className={`w-2 h-2 rounded-full ${color} group-hover:animate-ping`} />
+      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white">
+        {text}
+      </span>
+    </motion.div>
   );
 };
 
 export default function Hero() {
-  const line1 = "Intelligent Finance for".split("");
-  const line2 = "Modern Entities.".split("");
-
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden pt-32 pb-20">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden pt-20">
       
-      {/* 1. ARCHITECTURAL GRID (Refined) */}
-      <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none">
+      {/* 1. THE FALLING NAV ELEMENTS (Interactive & Clickable) */}
+      <NavCapsule text="Features" path="/features" color="bg-[#4182ff]" delay={0.5} />
+      <NavCapsule text="Security" path="/security" color="bg-[#66dd8b]" delay={0.8} />
+      <NavCapsule text="Solutions" path="/solutions" color="bg-[#fbbc00]" delay={1.1} />
+      <NavCapsule text="Pricing" path="/pricing" color="bg-purple-500" delay={1.4} />
+
+      {/* 2. BACKGROUND GRID (Locked) */}
+      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
         <div className="absolute inset-0" style={{
           backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), 
                             linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
@@ -48,56 +59,47 @@ export default function Hero() {
         }} />
       </div>
 
-      {/* 2. THE TERMINAL CONTAINER */}
-      <div className="relative z-10 text-center w-full max-w-[1400px] flex flex-col items-center px-4">
-        
-        {/* Subtle Pre-header */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-8 px-4 py-1 border border-[#4182ff]/30 rounded-full bg-[#4182ff]/5"
-        >
-          <p className="text-[#4182ff] text-[9px] font-black uppercase tracking-[0.4em]">Node Connection: Stable</p>
-        </motion.div>
-
-        {/* LINE 1 - Sits slightly higher */}
-        <div className="flex flex-wrap justify-center mb-0 perspective-[1000px]">
-          {line1.map((char, i) => (
-            <FallingLetter key={`l1-${i}`} char={char} color="text-white" fontSize="text-[7.5vw]" />
-          ))}
-        </div>
-
-        {/* LINE 2 - Overlaps Line 1 slightly for that Akio depth */}
-        <div className="flex flex-wrap justify-center -mt-6 md:-mt-10">
-          {line2.map((char, i) => (
-            <FallingLetter key={`l2-${i}`} char={char} color="text-[#4182ff]" fontSize="text-[11vw]" />
-          ))}
-        </div>
-
-        {/* 3. REFINED CALL TO ACTION */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+      {/* 3. MAIN AKIO TYPOGRAPHY (Static & Massive) */}
+      <div className="relative z-10 text-center w-full max-w-[95vw] pointer-events-none">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3.2 }}
-          className="mt-16 relative flex flex-col items-center"
+          className="text-[13vw] font-black leading-[0.75] tracking-tighter uppercase text-white"
         >
-          <div className="group relative">
-             {/* Glowing background behind button */}
-            <div className="absolute inset-0 bg-[#4182ff] blur-2xl opacity-0 group-hover:opacity-20 transition-opacity" />
-            
-            <button className="relative px-20 py-6 bg-white border border-white text-black font-black uppercase tracking-[0.6em] text-[11px] hover:bg-transparent hover:text-white transition-all duration-500 overflow-hidden">
-              Initialize Access
-            </button>
-          </div>
-
-          <p className="mt-12 text-gray-600 text-[10px] font-black uppercase tracking-[1em] opacity-50">
-            QueryFlow Vault System v4.0
-          </p>
-        </motion.div>
+          Intelligent <br/>
+          <span className="text-white/10 outline-text">Finance</span>
+        </motion.h1>
+        
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-[13vw] font-black leading-[0.75] tracking-tighter uppercase text-[#4182ff] italic -mt-4"
+        >
+          Entities.
+        </motion.h1>
       </div>
 
-      {/* Visual Depth Glow */}
-      <div className="absolute w-[800px] h-[800px] bg-[#4182ff]/5 blur-[200px] rounded-full z-0 pointer-events-none" />
+      {/* 4. CTA BUTTON */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        className="mt-20 z-30"
+      >
+        <button className="px-20 py-7 bg-white text-black font-black uppercase tracking-[0.6em] text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500">
+          Initialize Access
+        </button>
+      </motion.div>
+
+      {/* Background Glow */}
+      <div className="absolute w-[1000px] h-[1000px] bg-[#4182ff]/5 blur-[200px] rounded-full z-0 pointer-events-none" />
+      
+      <style jsx>{`
+        .outline-text {
+          -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+        }
+      `}</style>
     </section>
   );
 }
