@@ -22,7 +22,9 @@ public class ChatController {
         try {
             String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
             Object rawItems = payload.getOrDefault("items", "[]");
-            String safeItems = objectMapper.writeValueAsString(rawItems);
+            String safeItems = objectMapper.writeValueAsString(rawItems)
+                            .replace("{", "(")
+                            .replace("}", ")");
 
             return builder.build()
                     .prompt()
