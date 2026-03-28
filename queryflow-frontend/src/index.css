@@ -130,3 +130,12 @@ body {
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(65, 130, 255, 0.2); border-radius: 10px; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal wobble */
+  overflow-y: auto;   /* Allow vertical scroll */
+  height: auto;
+  min-height: 100%;
+}
