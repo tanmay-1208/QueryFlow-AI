@@ -1,41 +1,31 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const FallingLetter = ({ char, color = "white", fontSize = "text-[8vw]" }) => {
+const FallingLetter = ({ char, color = "text-white", fontSize = "text-[7vw]" }) => {
   if (char === " ") return <span className="inline-block w-4 md:w-8"></span>;
 
-  // CHAOS MATH - Calculated once per letter
-  const randomDelay = Math.random() * 3; // Long window for staggered rain
-  const initialRotate = (Math.random() - 0.5) * 720; // Multiple spins while falling
-  const initialX = (Math.random() - 0.5) * 500; // Come in from wide angles
+  // PHYSICS MATH
+  const randomDelay = Math.random() * 2.5; 
+  const initialRotate = (Math.random() - 0.5) * 720;
+  const initialX = (Math.random() - 0.5) * 400;
   
-  // LANDING OFFSETS - This is what makes the "End look" chaotic
-  const landX = (Math.random() - 0.5) * 15; // Doesn't land perfectly centered
-  const landY = (Math.random() - 0.5) * 25; // Doesn't land on a straight line
-  const landRotate = (Math.random() - 0.5) * 30; // Stays tilted after landing
+  // LANDING - Tighter offsets to keep it readable but "messy"
+  const landX = (Math.random() - 0.5) * 12; 
+  const landY = (Math.random() - 0.5) * 15; 
+  const landRotate = (Math.random() - 0.5) * 20; 
 
   return (
     <motion.span
-      initial={{ 
-        y: -1500, 
-        x: initialX, 
-        rotate: initialRotate, 
-        opacity: 0 
-      }}
-      animate={{ 
-        y: landY, 
-        x: landX, 
-        rotate: landRotate, 
-        opacity: 1 
-      }}
+      initial={{ y: -1200, x: initialX, rotate: initialRotate, opacity: 0 }}
+      animate={{ y: landY, x: landX, rotate: landRotate, opacity: 1 }}
       transition={{
         delay: randomDelay,
-        duration: 1,
+        duration: 0.9,
         type: "spring",
-        stiffness: 50, 
-        damping: 10, // High bounce
+        stiffness: 60, 
+        damping: 12,
       }}
-      className={`inline-block font-black uppercase tracking-tighter ${fontSize} ${color} leading-none`}
+      className={`inline-block font-black uppercase tracking-[-0.08em] ${fontSize} ${color} leading-[0.8] drop-shadow-2xl`}
     >
       {char}
     </motion.span>
@@ -47,54 +37,67 @@ export default function Hero() {
   const line2 = "Modern Entities.".split("");
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden pt-20">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#080808] overflow-hidden pt-32 pb-20">
       
-      {/* 1. BACKGROUND GRID */}
-      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+      {/* 1. ARCHITECTURAL GRID (Refined) */}
+      <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none">
         <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(to right, #333 1px, transparent 1px), 
-                            linear-gradient(to bottom, #333 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), 
+                            linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
           backgroundSize: '100px 100px'
         }} />
       </div>
 
-      {/* 2. CHAOTIC TEXT CONTAINER */}
-      <div className="relative z-10 text-center w-full max-w-[98vw] flex flex-col items-center">
+      {/* 2. THE TERMINAL CONTAINER */}
+      <div className="relative z-10 text-center w-full max-w-[1400px] flex flex-col items-center px-4">
         
-        {/* LINE 1 */}
-        <div className="flex flex-wrap justify-center mb-0">
-          {line1.map((char, i) => (
-            <FallingLetter key={`l1-${i}`} char={char} color="text-white" fontSize="text-[9vw]" />
-          ))}
-        </div>
-
-        {/* LINE 2 */}
-        <div className="flex flex-wrap justify-center -mt-4 md:-mt-10">
-          {line2.map((char, i) => (
-            <FallingLetter key={`l2-${i}`} char={char} color="text-[#4182ff]" fontSize="text-[13vw]" />
-          ))}
-        </div>
-
-        {/* 3. CTA BUTTON - Reveals after the storm */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 3.5 }}
-          className="mt-24 relative"
+        {/* Subtle Pre-header */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mb-8 px-4 py-1 border border-[#4182ff]/30 rounded-full bg-[#4182ff]/5"
         >
-          <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.6em] text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-300">
-            Initialize Access
-          </button>
-          
-          {/* Subtitle landing underneath */}
-          <p className="mt-8 text-gray-600 text-[10px] font-black uppercase tracking-[1em]">
-            Terminal v4.0.26
+          <p className="text-[#4182ff] text-[9px] font-black uppercase tracking-[0.4em]">Node Connection: Stable</p>
+        </motion.div>
+
+        {/* LINE 1 - Sits slightly higher */}
+        <div className="flex flex-wrap justify-center mb-0 perspective-[1000px]">
+          {line1.map((char, i) => (
+            <FallingLetter key={`l1-${i}`} char={char} color="text-white" fontSize="text-[7.5vw]" />
+          ))}
+        </div>
+
+        {/* LINE 2 - Overlaps Line 1 slightly for that Akio depth */}
+        <div className="flex flex-wrap justify-center -mt-6 md:-mt-10">
+          {line2.map((char, i) => (
+            <FallingLetter key={`l2-${i}`} char={char} color="text-[#4182ff]" fontSize="text-[11vw]" />
+          ))}
+        </div>
+
+        {/* 3. REFINED CALL TO ACTION */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 3.2 }}
+          className="mt-16 relative flex flex-col items-center"
+        >
+          <div className="group relative">
+             {/* Glowing background behind button */}
+            <div className="absolute inset-0 bg-[#4182ff] blur-2xl opacity-0 group-hover:opacity-20 transition-opacity" />
+            
+            <button className="relative px-20 py-6 bg-white border border-white text-black font-black uppercase tracking-[0.6em] text-[11px] hover:bg-transparent hover:text-white transition-all duration-500 overflow-hidden">
+              Initialize Access
+            </button>
+          </div>
+
+          <p className="mt-12 text-gray-600 text-[10px] font-black uppercase tracking-[1em] opacity-50">
+            QueryFlow Vault System v4.0
           </p>
         </motion.div>
       </div>
 
-      {/* Blue "Digital Smoke" Glow */}
-      <div className="absolute w-[1200px] h-[1200px] bg-[#4182ff]/5 blur-[200px] rounded-full z-0 pointer-events-none" />
+      {/* Visual Depth Glow */}
+      <div className="absolute w-[800px] h-[800px] bg-[#4182ff]/5 blur-[200px] rounded-full z-0 pointer-events-none" />
     </section>
   );
 }
