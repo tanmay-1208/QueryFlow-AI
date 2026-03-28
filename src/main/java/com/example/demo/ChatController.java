@@ -7,7 +7,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://query-flow-ai-uq5t.vercel.app", allowCredentials = "true")
 public class ChatController {
 
     private final ChatClient.Builder builder;
@@ -23,8 +22,9 @@ public class ChatController {
             String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
             Object rawItems = payload.getOrDefault("items", "[]");
             String safeItems = objectMapper.writeValueAsString(rawItems)
-                            .replace("{", "(")
-                            .replace("}", ")");
+    .replace("{", "(")
+    .replace("}", ")")
+    .replace("costPrice", "cost_price");
 
             return builder.build()
                     .prompt()

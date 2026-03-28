@@ -2,12 +2,10 @@ package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "https://query-flow-ai-uq5t.vercel.app", allowCredentials = "true")
 public class ProductController {
 
     @Autowired
@@ -26,10 +24,14 @@ public class ProductController {
         return productRepository.save(product);
     }
 
-    // ← THIS WAS MISSING
     @PutMapping("/{id}")
-public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
-    product.setId(id);
-    return productRepository.save(product);
-}
+    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        product.setId(id);
+        return productRepository.save(product);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        productRepository.deleteById(id);
+    }
 }
