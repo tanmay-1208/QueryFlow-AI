@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -13,7 +14,10 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping
-    public List<Product> getProducts() {
+    public List<Product> getProducts(@RequestParam(required = false) String userId) {
+        if (userId != null && !userId.isEmpty()) {
+            return productRepository.findByUserId(userId);
+        }
         return productRepository.findAll();
     }
 
