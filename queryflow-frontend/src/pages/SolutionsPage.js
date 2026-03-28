@@ -8,7 +8,7 @@ const SolutionsPage = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.3 }
+      transition: { staggerChildren: 0.2 }
     }
   };
 
@@ -24,6 +24,7 @@ const SolutionsPage = () => {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
           className="mb-20"
         >
           <h1 className="text-7xl font-black uppercase italic tracking-tighter">
@@ -43,11 +44,11 @@ const SolutionsPage = () => {
             <motion.div 
               key={i}
               variants={itemVariants}
-              whileHover={{ scale: 1.02, borderColor: "#4182ff" }}
-              className="p-10 bg-[#131313] border border-white/5 rounded-2xl transition-colors"
+              whileHover={{ scale: 1.02, borderColor: "#4182ff", backgroundColor: "#1a1a1a" }}
+              className="p-10 bg-[#131313] border border-white/5 rounded-2xl transition-all cursor-pointer"
             >
-              <h3 className="text-2xl font-bold mb-4">{solution}</h3>
-              <p className="text-gray-500 text-sm">Professional grade infrastructure built for the next generation of finance.</p>
+              <h3 className="text-2xl font-bold mb-4 uppercase tracking-tight">{solution}</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">Professional grade infrastructure built for the next generation of global finance.</p>
             </motion.div>
           ))}
         </motion.div>

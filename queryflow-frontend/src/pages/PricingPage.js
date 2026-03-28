@@ -10,7 +10,8 @@ const PricingPage = () => (
       <motion.h1 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="text-6xl font-black mb-20 tracking-tighter"
+        transition={{ duration: 0.8 }}
+        className="text-6xl font-black mb-20 tracking-tighter uppercase"
       >
         SELECT YOUR <span className="text-[#4182ff]">TIER</span>
       </motion.h1>
@@ -25,15 +26,19 @@ const PricingPage = () => (
             key={i}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.2 }}
+            transition={{ delay: i * 0.1, duration: 0.6 }}
             whileHover={{ y: -10 }}
-            className={`p-10 rounded-3xl border ${plan.featured ? 'border-[#4182ff] bg-[#131313]' : 'border-white/5 bg-[#0e0e0e]'}`}
+            className={`p-10 rounded-3xl border transition-all ${plan.featured ? 'border-[#4182ff] bg-[#131313] shadow-[0_0_30px_rgba(65,130,255,0.1)]' : 'border-white/5 bg-[#0e0e0e]'}`}
           >
             <h3 className="text-xl font-bold mb-4 uppercase tracking-widest">{plan.name}</h3>
-            <div className="text-4xl font-black mb-6">${plan.price}<span className="text-sm text-gray-500">/mo</span></div>
-            <button className={`w-full py-3 rounded-full font-bold uppercase text-xs tracking-widest transition-all ${plan.featured ? 'bg-[#4182ff] text-white' : 'bg-white text-black'}`}>
+            <div className="text-5xl font-black mb-6 italic">₹{plan.price}<span className="text-sm text-gray-500 not-italic">/mo</span></div>
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-full py-4 rounded-xl font-black uppercase text-xs tracking-[0.2em] transition-all ${plan.featured ? 'bg-[#4182ff] text-white' : 'bg-white text-black'}`}
+            >
               Deploy Node
-            </button>
+            </motion.button>
           </motion.div>
         ))}
       </div>
