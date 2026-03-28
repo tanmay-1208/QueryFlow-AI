@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 
-// Import Pages
+// 1. ALL IMPORTS MUST BE HERE
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Vault from "./pages/Vault";
-
-// --- ADDED IMPORTS ---
 import FeaturesPage from "./pages/FeaturesPage";
 import SolutionsPage from "./pages/SolutionsPage";
 import PricingPage from "./pages/PricingPage";
@@ -18,17 +16,13 @@ export default function App() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setIsInitialLoading(false);
     });
-
-    // 2. Listen for auth changes (Login/Logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -50,16 +44,19 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        {/* PUBLIC ROUTES - These tell the app where to go */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/solutions" element={<SolutionsPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/security" element={<SecurityPage />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Protected Private Route */}
+        {/* PROTECTED ROUTE */}
         <Route 
           path="/vault" 
           element={
             session ? (
-              // CRITICAL: We pass session.user.id (the UUID), NOT the email
               <Vault userId={session.user.id} onLogout={handleLogout} />
             ) : (
               <Navigate to="/login" replace />
@@ -67,6 +64,7 @@ export default function App() {
           } 
         />
 
+        {/* CATCH-ALL - If you don't add the routes above, this kicks you to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
