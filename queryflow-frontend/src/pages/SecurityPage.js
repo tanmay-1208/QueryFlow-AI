@@ -1,33 +1,49 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const SecurityPage = () => (
-  <div className="bg-[#0e0e0e] min-h-screen pt-40 text-white">
+  <div className="bg-[#0e0e0e] min-h-screen text-white pt-40 overflow-hidden">
     <Navbar />
     <div className="max-w-[1400px] mx-auto px-10 pb-40">
-      <div className="inline-flex items-center gap-2 bg-[#66dd8b]/10 border border-[#66dd8b]/20 px-6 py-2 rounded-full mb-12">
-        <span className="w-2 h-2 bg-[#66dd8b] rounded-full animate-pulse"></span>
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#66dd8b]">SOC2 Type II COMPLIANT</span>
-      </div>
-      <h1 className="text-6xl md:text-[100px] font-black font-['Manrope'] tracking-tighter mb-20 leading-[0.85]">Zero-Leak<br/><span className="text-[#66dd8b]">Fiscal Integrity</span></h1>      
-      
-      <div className="bg-[#131313] p-16 rounded-[5rem] border border-white/5 mb-12">
-        <h3 className="text-3xl font-black mb-10">The Zero-Knowledge Promise</h3>
-        <p className="text-gray-400 text-xl leading-relaxed max-w-3xl">
-          At QueryFlow, we believe in **Sovereign Data**. Our architecture uses end-to-end encryption where only you hold the keys to your ledger. We provide the intelligence; you provide the access.
-        </p>
-      </div>
+      <div className="relative">
+        {/* Animated Scanning Line */}
+        <motion.div 
+          animate={{ top: ["0%", "100%", "0%"] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          className="absolute left-0 right-0 h-[2px] bg-[#4182ff]/30 z-0"
+        />
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5">
-          <h4 className="font-black text-gray-500 uppercase text-xs mb-4 tracking-widest">Isolated Infrastructure</h4>
-          <p className="text-gray-500">Every institutional vault resides on a physically isolated database cluster. This "Air-Gap" philosophy ensures zero cross-tenant data leakage.</p>
-        </div>
-        <div className="bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5">
-          <h4 className="font-black text-gray-500 uppercase text-xs mb-4 tracking-widest">Audit Trail Transparency</h4>
-          <p className="text-gray-500">Every ledger interaction is logged on an immutable, append-only history. Your compliance team has a full audit trail for every asset movement.</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="relative z-10"
+        >
+          <h1 className="text-8xl font-black tracking-tighter mb-10 italic">FORTRESS<br/><span className="text-[#66dd8b]">ENCRYPTION</span></h1>
+          
+          <div className="grid lg:grid-cols-2 gap-20">
+            <motion.div 
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="p-10 bg-white/5 border-l-4 border-[#66dd8b]"
+            >
+              <h4 className="font-black text-[#66dd8b] mb-4 uppercase tracking-widest">Active Status: Secure</h4>
+              <p className="text-gray-400">Your data is sharded across multiple decentralized nodes. Even if one node is compromised, your vault remains invisible.</p>
+            </motion.div>
+
+            <motion.div 
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="p-10 bg-white/5 border-l-4 border-[#4182ff]"
+            >
+              <h4 className="font-black text-[#4182ff] mb-4 uppercase tracking-widest">Biometric Sync</h4>
+              <p className="text-gray-400">Multi-factor authentication via hardware keys and behavioral biometrics ensures only the Operator can access the terminal.</p>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
     </div>
     <Footer />
