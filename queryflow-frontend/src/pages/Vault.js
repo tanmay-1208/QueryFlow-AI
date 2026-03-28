@@ -72,6 +72,29 @@ const Vault = ({ userId, onLogout }) => {
 
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
 
+  const handleDeleteAsset = async (id) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/api/products/${id}`);
+    setItems(prev => prev.filter(item => item.id !== id));
+  } catch (err) {
+    console.error("Delete Error:", err);
+  }
+};
+
+const handleUpdateStock = async (id, change) => {
+  try {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const newStock = (item.stock || 0) + change;
+    if (newStock < 0) return;
+    const updated = { ...item, stock: newStock };
+    await axios.put(`${API_BASE_URL}/api/products/${id}`, updated);
+    setItems(prev => prev.map(i => i.id === id ? updated : i));
+  } catch (err) {
+    console.error("Stock Update Error:", err);
+  }
+};
+
   return (
     <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
       

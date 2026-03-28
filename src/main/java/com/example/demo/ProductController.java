@@ -25,4 +25,10 @@ public class ProductController {
     public Product addProduct(@RequestBody Product product) {
         return productRepository.save(product);
     }
+
+    // ← THIS WAS MISSING
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        productRepository.deleteById(id);
+    }
 }
