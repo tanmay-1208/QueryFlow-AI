@@ -22,30 +22,32 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    const payload = {
-      ...item,
-      name: form.name,
-      costPrice: parseFloat(form.cost_price) || 0,
-      price: parseFloat(form.price) || 0,
-      stock: parseInt(form.stock) || 0,
-    };
-
-    try {
-      const res = await axios.put(`${API_BASE_URL}/api/products/${item.id}`, payload);
-      if (res.data) {
-        onUpdate(res.data);
-      }
-      onClose();
-    } catch (err) {
-      console.error("Edit Error:", err);
-      alert("Terminal Error: Could not update asset.");
-    } finally {
-      setLoading(false);
-    }
+  const payload = {
+    id: item.id,
+    name: form.name,
+    cost_price: parseFloat(form.cost_price) || 0,
+    price: parseFloat(form.price) || 0,
+    stock: parseInt(form.stock) || 0,
+    userId: item.userId,
+    category: item.category || null
   };
+
+  try {
+    const res = await axios.put(`${API_BASE_URL}/api/products/${item.id}`, payload);
+    if (res.data) {
+      onUpdate(res.data);
+    }
+    onClose();
+  } catch (err) {
+    console.error("Edit Error:", err);
+    alert("Terminal Error: Could not update asset.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
