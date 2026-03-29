@@ -21,7 +21,8 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
       const res = await axios.post(`${API_BASE_URL}/api/sell`, {
         productId: item.id,
         userId: userId,
-        quantity: quantity
+        quantity: quantity,
+        vaultId: item.vaultId
       });
       onSellComplete(res.data);
       onClose();
@@ -36,7 +37,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <div className="bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl">
-        
+
         <h2 className="text-white font-black uppercase text-center mb-2 text-xs tracking-[0.4em] italic">
           Execute_Sale
         </h2>
