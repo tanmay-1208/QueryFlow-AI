@@ -1,4 +1,3 @@
-
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +20,18 @@ public class SellController {
         Long productId = Long.valueOf(payload.get("productId").toString());
         String userId = payload.get("userId").toString();
         int quantity = Integer.parseInt(payload.get("quantity").toString());
+        Long vaultId = payload.get("vaultId") != null ?
+            Long.valueOf(payload.get("vaultId").toString()) : null;
 
-        // Get product
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Update stock
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
 
-        // Calculate profit
         double costPrice = product.getCostPrice() != null ? product.getCostPrice() : 0;
         double profit = (product.getPrice() - costPrice) * quantity;
 
-        // Save sell history
         SellHistory history = new SellHistory();
         history.setUserId(userId);
         history.setProductId(productId);
@@ -43,12 +40,19 @@ public class SellController {
         history.setSellPrice(product.getPrice());
         history.setCostPrice(costPrice);
         history.setProfit(profit);
+        history.setVaultId(vaultId);
 
         return sellHistoryRepository.save(history);
     }
 
     @GetMapping
-    public List<SellHistory> getSellHistory(@RequestParam String userId) {
+    public List<SellHistory> getSellHistory(
+        @RequestParam String userId,
+        @RequestParam(required = false) Long vaultId
+    ) {
+        if (vaultId != null) {
+            return sellHistoryRepository.findByUserIdAndVaultIdOrderBySoldAtDesc(userId, vaultId);
+        }
         return sellHistoryRepository.findByUserIdOrderBySoldAtDesc(userId);
     }
 }

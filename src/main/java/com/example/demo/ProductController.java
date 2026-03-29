@@ -12,7 +12,13 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping
-    public List<Product> getProducts(@RequestParam(required = false) String userId) {
+    public List<Product> getProducts(
+        @RequestParam(required = false) String userId,
+        @RequestParam(required = false) Long vaultId
+    ) {
+        if (vaultId != null) {
+            return productRepository.findByVaultId(vaultId);
+        }
         if (userId != null && !userId.isEmpty()) {
             return productRepository.findByUserId(userId);
         }

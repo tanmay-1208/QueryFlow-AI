@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface SellHistoryRepository extends JpaRepository<SellHistory, Long> {
     List<SellHistory> findByUserIdOrderBySoldAtDesc(String userId);
+    List<SellHistory> findByUserIdAndVaultIdOrderBySoldAtDesc(String userId, Long vaultId);
 }

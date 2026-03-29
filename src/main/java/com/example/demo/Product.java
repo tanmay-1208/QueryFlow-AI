@@ -18,9 +18,14 @@ public class Product {
     private Double price;
     private Integer stock;
     private String category;
+
+    @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "vault_id")
+    private Long vaultId;
+
     @Column(name = "cost_price")
-    @JsonProperty("cost_price")      // ← THIS is the fix
+    @JsonProperty("cost_price")
     private Double costPrice;
 }
