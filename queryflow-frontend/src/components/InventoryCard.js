@@ -26,15 +26,22 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
         </button>
 
         <div className="flex justify-between items-start mb-6 pr-16">
-          <h4 className="font-black text-lg tracking-tighter truncate uppercase text-white w-full border-b border-white/5 pb-2">
-            {item.name}
-          </h4>
-          {isLowStock && (
-            <span className="absolute top-2 left-6 bg-red-500/10 text-red-500 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
-              Low Stock
-            </span>
-          )}
-        </div>
+  <div className="w-full">
+    <h4 className="font-black text-lg tracking-tighter truncate uppercase text-white w-full border-b border-white/5 pb-2">
+      {item.name}
+    </h4>
+    {item.category && (
+      <span className="inline-block mt-2 bg-[#4182ff]/10 text-[#4182ff] text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-[#4182ff]/20">
+        {item.category}
+      </span>
+    )}
+  </div>
+  {isLowStock && (
+    <span className="absolute top-2 left-6 bg-red-500/10 text-red-500 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
+      Low Stock
+    </span>
+  )}
+</div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-black/40 p-3 rounded-2xl border border-white/5">

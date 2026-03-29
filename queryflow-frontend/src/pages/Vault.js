@@ -12,6 +12,7 @@ const Vault = ({ userId, onLogout }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [chatLog, setChatLog] = useState([
     { role: "agent", text: "[SYSTEM]: Neural link stable. QueryFlow Agent v5.0 initialized. Ready for audit." }
   ]);
@@ -214,7 +215,6 @@ const Vault = ({ userId, onLogout }) => {
               {/* PERFORMANCE GRAPH — REAL DATA */}
               <div className="glass-panel p-10">
                 <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
-
                 <div className="grid grid-cols-2 gap-10">
 
                   {/* LEFT — Daily Profit Last 7 Days */}
@@ -315,9 +315,7 @@ const Vault = ({ userId, onLogout }) => {
                           <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
                             +${sale.profit?.toFixed(2)}
                           </p>
-                          <p className="text-[8px] text-white/20 uppercase font-black mt-1">
-                            profit
-                          </p>
+                          <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
                         </div>
                       </div>
                     ))}
@@ -327,14 +325,34 @@ const Vault = ({ userId, onLogout }) => {
 
             </div>
           ) : (
-            <InventoryContainer
-              items={items}
-              userId={userId}
-              onDeleteAsset={handleDeleteAsset}
-              onUpdateStock={handleUpdateStock}
-              onEditAsset={handleEditAsset}
-              onSellComplete={handleSellComplete}
-            />
+            <div className="space-y-6">
+
+              {/* CATEGORY FILTER */}
+              <div className="flex gap-3 flex-wrap">
+                {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                      selectedCategory === cat
+                        ? 'bg-[#4182ff] text-white'
+                        : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <InventoryContainer
+                items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
+                userId={userId}
+                onDeleteAsset={handleDeleteAsset}
+                onUpdateStock={handleUpdateStock}
+                onEditAsset={handleEditAsset}
+                onSellComplete={handleSellComplete}
+              />
+            </div>
           )}
         </div>
       </main>

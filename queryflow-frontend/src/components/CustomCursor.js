@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { motion, useSpring, useMotionValue } from "framer-motion";
 
+
+
 export default function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
