@@ -114,6 +114,33 @@ const Vault = ({ userId, onLogout }) => {
   const net = grossVal - costVal - tax;
   const topFive = [...items].sort((a, b) => (b.price * b.stock) - (a.price * a.stock)).slice(0, 5);
 
+  // --- GRAPH DATA ---
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d;
+  });
+
+  const dayData = days.map(day => {
+    const label = day.toLocaleDateString('en-IN', { weekday: 'short' });
+    const profit = sellHistory
+      .filter(s => new Date(s.soldAt).toDateString() === day.toDateString())
+      .reduce((acc, s) => acc + (s.profit || 0), 0);
+    return { label, profit };
+  });
+
+  const maxDayProfit = Math.max(...dayData.map(d => d.profit), 1);
+
+  const itemProfits = {};
+  sellHistory.forEach(s => {
+    if (!itemProfits[s.productName]) itemProfits[s.productName] = 0;
+    itemProfits[s.productName] += s.profit || 0;
+  });
+  const sortedItemProfits = Object.entries(itemProfits)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+  const maxItemProfit = Math.max(...sortedItemProfits.map(s => s[1]), 1);
+
   return (
     <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
 
@@ -184,13 +211,61 @@ const Vault = ({ userId, onLogout }) => {
                 <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
               </div>
 
-              {/* PERFORMANCE GRAPH */}
-              <div className="glass-panel p-10 h-[400px] flex flex-col justify-between">
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Performance_Report_Live</p>
-                <div className="flex items-end gap-3 h-56 px-4 opacity-30">
-                  {[40, 70, 45, 90, 65, 80, 100, 50, 85, 60].map((h, i) => (
-                    <div key={i} className="flex-1 bg-gradient-to-t from-[#4182ff]/5 to-[#4182ff]/60 rounded-t-sm" style={{ height: `${h}%` }} />
-                  ))}
+              {/* PERFORMANCE GRAPH — REAL DATA */}
+              <div className="glass-panel p-10">
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
+
+                <div className="grid grid-cols-2 gap-10">
+
+                  {/* LEFT — Daily Profit Last 7 Days */}
+                  <div>
+                    <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
+                    <div className="flex items-end gap-2 h-40">
+                      {dayData.map((d, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                          <span className="text-[7px] text-white/30 font-black">
+                            {d.profit > 0 ? `$${d.profit.toFixed(0)}` : ''}
+                          </span>
+                          <div
+                            className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
+                            style={{
+                              height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
+                              opacity: d.profit > 0 ? 1 : 0.1
+                            }}
+                          />
+                          <span className="text-[7px] text-white/30 font-black uppercase">{d.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* RIGHT — Profit Per Item */}
+                  <div>
+                    <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
+                    {sortedItemProfits.length === 0 ? (
+                      <div className="flex items-center justify-center h-40">
+                        <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 flex flex-col justify-center h-40">
+                        {sortedItemProfits.map(([name, profit], i) => (
+                          <div key={i} className="flex items-center gap-3">
+                            <span className="text-[8px] text-white/40 font-black uppercase w-16 truncate shrink-0">{name}</span>
+                            <div className="flex-1 bg-white/5 rounded-full h-2">
+                              <div
+                                className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
+                                style={{ width: `${(profit / maxItemProfit) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
+                              ${profit.toFixed(0)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                 </div>
               </div>
 
