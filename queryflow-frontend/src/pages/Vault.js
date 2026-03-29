@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import InventoryContainer from "../components/InventoryContainer";
 import AddAssetModal from "../components/AddAssetModal";
+import CreateVaultModal from "../components/CreateVaultModal";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
@@ -9,6 +10,10 @@ const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
   const [sellHistory, setSellHistory] = useState([]);
+  const [vaults, setVaults] = useState([]);
+  const [activeVault, setActiveVault] = useState(null);
+  const [isVaultDropdownOpen, setIsVaultDropdownOpen] = useState(false);
+  const [isCreateVaultOpen, setIsCreateVaultOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -19,30 +24,50 @@ const Vault = ({ userId, onLogout }) => {
   ]);
 
   // --- DATA SYNC ---
-  const fetchItems = useCallback(async () => {
+  const fetchVaults = useCallback(async () => {
     if (!userId) return;
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/products?userId=${userId}`);
+      const res = await axios.get(`${API_BASE_URL}/api/vaults?userId=${userId}`);
+      const data = Array.isArray(res.data) ? res.data : [];
+      setVaults(data);
+      if (data.length > 0 && !activeVault) {
+        setActiveVault(data[0]);
+      }
+    } catch (err) {
+      console.error("Vault fetch error:", err);
+    }
+  }, [userId]);
+
+  const fetchItems = useCallback(async () => {
+    if (!userId || !activeVault) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/products?vaultId=${activeVault.id}`);
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Vault Retrieval Error:", err);
     }
-  }, [userId]);
+  }, [userId, activeVault]);
 
   const fetchSellHistory = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || !activeVault) return;
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/sell?userId=${userId}`);
+      const res = await axios.get(`${API_BASE_URL}/api/sell?userId=${userId}&vaultId=${activeVault.id}`);
       setSellHistory(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Sell History Error:", err);
     }
-  }, [userId]);
+  }, [userId, activeVault]);
 
   useEffect(() => {
-    fetchItems();
-    fetchSellHistory();
-  }, [fetchItems, fetchSellHistory]);
+    fetchVaults();
+  }, [fetchVaults]);
+
+  useEffect(() => {
+    if (activeVault) {
+      fetchItems();
+      fetchSellHistory();
+    }
+  }, [activeVault, fetchItems, fetchSellHistory]);
 
   // --- HANDLERS ---
   const handleOnAdd = (newAsset) => {
@@ -161,9 +186,53 @@ const Vault = ({ userId, onLogout }) => {
       {/* 1. SIDEBAR */}
       <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
         <div>
-          <div className="mb-12 flex items-center gap-3">
-            <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
-            <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff]">Vault.v5</span>
+
+          {/* VAULT SWITCHER */}
+          <div className="mb-12 relative">
+            <button
+              onClick={() => setIsVaultDropdownOpen(!isVaultDropdownOpen)}
+              className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
+                <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff] truncate">
+                  {activeVault?.name || "Vault.v5"}
+                </span>
+              </div>
+              <span className="text-white/30 text-xs">▾</span>
+            </button>
+
+            {isVaultDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl">
+                {vaults.map(vault => (
+                  <button
+                    key={vault.id}
+                    onClick={() => {
+                      setActiveVault(vault);
+                      setIsVaultDropdownOpen(false);
+                      setItems([]);
+                      setSellHistory([]);
+                    }}
+                    className={`w-full text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${
+                      activeVault?.id === vault.id
+                        ? 'bg-[#4182ff]/10 text-[#4182ff]'
+                        : 'text-white/40 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {vault.name}
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    setIsVaultDropdownOpen(false);
+                    setIsCreateVaultOpen(true);
+                  }}
+                  className="w-full text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-[#4182ff] border-t border-white/5 transition-all"
+                >
+                  + New Vault
+                </button>
+              </div>
+            )}
           </div>
 
           <nav className="space-y-3">
@@ -196,14 +265,15 @@ const Vault = ({ userId, onLogout }) => {
       {/* 2. MAIN VIEWPORT */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
         <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">Terminal / {activeTab}</h2>
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">
+            Terminal / {activeVault?.name || "Vault"} / {activeTab}
+          </h2>
           <div className="flex items-center gap-6">
             <div className="text-right">
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
               <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
             </div>
 
-            {/* EXPORT PDF BUTTON */}
             {activeTab === "dashboard" && (
               <button
                 onClick={handleExportPDF}
@@ -225,161 +295,170 @@ const Vault = ({ userId, onLogout }) => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
-          {activeTab === "dashboard" ? (
-            <div className="space-y-10">
+        {/* NO VAULT STATE */}
+        {!activeVault ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-6">
+            <p className="text-white/20 text-[10px] uppercase font-black tracking-widest">No Vault Found</p>
+            <button
+              onClick={() => setIsCreateVaultOpen(true)}
+              className="bg-[#4182ff] px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white hover:brightness-110 transition-all"
+            >
+              Create Your First Vault
+            </button>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
+            {activeTab === "dashboard" ? (
+              <div className="space-y-10">
 
-              {/* TOP METRICS */}
-              <div className="grid grid-cols-4 gap-6">
-                <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
-                <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
-                <GlassCard label="Tax Provision" value={`-$${tax.toLocaleString()}`} accent="#ff3366" />
-                <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
-              </div>
+                {/* TOP METRICS */}
+                <div className="grid grid-cols-4 gap-6">
+                  <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
+                  <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
+                  <GlassCard label="Tax Provision" value={`-$${tax.toLocaleString()}`} accent="#ff3366" />
+                  <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
+                </div>
 
-              {/* PERFORMANCE GRAPH — REAL DATA */}
-              <div className="glass-panel p-10">
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
-                <div className="grid grid-cols-2 gap-10">
+                {/* PERFORMANCE GRAPH */}
+                <div className="glass-panel p-10">
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
+                  <div className="grid grid-cols-2 gap-10">
 
-                  {/* LEFT — Daily Profit Last 7 Days */}
-                  <div>
-                    <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
-                    <div className="flex items-end gap-2 h-40">
-                      {dayData.map((d, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                          <span className="text-[7px] text-white/30 font-black">
-                            {d.profit > 0 ? `$${d.profit.toFixed(0)}` : ''}
-                          </span>
-                          <div
-                            className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
-                            style={{
-                              height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
-                              opacity: d.profit > 0 ? 1 : 0.1
-                            }}
-                          />
-                          <span className="text-[7px] text-white/30 font-black uppercase">{d.label}</span>
+                    <div>
+                      <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
+                      <div className="flex items-end gap-2 h-40">
+                        {dayData.map((d, i) => (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                            <span className="text-[7px] text-white/30 font-black">
+                              {d.profit > 0 ? `$${d.profit.toFixed(0)}` : ''}
+                            </span>
+                            <div
+                              className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
+                              style={{
+                                height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
+                                opacity: d.profit > 0 ? 1 : 0.1
+                              }}
+                            />
+                            <span className="text-[7px] text-white/30 font-black uppercase">{d.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
+                      {sortedItemProfits.length === 0 ? (
+                        <div className="flex items-center justify-center h-40">
+                          <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4 flex flex-col justify-center h-40">
+                          {sortedItemProfits.map(([name, profit], i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <span className="text-[8px] text-white/40 font-black uppercase w-16 truncate shrink-0">{name}</span>
+                              <div className="flex-1 bg-white/5 rounded-full h-2">
+                                <div
+                                  className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
+                                  style={{ width: `${(profit / maxItemProfit) * 100}%` }}
+                                />
+                              </div>
+                              <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
+                                ${profit.toFixed(0)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* BOTTOM DATA */}
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="glass-panel p-10">
+                    <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
+                    <div className="space-y-6">
+                      {topFive.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center group">
+                          <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
+                          <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
+                          <span className="text-[11px] font-bold text-[#4182ff]">${(item.price * item.stock).toLocaleString()}</span>
                         </div>
                       ))}
                     </div>
                   </div>
+                  <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
+                    <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
+                    <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
+                    <p>{">"} Vault: {activeVault?.name}</p>
+                    <p>{">"} DB Sync: {items.length} assets integrated</p>
+                    <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
+                  </div>
+                </div>
 
-                  {/* RIGHT — Profit Per Item */}
-                  <div>
-                    <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
-                    {sortedItemProfits.length === 0 ? (
-                      <div className="flex items-center justify-center h-40">
-                        <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4 flex flex-col justify-center h-40">
-                        {sortedItemProfits.map(([name, profit], i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <span className="text-[8px] text-white/40 font-black uppercase w-16 truncate shrink-0">{name}</span>
-                            <div className="flex-1 bg-white/5 rounded-full h-2">
-                              <div
-                                className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
-                                style={{ width: `${(profit / maxItemProfit) * 100}%` }}
-                              />
-                            </div>
-                            <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
-                              ${profit.toFixed(0)}
-                            </span>
+                {/* SELL HISTORY */}
+                <div className="glass-panel p-10 pb-10">
+                  <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
+                  {sellHistory.length === 0 ? (
+                    <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {sellHistory.slice(0, 10).map((sale, i) => (
+                        <div key={i} className="flex justify-between items-center group border-b border-white/5 pb-4">
+                          <div>
+                            <p className="text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
+                              {sale.productName}
+                            </p>
+                            <p className="text-[8px] text-white/20 uppercase font-black mt-1">
+                              {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
+                                day: 'numeric', month: 'short', year: 'numeric',
+                                hour: '2-digit', minute: '2-digit'
+                              })}
+                            </p>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-              </div>
-
-              {/* BOTTOM DATA */}
-              <div className="grid grid-cols-2 gap-8">
-                <div className="glass-panel p-10">
-                  <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
-                  <div className="space-y-6">
-                    {topFive.map((item, i) => (
-                      <div key={i} className="flex justify-between items-center group">
-                        <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
-                        <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
-                        <span className="text-[11px] font-bold text-[#4182ff]">${(item.price * item.stock).toLocaleString()}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
-                  <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
-                  <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
-                  <p>{">"} DB Sync: {items.length} assets integrated</p>
-                  <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
-                </div>
-              </div>
-
-              {/* SELL HISTORY */}
-              <div className="glass-panel p-10 pb-10">
-                <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
-                {sellHistory.length === 0 ? (
-                  <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
-                ) : (
-                  <div className="space-y-4">
-                    {sellHistory.slice(0, 10).map((sale, i) => (
-                      <div key={i} className="flex justify-between items-center group border-b border-white/5 pb-4">
-                        <div>
-                          <p className="text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
-                            {sale.productName}
-                          </p>
-                          <p className="text-[8px] text-white/20 uppercase font-black mt-1">
-                            {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
-                              day: 'numeric', month: 'short', year: 'numeric',
-                              hour: '2-digit', minute: '2-digit'
-                            })}
-                          </p>
+                          <div className="text-right">
+                            <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                              +${sale.profit?.toFixed(2)}
+                            </p>
+                            <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
-                            +${sale.profit?.toFixed(2)}
-                          </p>
-                          <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
               </div>
-
-            </div>
-          ) : (
-            <div className="space-y-6">
-
-              {/* CATEGORY FILTER */}
-              <div className="flex gap-3 flex-wrap">
-                {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                      selectedCategory === cat
-                        ? 'bg-[#4182ff] text-white'
-                        : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+            ) : (
+              <div className="space-y-6">
+                <div className="flex gap-3 flex-wrap">
+                  {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                        selectedCategory === cat
+                          ? 'bg-[#4182ff] text-white'
+                          : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <InventoryContainer
+                  items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
+                  userId={userId}
+                  onDeleteAsset={handleDeleteAsset}
+                  onUpdateStock={handleUpdateStock}
+                  onEditAsset={handleEditAsset}
+                  onSellComplete={handleSellComplete}
+                />
               </div>
-
-              <InventoryContainer
-                items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
-                userId={userId}
-                onDeleteAsset={handleDeleteAsset}
-                onUpdateStock={handleUpdateStock}
-                onEditAsset={handleEditAsset}
-                onSellComplete={handleSellComplete}
-              />
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* 3. AI AGENT DRAWER */}
@@ -421,12 +500,24 @@ const Vault = ({ userId, onLogout }) => {
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* MODALS */}
       <AddAssetModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleOnAdd}
         userId={userId}
+        vaultId={activeVault?.id}
+      />
+
+      <CreateVaultModal
+        isOpen={isCreateVaultOpen}
+        onClose={() => setIsCreateVaultOpen(false)}
+        onCreated={(newVault) => {
+          setVaults(prev => [...prev, newVault]);
+          setActiveVault(newVault);
+        }}
+        userId={userId}
+        vaultCount={vaults.length}
       />
     </div>
   );

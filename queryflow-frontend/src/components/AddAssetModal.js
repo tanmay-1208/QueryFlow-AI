@@ -9,7 +9,7 @@ const PRESET_CATEGORIES = [
   "Books & Stationery", "Tools & Hardware", "Toys", "Other"
 ];
 
-const AddAssetModal = ({ isOpen, onClose, onAdd, userId }) => {
+const AddAssetModal = ({ isOpen, onClose, onAdd, userId, vaultId }) => {
   const [form, setForm] = useState({ name: "", cost_price: "", price: "", stock: "", category: "" });
   const [customCategory, setCustomCategory] = useState("");
   const [isCustom, setIsCustom] = useState(false);
@@ -29,7 +29,8 @@ const AddAssetModal = ({ isOpen, onClose, onAdd, userId }) => {
       price: parseFloat(form.price) || 0,
       stock: parseInt(form.stock) || 0,
       category: finalCategory || null,
-      userId: userId
+      userId: userId,
+      vaultId: vaultId
     };
 
     try {
