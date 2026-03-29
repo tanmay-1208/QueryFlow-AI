@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import EditAssetModal from "./EditAssetModal";
+import SellModal from "./SellModal";
 
-const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset }) => {
+const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isSellOpen, setIsSellOpen] = useState(false);
   const isLowStock = (item.stock || 0) <= 5;
 
   return (
     <>
       <div className={`bg-[#131313] p-6 rounded-[2.5rem] border transition-all shadow-xl relative group ${isLowStock ? 'border-red-500/20' : 'border-white/5 hover:bg-[#181818]'}`}>
 
-        {/* DELETE BUTTON */}
         <button
           onClick={() => onDeleteAsset(item.id)}
           className="absolute top-6 right-6 text-gray-700 hover:text-red-500 material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity"
@@ -17,7 +18,6 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset }) => {
           delete
         </button>
 
-        {/* EDIT BUTTON */}
         <button
           onClick={() => setIsEditOpen(true)}
           className="absolute top-6 right-12 text-gray-700 hover:text-[#4182ff] material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity"
@@ -59,12 +59,21 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset }) => {
         </div>
 
         <div className="flex gap-3">
-          <button onClick={() => onUpdateStock(item.id, 1)} className="flex-1 bg-white/5 text-white py-3 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-white/10 transition-all">Add</button>
-          <button onClick={() => onUpdateStock(item.id, -1)} className="flex-1 bg-white/5 text-white py-3 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-red-500/10 hover:text-red-500 transition-all">Sell</button>
+          <button
+            onClick={() => onUpdateStock(item.id, 1)}
+            className="flex-1 bg-white/5 text-white py-3 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-white/10 transition-all"
+          >
+            Add
+          </button>
+          <button
+            onClick={() => setIsSellOpen(true)}
+            className="flex-1 bg-white/5 text-white py-3 rounded-xl font-black uppercase text-[9px] tracking-widest hover:bg-[#00ff88]/10 hover:text-[#00ff88] transition-all"
+          >
+            Sell
+          </button>
         </div>
       </div>
 
-      {/* EDIT MODAL */}
       <EditAssetModal
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
@@ -73,6 +82,14 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset }) => {
           setIsEditOpen(false);
         }}
         item={item}
+      />
+
+      <SellModal
+        isOpen={isSellOpen}
+        onClose={() => setIsSellOpen(false)}
+        item={item}
+        userId={userId}
+        onSellComplete={onSellComplete}
       />
     </>
   );

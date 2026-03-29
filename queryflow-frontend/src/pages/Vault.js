@@ -7,6 +7,7 @@ const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
 const Vault = ({ userId, onLogout }) => {
   const [items, setItems] = useState([]);
+  const [sellHistory, setSellHistory] = useState([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -26,9 +27,20 @@ const Vault = ({ userId, onLogout }) => {
     }
   }, [userId]);
 
+  const fetchSellHistory = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/sell?userId=${userId}`);
+      setSellHistory(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Sell History Error:", err);
+    }
+  }, [userId]);
+
   useEffect(() => {
     fetchItems();
-  }, [fetchItems]);
+    fetchSellHistory();
+  }, [fetchItems, fetchSellHistory]);
 
   // --- HANDLERS ---
   const handleOnAdd = (newAsset) => {
@@ -59,16 +71,20 @@ const Vault = ({ userId, onLogout }) => {
   };
 
   const handleEditAsset = (updatedItem) => {
-  const normalized = {
-    ...updatedItem,
-    costPrice: updatedItem.cost_price || 0,
-    cost_price: updatedItem.cost_price || 0
+    const normalized = {
+      ...updatedItem,
+      costPrice: updatedItem.costPrice || updatedItem.cost_price || 0,
+      cost_price: updatedItem.costPrice || updatedItem.cost_price || 0
+    };
+    setItems(prev => prev.map(i =>
+      String(i.id) === String(normalized.id) ? normalized : i
+    ));
   };
-  setItems(prev => prev.map(i => 
-    String(i.id) === String(normalized.id) ? normalized : i
-  ));
-};
 
+  const handleSellComplete = (sellRecord) => {
+    setSellHistory(prev => [sellRecord, ...prev]);
+    fetchItems();
+  };
 
   // --- AI LOGIC ---
   const handleAiSubmit = async (e) => {
@@ -159,6 +175,8 @@ const Vault = ({ userId, onLogout }) => {
         <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
           {activeTab === "dashboard" ? (
             <div className="space-y-10">
+
+              {/* TOP METRICS */}
               <div className="grid grid-cols-4 gap-6">
                 <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
                 <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
@@ -166,6 +184,7 @@ const Vault = ({ userId, onLogout }) => {
                 <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
               </div>
 
+              {/* PERFORMANCE GRAPH */}
               <div className="glass-panel p-10 h-[400px] flex flex-col justify-between">
                 <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">Performance_Report_Live</p>
                 <div className="flex items-end gap-3 h-56 px-4 opacity-30">
@@ -175,7 +194,8 @@ const Vault = ({ userId, onLogout }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-8 pb-10">
+              {/* BOTTOM DATA */}
+              <div className="grid grid-cols-2 gap-8">
                 <div className="glass-panel p-10">
                   <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
                   <div className="space-y-6">
@@ -195,13 +215,50 @@ const Vault = ({ userId, onLogout }) => {
                   <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
                 </div>
               </div>
+
+              {/* SELL HISTORY */}
+              <div className="glass-panel p-10 pb-10">
+                <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
+                {sellHistory.length === 0 ? (
+                  <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
+                ) : (
+                  <div className="space-y-4">
+                    {sellHistory.slice(0, 10).map((sale, i) => (
+                      <div key={i} className="flex justify-between items-center group border-b border-white/5 pb-4">
+                        <div>
+                          <p className="text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
+                            {sale.productName}
+                          </p>
+                          <p className="text-[8px] text-white/20 uppercase font-black mt-1">
+                            {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
+                              day: 'numeric', month: 'short', year: 'numeric',
+                              hour: '2-digit', minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                            +${sale.profit?.toFixed(2)}
+                          </p>
+                          <p className="text-[8px] text-white/20 uppercase font-black mt-1">
+                            profit
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </div>
           ) : (
             <InventoryContainer
               items={items}
+              userId={userId}
               onDeleteAsset={handleDeleteAsset}
               onUpdateStock={handleUpdateStock}
               onEditAsset={handleEditAsset}
+              onSellComplete={handleSellComplete}
             />
           )}
         </div>
