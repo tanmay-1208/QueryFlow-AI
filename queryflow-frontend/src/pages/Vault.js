@@ -61,9 +61,12 @@ const Vault = ({ userId, onLogout }) => {
   const handleEditAsset = (updatedItem) => {
   const normalized = {
     ...updatedItem,
-    cost_price: updatedItem.costPrice || updatedItem.cost_price || 0
+    costPrice: updatedItem.cost_price || 0,
+    cost_price: updatedItem.cost_price || 0
   };
-  setItems(prev => prev.map(i => i.id === normalized.id ? normalized : i));
+  setItems(prev => prev.map(i => 
+    String(i.id) === String(normalized.id) ? normalized : i
+  ));
 };
 
 
