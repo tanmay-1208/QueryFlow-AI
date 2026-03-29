@@ -8,6 +8,8 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.13.6",
     "chart.js": "^4.5.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "papaparse": "^5.5.3",
     "postcss": "^8.4.41",
     "react": "^18.2.0",

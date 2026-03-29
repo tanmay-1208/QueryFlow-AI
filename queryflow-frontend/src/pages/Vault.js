@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import InventoryContainer from "../components/InventoryContainer";
 import AddAssetModal from "../components/AddAssetModal";
+import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
@@ -85,6 +86,18 @@ const Vault = ({ userId, onLogout }) => {
   const handleSellComplete = (sellRecord) => {
     setSellHistory(prev => [sellRecord, ...prev]);
     fetchItems();
+  };
+
+  const handleExportPDF = () => {
+    exportVaultReport({
+      items,
+      sellHistory,
+      grossVal,
+      net,
+      tax,
+      costVal,
+      userId
+    });
   };
 
   // --- AI LOGIC ---
@@ -189,6 +202,18 @@ const Vault = ({ userId, onLogout }) => {
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
               <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
             </div>
+
+            {/* EXPORT PDF BUTTON */}
+            {activeTab === "dashboard" && (
+              <button
+                onClick={handleExportPDF}
+                className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
+              >
+                <span className="material-symbols-outlined text-sm">download</span>
+                Export PDF
+              </button>
+            )}
+
             {activeTab === "inventory" && (
               <button
                 onClick={() => setIsAddModalOpen(true)}
