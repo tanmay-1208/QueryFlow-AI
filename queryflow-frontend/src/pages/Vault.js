@@ -59,8 +59,13 @@ const Vault = ({ userId, onLogout }) => {
   };
 
   const handleEditAsset = (updatedItem) => {
-    setItems(prev => prev.map(i => i.id === updatedItem.id ? updatedItem : i));
+  const normalized = {
+    ...updatedItem,
+    cost_price: updatedItem.costPrice || updatedItem.cost_price || 0
   };
+  setItems(prev => prev.map(i => i.id === normalized.id ? normalized : i));
+};
+
 
   // --- AI LOGIC ---
   const handleAiSubmit = async (e) => {
