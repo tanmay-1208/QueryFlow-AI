@@ -4,6 +4,7 @@ import InventoryContainer from "../components/InventoryContainer";
 import AddAssetModal from "../components/AddAssetModal";
 import CreateVaultModal from "../components/CreateVaultModal";
 import TeamModal from "../components/TeamModal";
+import InvoiceModal from "../components/InvoiceModal";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
@@ -16,6 +17,8 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [isVaultDropdownOpen, setIsVaultDropdownOpen] = useState(false);
   const [isCreateVaultOpen, setIsCreateVaultOpen] = useState(false);
   const [isTeamOpen, setIsTeamOpen] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [invoiceSale, setInvoiceSale] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -29,15 +32,12 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const fetchVaults = useCallback(async () => {
     if (!userId) return;
     try {
-      // Get own vaults
       const ownRes = await axios.get(`${API_BASE_URL}/api/vaults?userId=${userId}`);
       const ownVaults = Array.isArray(ownRes.data) ? ownRes.data : [];
 
-      // Get shared vault IDs
       const sharedRes = await axios.get(`${API_BASE_URL}/api/team/my-vaults?userId=${userId}`);
       const sharedIds = Array.isArray(sharedRes.data) ? sharedRes.data : [];
 
-      // Fetch shared vault details
       const sharedVaults = await Promise.all(
         sharedIds.map(id =>
           axios.get(`${API_BASE_URL}/api/vaults/${id}`)
@@ -342,9 +342,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
                 {/* TOP METRICS */}
                 <div className="grid grid-cols-4 gap-6">
-                  <GlassCard label="Gross Valuation" value={`$${grossVal.toLocaleString()}`} accent="#4182ff" />
-                  <GlassCard label="Net Efficiency" value={`$${net.toLocaleString()}`} accent="#00ff88" />
-                  <GlassCard label="Tax Provision" value={`-$${tax.toLocaleString()}`} accent="#ff3366" />
+                  <GlassCard label="Gross Valuation" value={`₹${grossVal.toLocaleString("en-IN")}`} accent="#4182ff" />
+                  <GlassCard label="Net Efficiency" value={`₹${net.toLocaleString("en-IN")}`} accent="#00ff88" />
+                  <GlassCard label="Tax Provision" value={`-₹${tax.toLocaleString("en-IN")}`} accent="#ff3366" />
                   <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
                 </div>
 
@@ -359,7 +359,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         {dayData.map((d, i) => (
                           <div key={i} className="flex-1 flex flex-col items-center gap-2">
                             <span className="text-[7px] text-white/30 font-black">
-                              {d.profit > 0 ? `$${d.profit.toFixed(0)}` : ''}
+                              {d.profit > 0 ? `₹${d.profit.toFixed(0)}` : ''}
                             </span>
                             <div
                               className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
@@ -392,7 +392,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                                 />
                               </div>
                               <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
-                                ${profit.toFixed(0)}
+                                ₹{profit.toFixed(0)}
                               </span>
                             </div>
                           ))}
@@ -412,7 +412,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         <div key={i} className="flex justify-between items-center group">
                           <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
                           <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
-                          <span className="text-[11px] font-bold text-[#4182ff]">${(item.price * item.stock).toLocaleString()}</span>
+                          <span className="text-[11px] font-bold text-[#4182ff]">₹{(item.price * item.stock).toLocaleString("en-IN")}</span>
                         </div>
                       ))}
                     </div>
@@ -446,11 +446,19 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                               })}
                             </p>
                           </div>
-                          <div className="text-right">
-                            <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
-                              +${sale.profit?.toFixed(2)}
-                            </p>
-                            <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                                +₹{sale.profit?.toFixed(2)}
+                              </p>
+                              <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
+                            </div>
+                            <button
+                              onClick={() => { setInvoiceSale(sale); setIsInvoiceOpen(true); }}
+                              className="bg-white/5 border border-white/10 px-3 py-2 rounded-xl text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
+                            >
+                              Invoice
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -555,6 +563,13 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         activeVault={activeVault}
         userId={userId}
         userEmail={userEmail}
+      />
+
+      <InvoiceModal
+        isOpen={isInvoiceOpen}
+        onClose={() => { setIsInvoiceOpen(false); setInvoiceSale(null); }}
+        sale={invoiceSale}
+        userId={userId}
       />
     </div>
   );
