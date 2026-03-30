@@ -1,175 +1,170 @@
-import React, { useState } from "react";
-import { generateInvoice } from "../utils/generateInvoice";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
-const InvoiceModal = ({ isOpen, onClose, sale, userId }) => {
-  const [seller, setSeller] = useState({
-    businessName: "",
-    address: "",
-    phone: "",
-    gstin: "",
-    bankDetails: ""
+export const generateInvoice = ({ sale, seller, buyer, invoiceNumber }) => {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const now = new Date();
+
+  // ─── HEADER BACKGROUND ───────────────────────────────
+  doc.setFillColor(5, 5, 5);
+  doc.rect(0, 0, pageWidth, 50, "F");
+
+  // Company Name
+  doc.setTextColor(65, 130, 255);
+  doc.setFontSize(22);
+  doc.setFont("helvetica", "bolditalic");
+  doc.text(seller.businessName || "QueryFlow Vault", 14, 20);
+
+  // Invoice label
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("TAX INVOICE", pageWidth - 14, 15, { align: "right" });
+
+  doc.setTextColor(150, 150, 150);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Invoice No: INV-${invoiceNumber}`, pageWidth - 14, 23, { align: "right" });
+  doc.text(`Date: ${now.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`, pageWidth - 14, 30, { align: "right" });
+  doc.text(`Vault: ${sale.vaultName || "Main Vault"}`, pageWidth - 14, 37, { align: "right" });
+
+  // Seller address
+  doc.setTextColor(150, 150, 150);
+  doc.setFontSize(8);
+  if (seller.address) doc.text(seller.address, 14, 30);
+  if (seller.phone) doc.text(`Ph: ${seller.phone}`, 14, 37);
+  if (seller.gstin) doc.text(`GSTIN: ${seller.gstin}`, 14, 44);
+
+  // ─── DIVIDER ──────────────────────────────────────────
+  doc.setDrawColor(65, 130, 255);
+  doc.setLineWidth(0.5);
+  doc.line(14, 55, pageWidth - 14, 55);
+
+  // ─── SELLER + BUYER INFO ──────────────────────────────
+  doc.setTextColor(30, 30, 30);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text("BILL FROM:", 14, 65);
+  doc.text("BILL TO:", pageWidth / 2 + 5, 65);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(60, 60, 60);
+
+  // Seller details
+  doc.text(seller.businessName || "N/A", 14, 73);
+  doc.text(seller.address || "N/A", 14, 80);
+  doc.text(seller.phone ? `Ph: ${seller.phone}` : "", 14, 87);
+  doc.text(seller.gstin ? `GSTIN: ${seller.gstin}` : "", 14, 94);
+
+  // Buyer details
+  doc.text(buyer.name || "N/A", pageWidth / 2 + 5, 73);
+  doc.text(buyer.address || "N/A", pageWidth / 2 + 5, 80);
+  doc.text(buyer.phone ? `Ph: ${buyer.phone}` : "", pageWidth / 2 + 5, 87);
+  doc.text(buyer.gstin ? `GSTIN: ${buyer.gstin}` : "", pageWidth / 2 + 5, 94);
+
+  // ─── ITEMS TABLE ──────────────────────────────────────
+  const gstRate = 0.18;
+  const baseAmount = sale.sellPrice * sale.quantity;
+  const gstAmount = baseAmount * gstRate;
+  const totalAmount = baseAmount + gstAmount;
+
+  autoTable(doc, {
+    startY: 105,
+    head: [["#", "Item Description", "HSN/SAC", "Qty", "Unit Price (₹)", "Amount (₹)"]],
+    body: [
+      [
+        "1",
+        sale.productName?.toUpperCase() || "Item",
+        "N/A",
+        sale.quantity?.toString(),
+        `₹${sale.sellPrice?.toLocaleString("en-IN")}`,
+        `₹${baseAmount?.toLocaleString("en-IN")}`
+      ]
+    ],
+    headStyles: {
+      fillColor: [65, 130, 255],
+      textColor: 255,
+      fontStyle: "bold",
+      fontSize: 9
+    },
+    bodyStyles: { fontSize: 9 },
+    columnStyles: {
+      0: { cellWidth: 10 },
+      3: { halign: "center" },
+      4: { halign: "right" },
+      5: { halign: "right", fontStyle: "bold" }
+    },
+    margin: { left: 14, right: 14 }
   });
 
-  const [buyer, setBuyer] = useState({
-    name: "",
-    address: "",
-    phone: "",
-    gstin: ""
+  // ─── TOTALS ───────────────────────────────────────────
+  const finalY = doc.lastAutoTable.finalY + 8;
+
+  autoTable(doc, {
+    startY: finalY,
+    body: [
+      ["", "", "", "", "Subtotal:", `₹${baseAmount.toLocaleString("en-IN")}`],
+      ["", "", "", "", `CGST (9%):`, `₹${(gstAmount / 2).toLocaleString("en-IN")}`],
+      ["", "", "", "", `SGST (9%):`, `₹${(gstAmount / 2).toLocaleString("en-IN")}`],
+      ["", "", "", "", "TOTAL:", `₹${totalAmount.toLocaleString("en-IN")}`],
+    ],
+    bodyStyles: { fontSize: 9 },
+    columnStyles: {
+      4: { halign: "right", fontStyle: "bold" },
+      5: { halign: "right" }
+    },
+    didParseCell: (data) => {
+      if (data.row.index === 3) {
+        data.cell.styles.fontStyle = "bold";
+        data.cell.styles.fontSize = 11;
+        data.cell.styles.textColor = [65, 130, 255];
+      }
+    },
+    margin: { left: 14, right: 14 }
   });
 
-  const [loading, setLoading] = useState(false);
+  // ─── PROFIT NOTE (internal only) ─────────────────────
+  const profitY = doc.lastAutoTable.finalY + 12;
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.setFont("helvetica", "italic");
+  doc.text(`Cost Price: ₹${sale.costPrice?.toLocaleString("en-IN")} | Net Profit on this sale: ₹${sale.profit?.toLocaleString("en-IN")}`, 14, profitY);
+  doc.text("(Internal record — not visible to buyer)", 14, profitY + 6);
 
-  if (!isOpen || !sale) return null;
+  // ─── BANK / PAYMENT DETAILS ───────────────────────────
+  if (seller.bankDetails) {
+    const bankY = profitY + 18;
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(30, 30, 30);
+    doc.setFontSize(9);
+    doc.text("PAYMENT DETAILS:", 14, bankY);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80);
+    doc.text(seller.bankDetails, 14, bankY + 7);
+  }
 
-  const handleGenerate = () => {
-    setLoading(true);
-    try {
-      const invoiceNumber = Date.now().toString().slice(-6);
-      generateInvoice({
-        sale,
-        seller,
-        buyer,
-        invoiceNumber
-      });
-    } catch (err) {
-      console.error("Invoice Error:", err);
-      alert("Failed to generate invoice.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ─── THANK YOU NOTE ───────────────────────────────────
+  const thankY = doc.lastAutoTable.finalY + 50;
+  doc.setFillColor(245, 247, 255);
+  doc.rect(14, thankY, pageWidth - 28, 16, "F");
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(65, 130, 255);
+  doc.text("Thank you for your business!", pageWidth / 2, thankY + 10, { align: "center" });
 
-  return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6 overflow-y-auto">
-      <div className="bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl my-6">
-
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-white font-black uppercase text-xs tracking-[0.4em] italic">
-              Generate_Invoice
-            </h2>
-            <p className="text-white/20 text-[9px] uppercase tracking-widest mt-1">
-              {sale.productName} — {sale.quantity} units — ₹{sale.sellPrice?.toLocaleString("en-IN")}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase"
-          >
-            Close
-          </button>
-        </div>
-
-        {/* SALE SUMMARY */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
-            <p className="text-[7px] text-gray-500 uppercase font-black mb-1">Quantity</p>
-            <p className="text-sm font-black text-white">{sale.quantity}</p>
-          </div>
-          <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
-            <p className="text-[7px] text-gray-500 uppercase font-black mb-1">Sell Price</p>
-            <p className="text-sm font-black text-white">₹{sale.sellPrice?.toLocaleString("en-IN")}</p>
-          </div>
-          <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
-            <p className="text-[7px] text-gray-500 uppercase font-black mb-1">Profit</p>
-            <p className="text-sm font-black text-[#00ff88]">₹{sale.profit?.toLocaleString("en-IN")}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-8">
-
-          {/* SELLER INFO */}
-          <div className="space-y-3">
-            <p className="text-[8px] text-white/20 uppercase font-black tracking-widest mb-4">
-              Your Business Info
-            </p>
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Business Name *"
-              value={seller.businessName}
-              onChange={e => setSeller({ ...seller, businessName: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Address"
-              value={seller.address}
-              onChange={e => setSeller({ ...seller, address: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Phone Number"
-              value={seller.phone}
-              onChange={e => setSeller({ ...seller, phone: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="GSTIN (optional)"
-              value={seller.gstin}
-              onChange={e => setSeller({ ...seller, gstin: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Bank Details (optional)"
-              value={seller.bankDetails}
-              onChange={e => setSeller({ ...seller, bankDetails: e.target.value })}
-            />
-          </div>
-
-          {/* BUYER INFO */}
-          <div className="space-y-3">
-            <p className="text-[8px] text-white/20 uppercase font-black tracking-widest mb-4">
-              Buyer Info
-            </p>
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Buyer Name *"
-              value={buyer.name}
-              onChange={e => setBuyer({ ...buyer, name: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Buyer Address"
-              value={buyer.address}
-              onChange={e => setBuyer({ ...buyer, address: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Buyer Phone"
-              value={buyer.phone}
-              onChange={e => setBuyer({ ...buyer, phone: e.target.value })}
-            />
-            <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
-              placeholder="Buyer GSTIN (optional)"
-              value={buyer.gstin}
-              onChange={e => setBuyer({ ...buyer, gstin: e.target.value })}
-            />
-          </div>
-        </div>
-
-        {/* GENERATE BUTTON */}
-        <div className="flex gap-4 mt-8">
-          <button
-            onClick={onClose}
-            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
-          >
-            [ Cancel ]
-          </button>
-          <button
-            onClick={handleGenerate}
-            disabled={loading || !seller.businessName || !buyer.name}
-            className="flex-1 bg-[#4182ff] p-4 rounded-xl font-black uppercase text-[9px] text-white shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
-          >
-            {loading ? "Generating..." : "Download Invoice PDF"}
-          </button>
-        </div>
-
-        <p className="text-white/10 text-[8px] uppercase font-black text-center mt-4">
-          Business name and buyer name are required
-        </p>
-      </div>
-    </div>
+  // ─── FOOTER ───────────────────────────────────────────
+  doc.setFontSize(7);
+  doc.setTextColor(180, 180, 180);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    "Generated by QueryFlow Vault — This is a computer generated invoice",
+    pageWidth / 2,
+    doc.internal.pageSize.getHeight() - 8,
+    { align: "center" }
   );
-};
 
-export default InvoiceModal;
+  // ─── SAVE ─────────────────────────────────────────────
+  doc.save(`Invoice_INV-${invoiceNumber}_${sale.productName}.pdf`);
+};
