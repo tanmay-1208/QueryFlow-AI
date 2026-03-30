@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "r
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "./supabaseClient";
 
-// Import Pages
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Vault from "./pages/Vault";
@@ -12,8 +11,6 @@ import SolutionsPage from "./pages/SolutionsPage";
 import PricingPage from "./pages/PricingPage";
 import SecurityPage from "./pages/SecurityPage";
 
-// --- CLEAN FADE TRANSITION ---
-// This removes the "slideshow" movement (y and rotateX are gone)
 const PageTransition = ({ children }) => (
   <motion.div
     initial={{ opacity: 0 }}
@@ -27,11 +24,10 @@ const PageTransition = ({ children }) => (
 
 function AnimatedRoutes({ session, handleLogout }) {
   const location = useLocation();
-  
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Public Routes */}
         <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
         <Route path="/features" element={<PageTransition><FeaturesPage /></PageTransition>} />
         <Route path="/solutions" element={<PageTransition><SolutionsPage /></PageTransition>} />
@@ -39,18 +35,21 @@ function AnimatedRoutes({ session, handleLogout }) {
         <Route path="/security" element={<PageTransition><SecurityPage /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
 
-        {/* Protected Private Route */}
-        <Route 
-          path="/vault" 
+        <Route
+          path="/vault"
           element={
             session ? (
               <PageTransition>
-                <Vault userId={session.user.id} onLogout={handleLogout} />
+                <Vault
+                  userId={session.user.id}
+                  userEmail={session.user.email}
+                  onLogout={handleLogout}
+                />
               </PageTransition>
             ) : (
               <Navigate to="/login" replace />
             )
-          } 
+          }
         />
 
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -64,13 +63,11 @@ export default function App() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setIsInitialLoading(false);
     });
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
@@ -95,9 +92,6 @@ export default function App() {
 
   return (
     <Router>
-      {/* Note: The CustomCursor was removed to eliminate lag. 
-        Ensure index.css does NOT have 'cursor: none'.
-      */}
       <AnimatedRoutes session={session} handleLogout={handleLogout} />
     </Router>
   );

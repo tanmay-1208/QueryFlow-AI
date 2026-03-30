@@ -3,17 +3,19 @@ import axios from "axios";
 import InventoryContainer from "../components/InventoryContainer";
 import AddAssetModal from "../components/AddAssetModal";
 import CreateVaultModal from "../components/CreateVaultModal";
+import TeamModal from "../components/TeamModal";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
-const Vault = ({ userId, onLogout }) => {
+const Vault = ({ userId, userEmail, onLogout }) => {
   const [items, setItems] = useState([]);
   const [sellHistory, setSellHistory] = useState([]);
   const [vaults, setVaults] = useState([]);
   const [activeVault, setActiveVault] = useState(null);
   const [isVaultDropdownOpen, setIsVaultDropdownOpen] = useState(false);
   const [isCreateVaultOpen, setIsCreateVaultOpen] = useState(false);
+  const [isTeamOpen, setIsTeamOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -27,11 +29,31 @@ const Vault = ({ userId, onLogout }) => {
   const fetchVaults = useCallback(async () => {
     if (!userId) return;
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/vaults?userId=${userId}`);
-      const data = Array.isArray(res.data) ? res.data : [];
-      setVaults(data);
-      if (data.length > 0 && !activeVault) {
-        setActiveVault(data[0]);
+      // Get own vaults
+      const ownRes = await axios.get(`${API_BASE_URL}/api/vaults?userId=${userId}`);
+      const ownVaults = Array.isArray(ownRes.data) ? ownRes.data : [];
+
+      // Get shared vault IDs
+      const sharedRes = await axios.get(`${API_BASE_URL}/api/team/my-vaults?userId=${userId}`);
+      const sharedIds = Array.isArray(sharedRes.data) ? sharedRes.data : [];
+
+      // Fetch shared vault details
+      const sharedVaults = await Promise.all(
+        sharedIds.map(id =>
+          axios.get(`${API_BASE_URL}/api/vaults/${id}`)
+            .then(r => r.data)
+            .catch(() => null)
+        )
+      );
+
+      const allVaults = [...ownVaults, ...sharedVaults.filter(Boolean)];
+      const unique = allVaults.filter((v, i, self) =>
+        self.findIndex(x => x.id === v.id) === i
+      );
+
+      setVaults(unique);
+      if (unique.length > 0 && !activeVault) {
+        setActiveVault(unique[0]);
       }
     } catch (err) {
       console.error("Vault fetch error:", err);
@@ -254,6 +276,13 @@ const Vault = ({ userId, onLogout }) => {
             className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#4182ff]/20 bg-[#4182ff]/5 text-[#4182ff] text-[9px] font-black uppercase tracking-widest hover:bg-[#4182ff]/10 transition-all"
           >
             <span className={`${isAiOpen ? 'text-[#00ff88]' : 'animate-pulse text-[#4182ff]'}`}>●</span> Agent_Interface
+          </button>
+
+          <button
+            onClick={() => setIsTeamOpen(true)}
+            className="mt-3 w-full flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all"
+          >
+            <span className="text-white/20">●</span> Team_Access
           </button>
         </div>
 
@@ -518,6 +547,14 @@ const Vault = ({ userId, onLogout }) => {
         }}
         userId={userId}
         vaultCount={vaults.length}
+      />
+
+      <TeamModal
+        isOpen={isTeamOpen}
+        onClose={() => setIsTeamOpen(false)}
+        activeVault={activeVault}
+        userId={userId}
+        userEmail={userEmail}
       />
     </div>
   );

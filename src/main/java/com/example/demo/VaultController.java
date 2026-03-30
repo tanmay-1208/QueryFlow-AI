@@ -18,6 +18,13 @@ public class VaultController {
         return vaultRepository.findByUserIdOrderByCreatedAtAsc(userId);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getVaultById(@PathVariable Long id) {
+        return vaultRepository.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<?> createVault(@RequestBody Map<String, String> payload) {
         String userId = payload.get("userId");
