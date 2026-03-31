@@ -5,6 +5,7 @@ import AddAssetModal from "../components/AddAssetModal";
 import CreateVaultModal from "../components/CreateVaultModal";
 import TeamModal from "../components/TeamModal";
 import InvoiceModal from "../components/InvoiceModal";
+import CSVImportModal from "../components/CSVImportModal";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
@@ -19,6 +20,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [isTeamOpen, setIsTeamOpen] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [invoiceSale, setInvoiceSale] = useState(null);
+  const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -314,12 +316,20 @@ const Vault = ({ userId, userEmail, onLogout }) => {
             )}
 
             {activeTab === "inventory" && (
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold"
-              >
-                +
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsCSVImportOpen(true)}
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
+                >
+                  CSV Import
+                </button>
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold"
+                >
+                  +
+                </button>
+              </div>
             )}
           </div>
         </header>
@@ -342,9 +352,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
                 {/* TOP METRICS */}
                 <div className="grid grid-cols-4 gap-6">
-                  <GlassCard label="Gross Valuation" value={`₹${grossVal.toLocaleString("en-IN")}`} accent="#4182ff" />
-                  <GlassCard label="Net Efficiency" value={`₹${net.toLocaleString("en-IN")}`} accent="#00ff88" />
-                  <GlassCard label="Tax Provision" value={`-₹${tax.toLocaleString("en-IN")}`} accent="#ff3366" />
+                  <GlassCard label="Gross Valuation" value={`Rs.${grossVal.toLocaleString("en-IN")}`} accent="#4182ff" />
+                  <GlassCard label="Net Efficiency" value={`Rs.${net.toLocaleString("en-IN")}`} accent="#00ff88" />
+                  <GlassCard label="Tax Provision" value={`-Rs.${tax.toLocaleString("en-IN")}`} accent="#ff3366" />
                   <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
                 </div>
 
@@ -359,7 +369,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         {dayData.map((d, i) => (
                           <div key={i} className="flex-1 flex flex-col items-center gap-2">
                             <span className="text-[7px] text-white/30 font-black">
-                              {d.profit > 0 ? `₹${d.profit.toFixed(0)}` : ''}
+                              {d.profit > 0 ? `Rs.${d.profit.toFixed(0)}` : ''}
                             </span>
                             <div
                               className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
@@ -392,7 +402,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                                 />
                               </div>
                               <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
-                                ₹{profit.toFixed(0)}
+                                Rs.{profit.toFixed(0)}
                               </span>
                             </div>
                           ))}
@@ -412,7 +422,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         <div key={i} className="flex justify-between items-center group">
                           <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
                           <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
-                          <span className="text-[11px] font-bold text-[#4182ff]">₹{(item.price * item.stock).toLocaleString("en-IN")}</span>
+                          <span className="text-[11px] font-bold text-[#4182ff]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
                         </div>
                       ))}
                     </div>
@@ -449,7 +459,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                           <div className="flex items-center gap-4">
                             <div className="text-right">
                               <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
-                                +₹{sale.profit?.toFixed(2)}
+                                +Rs.{sale.profit?.toFixed(2)}
                               </p>
                               <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
                             </div>
@@ -570,6 +580,17 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         onClose={() => { setIsInvoiceOpen(false); setInvoiceSale(null); }}
         sale={invoiceSale}
         userId={userId}
+      />
+
+      <CSVImportModal
+        isOpen={isCSVImportOpen}
+        onClose={() => setIsCSVImportOpen(false)}
+        onImportComplete={() => {
+          fetchItems();
+          setIsCSVImportOpen(false);
+        }}
+        userId={userId}
+        vaultId={activeVault?.id}
       />
     </div>
   );
