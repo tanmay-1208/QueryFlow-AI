@@ -14,7 +14,7 @@ const FeaturesPage = () => {
     })
   };
 
-  // make changes
+  // make changes n2
 
   return (
     <div className="bg-[#0e0e0e] min-h-screen text-white pt-40 overflow-x-hidden">
