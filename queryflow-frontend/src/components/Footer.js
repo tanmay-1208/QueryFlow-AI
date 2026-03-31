@@ -1,62 +1,109 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
+export default function Footer() {
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
 
-const AddAssetModal = ({ isOpen, onClose, onAdd, userId }) => {
-  const [form, setForm] = useState({ name: "", cost_price: "", price: "", stock: "" });
-  const [loading, setLoading] = useState(false);
+  // Update clock every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-  if (!isOpen) return null;
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    console.log("Execute Triggered for ID:", userId);
-
-    try {
-      const payload = {
-        name: form.name,
-        cost_price: Number(form.cost_price),
-        price: Number(form.price), // Unified field name
-        stock: Number(form.stock),
-        userId: userId
-      };
-
-      const res = await axios.post(`${API_BASE_URL}/api/products`, payload);
-      
-      console.log("Vault Success:", res.data);
-      onAdd(res.data); // This updates the dashboard immediately
-    } catch (err) {
-      console.error("Vault Error:", err);
-      alert("Terminal Sync Failure: " + (err.response?.data?.message || err.message));
-    } finally {
-      setLoading(false);
-    }
-  };
+  // System logs for the scrolling marquee
+  const systemLogs = [
+    "GATEWAY_READY", 
+    "NODE_01_ACTIVE", 
+    "ENCRYPTION_LAYER_AES256", 
+    "SSL_HANDSHAKE_COMPLETE", 
+    "QUERY_ENGINE_IDLE", 
+    "VAULT_SYNC_100%",
+    "DB_LATENCY_3MS",
+    "AUTH_PROTOCOL_ESTABLISHED"
+  ];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6">
-      <form onSubmit={handleSubmit} className="bg-[#1c1b1b] w-full max-w-md p-10 rounded-[3.5rem] border border-white/10 shadow-2xl">
-        <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 italic text-center">Vault New Asset</h3>
-        <div className="space-y-4">
-          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Asset Name" onChange={e => setForm({...form, name: e.target.value})} required />
-          <div className="grid grid-cols-2 gap-4">
-            <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Cost" type="number" onChange={e => setForm({...form, cost_price: e.target.value})} required />
-            <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Market" type="number" onChange={e => setForm({...form, price: e.target.value})} required />
+    <footer className="w-full bg-[#080808] border-t border-white/5 pt-24 pb-12 px-6 md:px-12 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto">
+        
+        {/* --- TOP SECTION: LIVE SYSTEM FEED --- */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-24">
+          <div className="w-full md:w-auto">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-[#4182ff] mb-6">
+              Live System Status
+            </h4>
+            {/* The scrolling marquee container */}
+            <div className="relative w-full md:w-[400px] bg-white/5 p-5 rounded-2xl border border-white/5 overflow-hidden backdrop-blur-sm">
+              <div className="flex gap-12 animate-marquee whitespace-nowrap">
+                {/* Double the array to make the loop seamless */}
+                {[...systemLogs, ...systemLogs].map((log, i) => (
+                  <span key={i} className="text-[9px] font-mono text-gray-500 tracking-tighter">
+                    [{log}]
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-          <input className="w-full bg-[#2a2a2a] p-4 rounded-2xl border-none outline-none text-white text-[11px] font-black uppercase" placeholder="Stock" type="number" onChange={e => setForm({...form, stock: e.target.value})} required />
-          
-          <div className="flex gap-4 pt-6">
-            <button type="button" onClick={onClose} className="flex-1 bg-white/5 py-4 rounded-2xl text-[9px] font-black uppercase text-gray-500">Cancel</button>
-            <button type="submit" className="flex-1 bg-[#4182ff] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white active:scale-95 transition-all">
-              {loading ? "Syncing..." : "Execute"}
-            </button>
+
+          <div className="md:text-right">
+            <motion.p 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="text-[6vw] md:text-[4vw] font-black tracking-tighter text-white leading-none uppercase italic"
+            >
+              Terminal <span className="text-[#4182ff]">Active</span>
+            </motion.p>
+            <p className="font-mono text-[10px] md:text-xs text-gray-600 mt-4 tracking-[0.3em] uppercase">
+              {time} // BHARTHIA_NODE_PRIMARY
+            </p>
           </div>
         </div>
-      </form>
-    </div>
-  );
-};
 
-export default AddAssetModal;
+        {/* --- BOTTOM SECTION: BRUTALIST LINKS --- */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 border-t border-white/5 pt-12">
+          {/* Column 1 */}
+          <div className="flex flex-col gap-3">
+            <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Navigation</span>
+            <Link to="/features" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Features</Link>
+            <Link to="/solutions" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Solutions</Link>
+            <Link to="/pricing" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Pricing</Link>
+          </div>
+
+          {/* Column 2 */}
+          <div className="flex flex-col gap-3">
+            <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Security</span>
+            <Link to="/security" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Vault Protocol</Link>
+            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Source Code</a>
+          </div>
+
+          {/* Column 3 & 4: Copyright & Branding */}
+          <div className="col-span-2 flex flex-col md:items-end justify-end">
+            <div className="text-right">
+               <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">
+                 Query<span className="text-[#4182ff]">Flow</span>
+               </h2>
+               <p className="text-[9px] font-black text-gray-700 uppercase tracking-[0.5em] leading-relaxed">
+                 © 2026 // Institutional Fiscal Synthesis <br/> 
+                 All Rights Reserved
+               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- INLINE STYLES FOR MARQUEE ANIMATION --- */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+      `}} />
+    </footer>
+  );
+}
