@@ -103,3 +103,5 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
 };
 
 export default InventoryCard;
+
+//pihu
