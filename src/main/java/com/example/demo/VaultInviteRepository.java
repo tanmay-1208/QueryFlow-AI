@@ -7,3 +7,4 @@ public interface VaultInviteRepository extends JpaRepository<VaultInvite, Long> 
     Optional<VaultInvite> findByInviteCode(String inviteCode);
     Optional<VaultInvite> findByVaultId(Long vaultId);
 }
+// bschb
