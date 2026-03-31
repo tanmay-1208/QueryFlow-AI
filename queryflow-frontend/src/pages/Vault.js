@@ -6,8 +6,6 @@ import CreateVaultModal from "../components/CreateVaultModal";
 import TeamModal from "../components/TeamModal";
 import InvoiceModal from "../components/InvoiceModal";
 import CSVImportModal from "../components/CSVImportModal";
-import SkeletonDashboard from "../components/SkeletonDashboard";
-import { SkeletonGrid } from "../components/SkeletonCard";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
@@ -28,12 +26,6 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-  // LOADING STATES
-  const [isLoadingVaults, setIsLoadingVaults] = useState(true);
-  const [isLoadingItems, setIsLoadingItems] = useState(false);
-  const [isLoadingSellHistory, setIsLoadingSellHistory] = useState(false);
-
   const [chatLog, setChatLog] = useState([
     { role: "agent", text: "[SYSTEM]: Neural link stable. QueryFlow Agent v5.0 initialized. Ready for audit." }
   ]);
@@ -41,7 +33,6 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   // --- DATA SYNC ---
   const fetchVaults = useCallback(async () => {
     if (!userId) return;
-    setIsLoadingVaults(true);
     try {
       const ownRes = await axios.get(`${API_BASE_URL}/api/vaults?userId=${userId}`);
       const ownVaults = Array.isArray(ownRes.data) ? ownRes.data : [];
@@ -68,34 +59,26 @@ const Vault = ({ userId, userEmail, onLogout }) => {
       }
     } catch (err) {
       console.error("Vault fetch error:", err);
-    } finally {
-      setIsLoadingVaults(false);
     }
   }, [userId]);
 
   const fetchItems = useCallback(async () => {
     if (!userId || !activeVault) return;
-    setIsLoadingItems(true);
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products?vaultId=${activeVault.id}`);
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Vault Retrieval Error:", err);
-    } finally {
-      setIsLoadingItems(false);
     }
   }, [userId, activeVault]);
 
   const fetchSellHistory = useCallback(async () => {
     if (!userId || !activeVault) return;
-    setIsLoadingSellHistory(true);
     try {
       const res = await axios.get(`${API_BASE_URL}/api/sell?userId=${userId}&vaultId=${activeVault.id}`);
       setSellHistory(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Sell History Error:", err);
-    } finally {
-      setIsLoadingSellHistory(false);
     }
   }, [userId, activeVault]);
 
@@ -220,20 +203,6 @@ const Vault = ({ userId, userEmail, onLogout }) => {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
   const maxItemProfit = Math.max(...sortedItemProfits.map(s => s[1]), 1);
-
-  // --- LOADING STATE FOR ENTIRE VAULT ---
-  if (isLoadingVaults) {
-    return (
-      <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] text-white items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-2 border-[#4182ff] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-[#4182ff] text-[10px] font-black uppercase tracking-widest animate-pulse">
-            Initializing Vault...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
@@ -379,10 +348,6 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         ) : (
           <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
             {activeTab === "dashboard" ? (
-              // SHOW SKELETON OR REAL DASHBOARD
-              isLoadingItems || isLoadingSellHistory ? (
-                <SkeletonDashboard />
-              ) : (
               <div className="space-y-10">
 
                 {/* TOP METRICS */}
@@ -397,6 +362,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                 <div className="glass-panel p-10">
                   <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
                   <div className="grid grid-cols-2 gap-10">
+
                     <div>
                       <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
                       <div className="flex items-end gap-2 h-40">
@@ -417,6 +383,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         ))}
                       </div>
                     </div>
+
                     <div>
                       <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
                       {sortedItemProfits.length === 0 ? (
@@ -442,6 +409,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         </div>
                       )}
                     </div>
+
                   </div>
                 </div>
 
@@ -509,19 +477,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                 </div>
 
               </div>
-              )
             ) : (
-              // SHOW SKELETON OR REAL INVENTORY
-              isLoadingItems ? (
-                <div className="space-y-6">
-                  <div className="flex gap-3 flex-wrap">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="h-8 w-24 bg-white/5 rounded-xl animate-pulse" />
-                    ))}
-                  </div>
-                  <SkeletonGrid count={6} />
-                </div>
-              ) : (
               <div className="space-y-6">
                 <div className="flex gap-3 flex-wrap">
                   {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
@@ -547,7 +503,6 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                   onSellComplete={handleSellComplete}
                 />
               </div>
-              )
             )}
           </div>
         )}
