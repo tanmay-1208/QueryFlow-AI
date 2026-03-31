@@ -14,6 +14,8 @@ const FeaturesPage = () => {
     })
   };
 
+  // make changes
+
   return (
     <div className="bg-[#0e0e0e] min-h-screen text-white pt-40 overflow-x-hidden">
       <Navbar />
