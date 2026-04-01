@@ -2,7 +2,7 @@
 
 **QueryFlow AI** is a full-stack intelligent assistant application powered by OpenAI and Spring AI. It provides a conversational interface where users can ask questions and receive AI-generated responses, with all interactions persisted in a PostgreSQL database.
 
-🔗 **Live Demo:** [query-flow-ai-two.vercel.app](https://query-flow-ai-two.vercel.app)
+🔗 **Live Demo:** https://query-flow-ai-uq5t-pkcmakvyz-tanmay-1208s-projects.vercel.app
 
 ---
 
