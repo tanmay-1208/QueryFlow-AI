@@ -1,6 +1,6 @@
 {
   "short_name": "QueryFlow",
-  "name": "QueryFlow AI | Institutional Terminal",
+  "name": "QueryFlow AI | Terminal",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,20 +8,21 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
+      "src": "6E01371A-92F2-4735-9840-A957FAB3B1F5_4_5005_c.jpeg",
+      "type": "image/jpeg",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
+      "src": "6E01371A-92F2-4735-9840-A957FAB3B1F5_4_5005_c.jpeg",
+      "type": "image/jpeg",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#050505",
   "background_color": "#050505"
 }
