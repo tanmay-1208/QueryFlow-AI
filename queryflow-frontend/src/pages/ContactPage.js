@@ -33,29 +33,30 @@ const ContactPage = () => {
               Initialize Connection
             </h3>
             
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            {/* ACTIVE FORMSPREE INTEGRATION */}
+            <form action="https://formspree.io/f/mpqoljwe" method="POST" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col">
                   <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Operator Name</label>
-                  <input type="text" className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="John Doe" />
+                  <input type="text" name="name" required className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="John Doe" />
                 </div>
                 <div className="flex flex-col">
                   <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Entity / Node</label>
-                  <input type="text" className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="Company Name" />
+                  <input type="text" name="entity" className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="Company Name" />
                 </div>
               </div>
 
               <div className="flex flex-col">
                 <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Secure Relay (Email)</label>
-                <input type="email" className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="operator@entity.com" />
+                <input type="email" name="email" required className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="operator@entity.com" />
               </div>
 
               <div className="flex flex-col">
                 <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Encrypted Payload (Message)</label>
-                <textarea rows="5" className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors resize-none" placeholder="State your requirements..." />
+                <textarea rows="5" name="message" required className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors resize-none" placeholder="State your requirements..." />
               </div>
 
-              <button className="w-full mt-4 px-8 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 rounded-xl">
+              <button type="submit" className="w-full mt-4 px-8 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 rounded-xl">
                 Transmit Payload
               </button>
             </form>
@@ -79,7 +80,7 @@ const ContactPage = () => {
               </p>
             </div>
 
-            {/* Direct Link (Updated with your email) */}
+            {/* Direct Link */}
             <div className="bg-[#131313] p-8 rounded-[2rem] border border-white/5">
               <span className="text-[#66dd8b] material-symbols-outlined text-3xl mb-4">mail</span>
               <h4 className="text-sm font-black uppercase tracking-widest mb-2">Direct Link</h4>
