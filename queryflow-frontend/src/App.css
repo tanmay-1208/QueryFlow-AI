@@ -1,97 +1,219 @@
-/* --- 1. THE STITCH COLOR PALETTE --- */
+/* ============================================
+   QUERYFLOW-AI — MOBILE-FIRST App.css
+   Drop-in replacement for your existing file
+   ============================================ */
+
+/* --- 1. COLOR PALETTE --- */
 :root {
-  --bg-main: #0e0e0e;          
-  --bg-surface: #131313;       
-  --bg-input: #1c1b1b;         
-  --primary: #adc7ff;          
-  --on-primary: #002e68;       
-  --secondary: #66dd8b;        
-  --error: #ffb4ab;            
-  --text-dim: #8b90a0;         
+  --bg-main: #0e0e0e;
+  --bg-surface: #131313;
+  --bg-input: #1c1b1b;
+  --primary: #adc7ff;
+  --on-primary: #002e68;
+  --secondary: #66dd8b;
+  --error: #ffb4ab;
+  --text-dim: #8b90a0;
   --border: rgba(255, 255, 255, 0.05);
+
+  /* Mobile safe area support (iPhone notch/home bar) */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* Prevent horizontal wobble */
-  overflow-y: auto;   /* Allow vertical scroll */
-  height: auto;
-  min-height: 100%;
+/* --- 2. BASE RESET --- */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-/* --- 2. LAYOUT ENGINE (SCROLL FIX APPLIED) --- */
-html, body, #root {
-  /* Changed from height: 100% to min-height: 100% */
-  min-height: 100%;
-  width: 100%;
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling on orientation change */
+  overflow-x: hidden;
+}
+
+body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-main);
   color: #e5e2e1;
   font-family: 'Inter', sans-serif;
-  
-  /* FIX: Changed 'hidden' to 'auto' to allow landing page to scroll */
-  overflow-x: hidden; 
-  overflow-y: auto; 
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100%;
+  /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Typography */
-h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; font-weight: 800; }
+#root {
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* --- 3. TYPOGRAPHY --- */
+h1, h2, h3, h4 {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 .font-label { font-family: 'Space Grotesk', sans-serif; }
 
-/* --- 3. TERMINAL STRUCTURE (For the Vault only) --- */
-/* This ensures your Dashboard stays locked while the Home Page scrolls */
+/* --- 4. VAULT / DASHBOARD LAYOUT (MOBILE-FIRST) --- */
+
+/*
+  KEY FIX: Removed position:fixed from mobile.
+  The dashboard now scrolls naturally on phones.
+  On desktop (md+) it locks back to full-screen terminal mode.
+*/
 .flex-terminal {
   display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden; /* Keeps the Dashboard stable */
+  flex-direction: column;      /* Stack sidebar on top on mobile */
+  width: 100%;
+  min-height: 100vh;
+  overflow: visible;           /* Allow scroll on mobile */
+}
+
+@media (min-width: 768px) {
+  .flex-terminal {
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;          /* Lock back to fixed on desktop */
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+}
+
+/* --- 5. SIDEBAR --- */
+aside {
+  flex-shrink: 0;
+  z-index: 50;
+  width: 100%;                 /* Full width on mobile */
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  aside {
+    width: 260px;
+    height: 100vh;
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+  }
+}
+
+/* Mobile sidebar collapse — add class 'sidebar-open' via JS to show */
+.sidebar-mobile-hidden {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar-mobile-hidden {
+    display: flex !important;
+  }
+}
+
+/* Hamburger button — only visible on mobile */
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  min-width: 44px;   /* Minimum touch target */
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+/* Mobile nav drawer overlay */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.mobile-nav-overlay.active {
+  display: block;
+}
+
+.mobile-nav-drawer {
   position: fixed;
   top: 0;
   left: 0;
+  bottom: 0;
+  width: 280px;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  z-index: 101;
+  padding: 1.5rem;
+  padding-top: calc(1.5rem + var(--safe-top));
+  padding-bottom: calc(1.5rem + var(--safe-bottom));
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
 }
 
-/* Scrollbar Style */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+.mobile-nav-drawer.open {
+  transform: translateX(0);
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+
+/* --- 6. MAIN CONTENT PANE --- */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* --- 7. SCROLLBAR --- */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
-/* --- 4. SIDEBAR & PANE LOCKING --- */
-aside {
-  flex-shrink: 0; 
-  z-index: 50;
-}
-
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0; 
-}
-
-/* --- 5. BENTO CARDS & ASSETS --- */
+/* --- 8. CARDS --- */
 .stat-card {
   background: var(--bg-input);
-  padding: 1.5rem;
-  border-radius: 20px;
+  padding: 1.25rem;
+  border-radius: 16px;
   border: 1px solid var(--border);
   transition: all 0.3s ease;
 }
 
+@media (min-width: 768px) {
+  .stat-card { padding: 1.5rem; border-radius: 20px; }
+}
+
 .inventory-card {
   background: var(--bg-input);
-  border-radius: 28px;
-  padding: 1.5rem;
+  border-radius: 20px;
+  padding: 1.25rem;
   border: 1px solid var(--border);
   transition: border 0.3s ease, transform 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .inventory-card { border-radius: 28px; padding: 1.5rem; }
 }
 
 .inventory-card:hover {
@@ -99,14 +221,17 @@ main {
   transform: translateY(-2px);
 }
 
-/* --- 6. BUTTONS & INPUTS --- */
+/* --- 9. BUTTONS & INPUTS --- */
 .biz-input {
   background: #2a2a2a;
   border: 1px solid transparent;
   color: white;
-  padding: 12px 16px;
+  padding: 14px 16px;         /* Slightly taller for touch */
   border-radius: 12px;
   outline: none;
+  width: 100%;
+  font-size: 16px;            /* Prevents iOS zoom on focus */
+  -webkit-appearance: none;   /* Remove iOS default styling */
 }
 
 .biz-input:focus {
@@ -122,6 +247,11 @@ main {
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;           /* Apple/Google minimum touch target */
+  padding: 12px 20px;
+  font-size: 16px;
+  touch-action: manipulation; /* Removes 300ms tap delay */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cta-button:hover {
@@ -129,101 +259,87 @@ main {
   transform: scale(1.02);
 }
 
-/* Helper Utilities */
+.cta-button:active {
+  transform: scale(0.98);     /* Tactile press feedback on mobile */
+}
+
+/* --- 10. RESPONSIVE GRID --- */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .responsive-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+}
+
+/* --- 11. LANDING PAGE HERO --- */
+.hero-title {
+  font-size: clamp(2rem, 8vw, 5rem); /* Fluid font: scales with viewport */
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    text-align: left;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* --- 12. NAVIGATION --- */
+.nav-menu-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nav-menu-desktop { display: flex; }
+}
+
+/* Mobile nav header bar */
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  padding-top: calc(1rem + var(--safe-top));
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  .mobile-nav-header { display: none; }
+}
+
+/* --- 13. PADDING HELPERS --- */
+.mobile-padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-padding { padding-left: 2rem; padding-right: 2rem; }
+}
+
+/* Bottom safe area padding (for iPhone home bar) */
+.safe-bottom {
+  padding-bottom: var(--safe-bottom);
+}
+
+/* --- 14. UTILITY --- */
 .text-growth { color: var(--secondary); }
 .text-alert { color: var(--error); }
 .glow-blue { box-shadow: 0 0 20px rgba(173, 199, 255, 0.1); }
 
-/* --- 7. SMOOTH SCROLLING --- */
-html {
-  scroll-behavior: smooth;
-}
-
-/* --- Global Mobile Refinements --- */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 3.5rem !important; /* Resizes 'The Modern CFO's' */
-    line-height: 1.1 !important;
-    text-align: left;
-    margin-bottom: 1.5rem;
-  }
-
-  .nav-menu-desktop {
-    display: none; /* Hides the long list of links in the header */
-  }
-
-  /* Ensures Bento cards stack vertically without overlapping */
-  .responsive-grid {
-    grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
-  }
-
-  .mobile-padding {
-    padding-left: 1.5rem !important;
-    padding-right: 1.5rem !important;
-  }
-}
-
-/* Global Mobile Header Fix */
-@media (max-width: 768px) {
-  h1 {
-    word-break: break-word; /* Prevents long words from cutting off */
-    overflow-wrap: break-word;
-  }
-  
-  /* Optional: Makes the Bento cards take up more width on small phones */
-  .grid {
-    gap: 1rem !important;
-  }
-}
-
-/* Container adjustment */
-.vault-container {
-  display: flex;
-  flex-direction: column; /* Stack vertically on mobile */
-  width: 100%;
-  overflow-x: hidden;
-}
-
-/* Sidebar adjustment */
-.sidebar {
-  width: 100%; 
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-/* Desktop override */
-@media (min-width: 768px) {
-  .vault-container {
-    flex-direction: row;
-  }
-  .sidebar {
-    width: 250px;
-    height: 100vh;
-  }
-}
-
-/* In your CSS file */
-.vault-wrapper {
-  @apply flex flex-col md:flex-row min-h-screen w-full overflow-x-hidden;
-}
-
-.vault-sidebar {
-  @apply w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-800;
-}
-@media (max-width: 768px) {
-  .text-2xl {
-    font-size: 1.25rem; /* Shrink font size on mobile */
-  }
-  .p-7 {
-    padding: 1rem; /* Reduce padding so content doesn't overflow */
-  }
-}
-
+/* --- 15. STARS BACKGROUND --- */
 .stars-container {
   width: 100%;
   height: 100%;
-  background-image: 
+  background-image:
     radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
     radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
     radial-gradient(1px 1px at 50px 160px, #fff, rgba(0,0,0,0)),
@@ -240,3 +356,29 @@ html {
   to { transform: translateY(-2000px); }
 }
 
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .stars-container { animation: none; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* --- 16. VAULT CONTAINER (legacy class support) --- */
+.vault-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+  .vault-container { flex-direction: row; }
+}
+
+.sidebar {
+  width: 100%;
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .sidebar { width: 250px; height: 100vh; }
+}
