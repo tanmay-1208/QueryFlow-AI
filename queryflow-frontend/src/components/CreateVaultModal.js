@@ -89,3 +89,4 @@ const CreateVaultModal = ({ isOpen, onClose, onCreated, userId, vaultCount }) =>
 };
 
 export default CreateVaultModal;
+
