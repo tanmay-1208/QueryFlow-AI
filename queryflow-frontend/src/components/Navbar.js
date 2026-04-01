@@ -6,11 +6,13 @@ export default function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // 1. INJECTED THE CONTACT ROUTE HERE
   const navLinks = [
     { name: "Features", path: "/features" },
     { name: "Solutions", path: "/solutions" },
     { name: "Pricing", path: "/pricing" },
     { name: "Security", path: "/security" },
+    { name: "Contact", path: "/contact" }, // <-- Added Secure Comms link
   ];
 
   // Close drawer on route change

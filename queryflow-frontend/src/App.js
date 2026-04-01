@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "r
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "./supabaseClient";
 
+// Page Imports
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Vault from "./pages/Vault";
@@ -10,6 +11,7 @@ import FeaturesPage from "./pages/FeaturesPage";
 import SolutionsPage from "./pages/SolutionsPage";
 import PricingPage from "./pages/PricingPage";
 import SecurityPage from "./pages/SecurityPage";
+import ContactPage from "./pages/ContactPage"; // <-- 1. Imported the new page
 
 const PageTransition = ({ children }) => (
   <motion.div
@@ -33,6 +35,10 @@ function AnimatedRoutes({ session, handleLogout }) {
         <Route path="/solutions" element={<PageTransition><SolutionsPage /></PageTransition>} />
         <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
         <Route path="/security" element={<PageTransition><SecurityPage /></PageTransition>} />
+        
+        {/* 2. Added the new Contact Route */}
+        <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} /> 
+        
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
 
         <Route
