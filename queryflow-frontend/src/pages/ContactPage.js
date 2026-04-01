@@ -68,6 +68,7 @@ const ContactPage = () => {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="lg:col-span-4 flex flex-col gap-6"
           >
+            {/* Location Node */}
             <div className="bg-[#131313] p-8 rounded-[2rem] border border-white/5">
               <span className="text-[#4182ff] material-symbols-outlined text-3xl mb-4">location_on</span>
               <h4 className="text-sm font-black uppercase tracking-widest mb-2">Primary Node</h4>
@@ -78,15 +79,18 @@ const ContactPage = () => {
               </p>
             </div>
 
+            {/* Direct Link (Updated with your email) */}
             <div className="bg-[#131313] p-8 rounded-[2rem] border border-white/5">
               <span className="text-[#66dd8b] material-symbols-outlined text-3xl mb-4">mail</span>
               <h4 className="text-sm font-black uppercase tracking-widest mb-2">Direct Link</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                admin@queryflow.ai<br/>
-                support@queryflow.ai
+              <p className="text-gray-500 text-sm leading-relaxed flex flex-col items-start">
+                <a href="mailto:tanmaysingh1208@gmail.com" className="hover:text-[#66dd8b] transition-colors">
+                  tanmaysingh1208@gmail.com
+                </a>
               </p>
             </div>
 
+            {/* System Status */}
             <div className="bg-[#4182ff] p-8 rounded-[2rem] text-black">
               <h4 className="text-sm font-black uppercase tracking-widest mb-2">System Status</h4>
               <div className="flex items-center gap-2 mt-4">
