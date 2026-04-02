@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import EditAssetModal from "./EditAssetModal";
 import SellModal from "./SellModal";
+import { ScaleIn } from "./AnimatedPage";
 
 const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -8,7 +9,7 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
   const isLowStock = (item.stock || 0) <= 5;
 
   return (
-    <>
+    <ScaleIn>
       <div className={`bg-[#131313] p-6 rounded-[2.5rem] border transition-all shadow-xl relative group ${isLowStock ? 'border-red-500/20' : 'border-white/5 hover:bg-[#181818]'}`}>
 
         <button
@@ -26,34 +27,34 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
         </button>
 
         <div className="flex justify-between items-start mb-6 pr-16">
-  <div className="w-full">
-    <h4 className="font-black text-lg tracking-tighter truncate uppercase text-white w-full border-b border-white/5 pb-2">
-      {item.name}
-    </h4>
-    {item.category && (
-      <span className="inline-block mt-2 bg-[#4182ff]/10 text-[#4182ff] text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-[#4182ff]/20">
-        {item.category}
-      </span>
-    )}
-  </div>
-  {isLowStock && (
-    <span className="absolute top-2 left-6 bg-red-500/10 text-red-500 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
-      Low Stock
-    </span>
-  )}
-</div>
+          <div className="w-full">
+            <h4 className="font-black text-lg tracking-tighter truncate uppercase text-white w-full border-b border-white/5 pb-2">
+              {item.name}
+            </h4>
+            {item.category && (
+              <span className="inline-block mt-2 bg-[#4182ff]/10 text-[#4182ff] text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-[#4182ff]/20">
+                {item.category}
+              </span>
+            )}
+          </div>
+          {isLowStock && (
+            <span className="absolute top-2 left-6 bg-red-500/10 text-red-500 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
+              Low Stock
+            </span>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
             <span className="text-[7px] text-gray-500 block uppercase font-black mb-1">Cost Point</span>
             <span className="text-xs font-black text-gray-500 block truncate">
-              ${(item.costPrice || item.cost_price || 0).toLocaleString()}
+              Rs.{(item.costPrice || item.cost_price || 0).toLocaleString()}
             </span>
           </div>
           <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
             <span className="text-[7px] text-gray-600 block uppercase font-black mb-1">Market Point</span>
             <span className="text-xs font-black text-white block truncate">
-              ${(item.price || 0).toLocaleString()}
+              Rs.{(item.price || 0).toLocaleString()}
             </span>
           </div>
         </div>
@@ -98,10 +99,8 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
         userId={userId}
         onSellComplete={onSellComplete}
       />
-    </>
+    </ScaleIn>
   );
 };
 
 export default InventoryCard;
-
-//pihu

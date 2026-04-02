@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion"; // Added AnimatePresence for the mobile overlay
 import InventoryContainer from "../components/InventoryContainer";
 import AddAssetModal from "../components/AddAssetModal";
 import CreateVaultModal from "../components/CreateVaultModal";
@@ -9,14 +8,13 @@ import InvoiceModal from "../components/InvoiceModal";
 import CSVImportModal from "../components/CSVImportModal";
 import SkeletonCard from "../components/SkeletonCard";
 import SkeletonDashboard from "../components/SkeletonDashboard";
+import OnboardingModal from "../components/OnboardingModal";
+import { FadeIn, StaggerContainer, StaggerItem } from "../components/AnimatedPage";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
 
 const Vault = ({ userId, userEmail, onLogout }) => {
-  // --- MOBILE SIDEBAR STATE ---
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [items, setItems] = useState([]);
   const [sellHistory, setSellHistory] = useState([]);
   const [vaults, setVaults] = useState([]);
@@ -27,17 +25,15 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [invoiceSale, setInvoiceSale] = useState(null);
   const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-  // LOADING STATES
   const [loadingVaults, setLoadingVaults] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
-
   const [chatLog, setChatLog] = useState([
     { role: "agent", text: "[SYSTEM]: Neural link stable. QueryFlow Agent v5.0 initialized. Ready for audit." }
   ]);
@@ -67,9 +63,17 @@ const Vault = ({ userId, userEmail, onLogout }) => {
       );
 
       setVaults(unique);
+
       if (unique.length > 0 && !activeVault) {
         setActiveVault(unique[0]);
       }
+
+      // Show onboarding for new users
+      const isOnboarded = localStorage.getItem(`onboarded_${userId}`);
+      if (unique.length === 0 && !isOnboarded) {
+        setShowOnboarding(true);
+      }
+
     } catch (err) {
       console.error("Vault fetch error:", err);
     } finally {
@@ -226,36 +230,12 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const maxItemProfit = Math.max(...sortedItemProfits.map(s => s[1]), 1);
 
   return (
-    <div className="flex h-screen w-full bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white relative">
-      
-      {/* --- MOBILE OVERLAY --- */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-[90] md:hidden backdrop-blur-sm" 
-            onClick={() => setIsSidebarOpen(false)} 
-          />
-        )}
-      </AnimatePresence>
+    <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
 
-      {/* 1. RESPONSIVE SIDEBAR */}
-      <aside className={`
-        absolute md:relative top-0 left-0 h-full w-[280px] md:w-64 border-r border-white/5 p-6 md:p-8 flex flex-col justify-between 
-        bg-[#080808] md:bg-black/40 backdrop-blur-xl shrink-0 z-[100] transition-transform duration-300
-        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-      `}>
-        {/* Mobile Close Button */}
-        <button 
-          className="md:hidden absolute top-6 right-6 text-white/50 hover:text-white"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          <span className="material-symbols-outlined text-xl">close</span>
-        </button>
+      {/* 1. SIDEBAR */}
+      <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
+        <div>
 
-        <div className="mt-8 md:mt-0">
           {/* VAULT SWITCHER */}
           <div className="mb-12 relative">
             {loadingVaults ? (
@@ -314,10 +294,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
             {["dashboard", "inventory"].map((tab) => (
               <button
                 key={tab}
-                onClick={() => {
-                  setActiveTab(tab);
-                  setIsSidebarOpen(false); // Close sidebar on mobile when navigating
-                }}
+                onClick={() => setActiveTab(tab)}
                 className={`w-full text-left p-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${
                   activeTab === tab ? "bg-white/5 text-white border border-white/10" : "text-white/20 hover:text-white/50"
                 }`}
@@ -328,14 +305,14 @@ const Vault = ({ userId, userEmail, onLogout }) => {
           </nav>
 
           <button
-            onClick={() => { setIsAiOpen(true); setIsSidebarOpen(false); }}
+            onClick={() => setIsAiOpen(true)}
             className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#4182ff]/20 bg-[#4182ff]/5 text-[#4182ff] text-[9px] font-black uppercase tracking-widest hover:bg-[#4182ff]/10 transition-all"
           >
             <span className={`${isAiOpen ? 'text-[#00ff88]' : 'animate-pulse text-[#4182ff]'}`}>●</span> Agent_Interface
           </button>
 
           <button
-            onClick={() => { setIsTeamOpen(true); setIsSidebarOpen(false); }}
+            onClick={() => setIsTeamOpen(true)}
             className="mt-3 w-full flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all"
           >
             <span className="text-white/20">●</span> Team_Access
@@ -348,25 +325,13 @@ const Vault = ({ userId, userEmail, onLogout }) => {
       </aside>
 
       {/* 2. MAIN VIEWPORT */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out h-full overflow-hidden">
-        
-        {/* RESPONSIVE HEADER */}
-        <header className="h-20 md:h-24 border-b border-white/5 flex justify-between items-center px-6 md:px-12 shrink-0 bg-[#050505]/90 backdrop-blur-md z-40">
-          <div className="flex items-center gap-4">
-            {/* Mobile Hamburger */}
-            <button 
-              className="md:hidden flex items-center justify-center p-2 rounded-lg bg-white/5 border border-white/10 text-white"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <span className="material-symbols-outlined text-sm">menu</span>
-            </button>
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic hidden sm:block">
-              Terminal / {activeVault?.name || "Vault"} / {activeTab}
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-4 md:gap-6">
-            <div className="text-right hidden sm:block">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
+        <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">
+            Terminal / {activeVault?.name || "Vault"} / {activeTab}
+          </h2>
+          <div className="flex items-center gap-6">
+            <div className="text-right">
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
               <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
             </div>
@@ -374,24 +339,24 @@ const Vault = ({ userId, userEmail, onLogout }) => {
             {activeTab === "dashboard" && (
               <button
                 onClick={handleExportPDF}
-                className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 md:px-4 py-2 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
+                className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
               >
-                <span className="material-symbols-outlined text-sm hidden sm:block">download</span>
-                Export
+                <span className="material-symbols-outlined text-sm">download</span>
+                Export PDF
               </button>
             )}
 
             {activeTab === "inventory" && (
-              <div className="flex items-center gap-2 md:gap-3">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsCSVImportOpen(true)}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 md:px-4 py-2 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
                 >
-                  Import
+                  CSV Import
                 </button>
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="bg-[#4182ff] w-10 h-10 md:w-12 md:h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold flex items-center justify-center"
+                  className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold"
                 >
                   +
                 </button>
@@ -402,209 +367,217 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
         {/* NO VAULT STATE */}
         {!loadingVaults && !activeVault ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-            <p className="text-white/20 text-[10px] uppercase font-black tracking-widest text-center">No Vault Found</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-6">
+            <p className="text-white/20 text-[10px] uppercase font-black tracking-widest">No Vault Found</p>
             <button
               onClick={() => setIsCreateVaultOpen(true)}
-              className="bg-[#4182ff] px-6 md:px-8 py-4 rounded-2xl font-black uppercase text-[9px] md:text-[10px] tracking-widest text-white hover:brightness-110 transition-all text-center"
+              className="bg-[#4182ff] px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white hover:brightness-110 transition-all"
             >
               Create Your First Vault
             </button>
           </div>
         ) : (
-          /* RESPONSIVE PADDING ON CONTENT (p-6 md:p-12) */
-          <div className="flex-1 overflow-y-auto p-6 md:p-12 space-y-8 md:space-y-10 custom-scrollbar pb-32">
+          <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
             {activeTab === "dashboard" ? (
               loadingDashboard ? (
                 <SkeletonDashboard />
               ) : (
-                <div className="space-y-8 md:space-y-10">
+                <FadeIn>
+                  <div className="space-y-10">
 
-                  {/* TOP METRICS - RESPONSIVE GRID */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                    <GlassCard label="Gross Valuation" value={`Rs.${grossVal.toLocaleString("en-IN")}`} accent="#4182ff" />
-                    <GlassCard label="Net Efficiency" value={`Rs.${net.toLocaleString("en-IN")}`} accent="#00ff88" />
-                    <GlassCard label="Tax Provision" value={`-Rs.${tax.toLocaleString("en-IN")}`} accent="#ff3366" />
-                    <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
-                  </div>
+                    {/* TOP METRICS */}
+                    <StaggerContainer>
+                      <div className="grid grid-cols-4 gap-6">
+                        {[
+                          { label: "Gross Valuation", value: `Rs.${grossVal.toLocaleString("en-IN")}`, accent: "#4182ff" },
+                          { label: "Net Efficiency", value: `Rs.${net.toLocaleString("en-IN")}`, accent: "#00ff88" },
+                          { label: "Tax Provision", value: `-Rs.${tax.toLocaleString("en-IN")}`, accent: "#ff3366" },
+                          { label: "Units Held", value: totalStock.toLocaleString(), accent: "#ffffff" }
+                        ].map((card, i) => (
+                          <StaggerItem key={i}>
+                            <GlassCard label={card.label} value={card.value} accent={card.accent} />
+                          </StaggerItem>
+                        ))}
+                      </div>
+                    </StaggerContainer>
 
-                  {/* PERFORMANCE GRAPH - RESPONSIVE GRID */}
-                  <div className="glass-panel p-6 md:p-10">
-                    <p className="text-[9px] md:text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                      <div>
-                        <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
-                        <div className="flex items-end gap-1 md:gap-2 h-40">
-                          {dayData.map((d, i) => (
-                            <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                              <span className="text-[6px] md:text-[7px] text-white/30 font-black">
-                                {d.profit > 0 ? `Rs.${d.profit.toFixed(0)}` : ''}
-                              </span>
-                              <div
-                                className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
-                                style={{
-                                  height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
-                                  opacity: d.profit > 0 ? 1 : 0.1
-                                }}
-                              />
-                              <span className="text-[6px] md:text-[7px] text-white/30 font-black uppercase">{d.label}</span>
+                    {/* PERFORMANCE GRAPH */}
+                    <div className="glass-panel p-10">
+                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
+                      <div className="grid grid-cols-2 gap-10">
+                        <div>
+                          <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
+                          <div className="flex items-end gap-2 h-40">
+                            {dayData.map((d, i) => (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                <span className="text-[7px] text-white/30 font-black">
+                                  {d.profit > 0 ? `Rs.${d.profit.toFixed(0)}` : ''}
+                                </span>
+                                <div
+                                  className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
+                                  style={{
+                                    height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
+                                    opacity: d.profit > 0 ? 1 : 0.1
+                                  }}
+                                />
+                                <span className="text-[7px] text-white/30 font-black uppercase">{d.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
+                          {sortedItemProfits.length === 0 ? (
+                            <div className="flex items-center justify-center h-40">
+                              <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4 flex flex-col justify-center h-40">
+                              {sortedItemProfits.map(([name, profit], i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                  <span className="text-[8px] text-white/40 font-black uppercase w-16 truncate shrink-0">{name}</span>
+                                  <div className="flex-1 bg-white/5 rounded-full h-2">
+                                    <div
+                                      className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
+                                      style={{ width: `${(profit / maxItemProfit) * 100}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
+                                    Rs.{profit.toFixed(0)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* BOTTOM DATA */}
+                    <div className="grid grid-cols-2 gap-8">
+                      <div className="glass-panel p-10">
+                        <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
+                        <div className="space-y-6">
+                          {topFive.map((item, i) => (
+                            <div key={i} className="flex justify-between items-center group">
+                              <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
+                              <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
+                              <span className="text-[11px] font-bold text-[#4182ff]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
                             </div>
                           ))}
                         </div>
                       </div>
-
-                      <div>
-                        <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
-                        {sortedItemProfits.length === 0 ? (
-                          <div className="flex items-center justify-center h-40">
-                            <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-4 flex flex-col justify-center h-40">
-                            {sortedItemProfits.map(([name, profit], i) => (
-                              <div key={i} className="flex items-center gap-3">
-                                <span className="text-[7px] md:text-[8px] text-white/40 font-black uppercase w-12 md:w-16 truncate shrink-0">{name}</span>
-                                <div className="flex-1 bg-white/5 rounded-full h-2">
-                                  <div
-                                    className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
-                                    style={{ width: `${(profit / maxItemProfit) * 100}%` }}
-                                  />
-                                </div>
-                                <span className="text-[7px] md:text-[8px] text-[#00ff88] font-black w-12 md:w-14 text-right shrink-0">
-                                  Rs.{profit.toFixed(0)}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                      <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
+                        <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
+                        <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
+                        <p>{">"} Vault: {activeVault?.name}</p>
+                        <p>{">"} DB Sync: {items.length} assets integrated</p>
+                        <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* BOTTOM DATA - RESPONSIVE GRID */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                    <div className="glass-panel p-6 md:p-10">
-                      <p className="text-[9px] md:text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
-                      <div className="space-y-6">
-                        {topFive.map((item, i) => (
-                          <div key={i} className="flex justify-between items-center group">
-                            <span className="text-[9px] md:text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors truncate max-w-[100px] md:max-w-[150px]">{item.name}</span>
-                            <div className="flex-1 mx-2 md:mx-4 border-b border-white/5 border-dashed" />
-                            <span className="text-[9px] md:text-[11px] font-bold text-[#4182ff]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="glass-panel p-6 md:p-10 font-mono text-[8px] md:text-[9px] text-white/20 space-y-2 overflow-x-hidden">
-                      <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
-                      <p className="text-[#00ff88] truncate">{">"} Handshake: Session_Active</p>
-                      <p className="truncate">{">"} Vault: {activeVault?.name}</p>
-                      <p className="truncate">{">"} DB Sync: {items.length} assets integrated</p>
-                      <p className="text-[#ff3366] animate-pulse truncate">{">"} Real-time Valuation Engine: Active</p>
-                    </div>
-                  </div>
-
-                  {/* SELL HISTORY */}
-                  <div className="glass-panel p-6 md:p-10 pb-10">
-                    <p className="text-[9px] md:text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
-                    {sellHistory.length === 0 ? (
-                      <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
-                    ) : (
-                      <div className="space-y-4">
-                        {sellHistory.slice(0, 10).map((sale, i) => (
-                          <div key={i} className="flex flex-col sm:flex-row justify-between sm:items-center group border-b border-white/5 pb-4 gap-4 sm:gap-0">
-                            <div>
-                              <p className="text-[10px] md:text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
-                                {sale.productName}
-                              </p>
-                              <p className="text-[7px] md:text-[8px] text-white/20 uppercase font-black mt-1">
-                                {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
-                                  day: 'numeric', month: 'short', year: 'numeric',
-                                  hour: '2-digit', minute: '2-digit'
-                                })}
-                              </p>
-                            </div>
-                            <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
-                              <div className="text-left sm:text-right">
-                                <p className={`text-[10px] md:text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
-                                  +Rs.{sale.profit?.toFixed(2)}
+                    {/* SELL HISTORY */}
+                    <div className="glass-panel p-10 pb-10">
+                      <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
+                      {sellHistory.length === 0 ? (
+                        <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
+                      ) : (
+                        <div className="space-y-4">
+                          {sellHistory.slice(0, 10).map((sale, i) => (
+                            <div key={i} className="flex justify-between items-center group border-b border-white/5 pb-4">
+                              <div>
+                                <p className="text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
+                                  {sale.productName}
                                 </p>
-                                <p className="text-[7px] md:text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
+                                <p className="text-[8px] text-white/20 uppercase font-black mt-1">
+                                  {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
+                                    day: 'numeric', month: 'short', year: 'numeric',
+                                    hour: '2-digit', minute: '2-digit'
+                                  })}
+                                </p>
                               </div>
-                              <button
-                                onClick={() => { setInvoiceSale(sale); setIsInvoiceOpen(true); }}
-                                className="bg-white/5 border border-white/10 px-3 py-2 rounded-xl text-[7px] md:text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
-                              >
-                                Invoice
-                              </button>
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                                    +Rs.{sale.profit?.toFixed(2)}
+                                  </p>
+                                  <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
+                                </div>
+                                <button
+                                  onClick={() => { setInvoiceSale(sale); setIsInvoiceOpen(true); }}
+                                  className="bg-white/5 border border-white/10 px-3 py-2 rounded-xl text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
+                                >
+                                  Invoice
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                </div>
+                  </div>
+                </FadeIn>
               )
             ) : (
-              <div className="space-y-6">
-                <div className="flex gap-2 md:gap-3 flex-wrap">
-                  {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`px-3 md:px-4 py-2 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all ${
-                        selectedCategory === cat
-                          ? 'bg-[#4182ff] text-white'
-                          : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-
-                {/* INVENTORY SKELETONS */}
-                {loadingItems ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {[...Array(6)].map((_, i) => (
-                      <SkeletonCard key={i} />
+              <FadeIn>
+                <div className="space-y-6">
+                  <div className="flex gap-3 flex-wrap">
+                    {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                          selectedCategory === cat
+                            ? 'bg-[#4182ff] text-white'
+                            : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
+                        }`}
+                      >
+                        {cat}
+                      </button>
                     ))}
                   </div>
-                ) : (
-                  <InventoryContainer
-                    items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
-                    userId={userId}
-                    onDeleteAsset={handleDeleteAsset}
-                    onUpdateStock={handleUpdateStock}
-                    onEditAsset={handleEditAsset}
-                    onSellComplete={handleSellComplete}
-                  />
-                )}
-              </div>
+
+                  {loadingItems ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {[...Array(6)].map((_, i) => (
+                        <SkeletonCard key={i} />
+                      ))}
+                    </div>
+                  ) : (
+                    <InventoryContainer
+                      items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
+                      userId={userId}
+                      onDeleteAsset={handleDeleteAsset}
+                      onUpdateStock={handleUpdateStock}
+                      onEditAsset={handleEditAsset}
+                      onSellComplete={handleSellComplete}
+                    />
+                  )}
+                </div>
+              </FadeIn>
             )}
           </div>
         )}
       </main>
 
-      {/* 3. RESPONSIVE AI AGENT DRAWER */}
+      {/* 3. AI AGENT DRAWER */}
       <div
-        className={`absolute md:relative right-0 top-0 h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 z-[110] ${
-          isAiOpen ? 'w-full md:w-[450px] opacity-100 translate-x-0' : 'w-0 opacity-0 translate-x-full md:translate-x-0 border-none'
+        className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 z-30 ${
+          isAiOpen ? 'w-[450px] opacity-100' : 'w-0 opacity-0 border-none'
         }`}
       >
-        <div className="w-full md:w-[450px] p-6 md:p-10 h-full flex flex-col">
+        <div className="w-[450px] p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
               <p className="text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
             </div>
-            <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-2 rounded-md transition-all uppercase flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">close</span>
-            </button>
+            <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase">Close</button>
           </div>
 
-          <div className="flex-1 font-mono text-[9px] md:text-[10px] leading-relaxed bg-black/60 p-4 md:p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
+          <div className="flex-1 font-mono text-[10px] leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
             {chatLog.map((msg, i) => (
               <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
                 <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
@@ -617,7 +590,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
           <div className="mt-8 relative">
             <input
-              className="w-full bg-white/5 border border-white/10 p-4 md:p-5 rounded-2xl text-[10px] md:text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold"
+              className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold"
               placeholder="Execute command (e.g., Audit Portfolio)..."
               value={aiQuery}
               onChange={(e) => setAiQuery(e.target.value)}
@@ -673,16 +646,29 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         userId={userId}
         vaultId={activeVault?.id}
       />
+
+      <OnboardingModal
+        isOpen={showOnboarding}
+        userId={userId}
+        userEmail={userEmail}
+        onComplete={(newVault) => {
+          setShowOnboarding(false);
+          if (newVault) {
+            setVaults([newVault]);
+            setActiveVault(newVault);
+          }
+          fetchVaults();
+        }}
+      />
     </div>
   );
 };
 
-// Responsive GlassCard component
 const GlassCard = ({ label, value, accent }) => (
-  <div className="glass-panel p-6 md:p-8 group hover:bg-white/[0.05] transition-all relative overflow-hidden h-full">
+  <div className="glass-panel p-8 group hover:bg-white/[0.05] transition-all relative overflow-hidden">
     <div className="absolute top-0 left-0 w-1 h-full transition-all group-hover:w-2" style={{ backgroundColor: accent }} />
-    <p className="text-[7px] md:text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-2 md:mb-3">{label}</p>
-    <p className="text-lg md:text-xl font-black tracking-tighter truncate" style={{ color: value.includes('-') ? '#ff3366' : 'white' }}>{value}</p>
+    <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-3">{label}</p>
+    <p className="text-xl font-black tracking-tighter truncate" style={{ color: value.includes('-') ? '#ff3366' : 'white' }}>{value}</p>
   </div>
 );
 
