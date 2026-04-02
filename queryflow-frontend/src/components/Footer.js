@@ -76,7 +76,8 @@ export default function Footer() {
           <div className="flex flex-col gap-3">
             <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Security</span>
             <Link to="/security" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Vault Protocol</Link>
-            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Source Code</a>
+            <Link to="/contact" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Secure Comms</Link>
+            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic mt-2">Source Code</a>
           </div>
 
           {/* Column 3 & 4: Copyright & Branding */}

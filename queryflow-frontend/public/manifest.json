@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "QueryFlow",
+  "name": "QueryFlow AI | Terminal",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,18 +8,21 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "6E01371A-92F2-4735-9840-A957FAB3B1F5_4_5005_c.jpeg",
+      "type": "image/jpeg",
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "6E01371A-92F2-4735-9840-A957FAB3B1F5_4_5005_c.jpeg",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait",
+  "theme_color": "#050505",
+  "background_color": "#050505"
 }

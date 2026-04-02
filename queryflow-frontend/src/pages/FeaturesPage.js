@@ -14,21 +14,24 @@ const FeaturesPage = () => {
     })
   };
 
-  // make changes n2
-
   return (
-    <div className="bg-[#0e0e0e] min-h-screen text-white pt-40 overflow-x-hidden">
+    <div className="bg-[#0e0e0e] min-h-screen text-white pt-32 md:pt-40 overflow-x-hidden">
       <Navbar />
-      <div className="max-w-[1400px] mx-auto px-10 pb-40">
+      {/* 1. Adjusted mobile padding (px-6) and desktop padding (md:px-10) */}
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
+        
+        {/* 2. RESPONSIVE TYPOGRAPHY FIX */}
         <motion.h1 
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          className="text-7xl md:text-[100px] font-black tracking-tighter mb-20 italic"
+          className="text-[12vw] md:text-[9vw] font-black uppercase tracking-tighter leading-[0.85] md:leading-[0.8] mb-16 md:mb-20 italic w-full break-words"
         >
-          PRECISION<br/><span className="text-[#4182ff]">ARCHITECTURE</span>
+          PRECISION<br/>
+          <span className="text-[#4182ff]">ARCHITECTURE</span>
         </motion.h1>
         
-        <div className="grid lg:grid-cols-3 gap-8">
+        {/* 3. The Grid (Already responsive with lg:grid-cols-3) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[
             { icon: "analytics", title: "SKU Indexing", color: "#4182ff" },
             { icon: "psychology", title: "CFO AI Advisor", color: "#66dd8b" },
@@ -47,10 +50,10 @@ const FeaturesPage = () => {
                 rotateY: 5,
                 boxShadow: `0px 20px 50px rgba(0,0,0,0.5), 0px 0px 20px ${f.color}33` 
               }}
-              className="bg-[#131313] p-12 rounded-[3rem] border border-white/5 cursor-pointer relative group"
+              className="bg-[#131313] p-10 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/5 cursor-pointer relative group flex flex-col items-start"
             >
               <span className="material-symbols-outlined mb-6 text-5xl" style={{color: f.color}}>{f.icon}</span>
-              <h3 className="text-2xl font-black mb-4 uppercase">{f.title}</h3>
+              <h3 className="text-xl md:text-2xl font-black mb-4 uppercase">{f.title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">High-velocity data processing with sub-4ms latency for real-time asset tracking.</p>
               
               {/* Micro-interaction: revealing line on hover */}
@@ -68,5 +71,3 @@ const FeaturesPage = () => {
 };
 
 export default FeaturesPage;
-
-//vivek

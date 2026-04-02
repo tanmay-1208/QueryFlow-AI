@@ -6,6 +6,10 @@ import CreateVaultModal from "../components/CreateVaultModal";
 import TeamModal from "../components/TeamModal";
 import InvoiceModal from "../components/InvoiceModal";
 import CSVImportModal from "../components/CSVImportModal";
+import SkeletonCard from "../components/SkeletonCard";
+import SkeletonDashboard from "../components/SkeletonDashboard";
+import OnboardingModal from "../components/OnboardingModal";
+import { FadeIn, StaggerContainer, StaggerItem } from "../components/AnimatedPage";
 import { exportVaultReport } from "../utils/exportPDF";
 
 const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
@@ -21,11 +25,15 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [invoiceSale, setInvoiceSale] = useState(null);
   const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [loadingVaults, setLoadingVaults] = useState(true);
+  const [loadingItems, setLoadingItems] = useState(false);
+  const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [chatLog, setChatLog] = useState([
     { role: "agent", text: "[SYSTEM]: Neural link stable. QueryFlow Agent v5.0 initialized. Ready for audit." }
   ]);
@@ -33,6 +41,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   // --- DATA SYNC ---
   const fetchVaults = useCallback(async () => {
     if (!userId) return;
+    setLoadingVaults(true);
     try {
       const ownRes = await axios.get(`${API_BASE_URL}/api/vaults?userId=${userId}`);
       const ownVaults = Array.isArray(ownRes.data) ? ownRes.data : [];
@@ -54,31 +63,47 @@ const Vault = ({ userId, userEmail, onLogout }) => {
       );
 
       setVaults(unique);
+
       if (unique.length > 0 && !activeVault) {
         setActiveVault(unique[0]);
       }
+
+      // Show onboarding for new users
+      const isOnboarded = localStorage.getItem(`onboarded_${userId}`);
+      if (unique.length === 0 && !isOnboarded) {
+        setShowOnboarding(true);
+      }
+
     } catch (err) {
       console.error("Vault fetch error:", err);
+    } finally {
+      setLoadingVaults(false);
     }
   }, [userId]);
 
   const fetchItems = useCallback(async () => {
     if (!userId || !activeVault) return;
+    setLoadingItems(true);
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products?vaultId=${activeVault.id}`);
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Vault Retrieval Error:", err);
+    } finally {
+      setLoadingItems(false);
     }
   }, [userId, activeVault]);
 
   const fetchSellHistory = useCallback(async () => {
     if (!userId || !activeVault) return;
+    setLoadingDashboard(true);
     try {
       const res = await axios.get(`${API_BASE_URL}/api/sell?userId=${userId}&vaultId=${activeVault.id}`);
       setSellHistory(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Sell History Error:", err);
+    } finally {
+      setLoadingDashboard(false);
     }
   }, [userId, activeVault]);
 
@@ -213,49 +238,55 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
           {/* VAULT SWITCHER */}
           <div className="mb-12 relative">
-            <button
-              onClick={() => setIsVaultDropdownOpen(!isVaultDropdownOpen)}
-              className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
-                <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff] truncate">
-                  {activeVault?.name || "Vault.v5"}
-                </span>
-              </div>
-              <span className="text-white/30 text-xs">▾</span>
-            </button>
-
-            {isVaultDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl">
-                {vaults.map(vault => (
-                  <button
-                    key={vault.id}
-                    onClick={() => {
-                      setActiveVault(vault);
-                      setIsVaultDropdownOpen(false);
-                      setItems([]);
-                      setSellHistory([]);
-                    }}
-                    className={`w-full text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${
-                      activeVault?.id === vault.id
-                        ? 'bg-[#4182ff]/10 text-[#4182ff]'
-                        : 'text-white/40 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    {vault.name}
-                  </button>
-                ))}
+            {loadingVaults ? (
+              <div className="h-8 bg-white/5 rounded-xl animate-pulse" />
+            ) : (
+              <>
                 <button
-                  onClick={() => {
-                    setIsVaultDropdownOpen(false);
-                    setIsCreateVaultOpen(true);
-                  }}
-                  className="w-full text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-[#4182ff] border-t border-white/5 transition-all"
+                  onClick={() => setIsVaultDropdownOpen(!isVaultDropdownOpen)}
+                  className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"
                 >
-                  + New Vault
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
+                    <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff] truncate">
+                      {activeVault?.name || "Vault.v5"}
+                    </span>
+                  </div>
+                  <span className="text-white/30 text-xs">▾</span>
                 </button>
-              </div>
+
+                {isVaultDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f0f0f] border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl">
+                    {vaults.map(vault => (
+                      <button
+                        key={vault.id}
+                        onClick={() => {
+                          setActiveVault(vault);
+                          setIsVaultDropdownOpen(false);
+                          setItems([]);
+                          setSellHistory([]);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${
+                          activeVault?.id === vault.id
+                            ? 'bg-[#4182ff]/10 text-[#4182ff]'
+                            : 'text-white/40 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {vault.name}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => {
+                        setIsVaultDropdownOpen(false);
+                        setIsCreateVaultOpen(true);
+                      }}
+                      className="w-full text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-[#4182ff] border-t border-white/5 transition-all"
+                    >
+                      + New Vault
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -335,7 +366,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         </header>
 
         {/* NO VAULT STATE */}
-        {!activeVault ? (
+        {!loadingVaults && !activeVault ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-6">
             <p className="text-white/20 text-[10px] uppercase font-black tracking-widest">No Vault Found</p>
             <button
@@ -348,62 +379,138 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         ) : (
           <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
             {activeTab === "dashboard" ? (
-              <div className="space-y-10">
+              loadingDashboard ? (
+                <SkeletonDashboard />
+              ) : (
+                <FadeIn>
+                  <div className="space-y-10">
 
-                {/* TOP METRICS */}
-                <div className="grid grid-cols-4 gap-6">
-                  <GlassCard label="Gross Valuation" value={`Rs.${grossVal.toLocaleString("en-IN")}`} accent="#4182ff" />
-                  <GlassCard label="Net Efficiency" value={`Rs.${net.toLocaleString("en-IN")}`} accent="#00ff88" />
-                  <GlassCard label="Tax Provision" value={`-Rs.${tax.toLocaleString("en-IN")}`} accent="#ff3366" />
-                  <GlassCard label="Units Held" value={totalStock.toLocaleString()} accent="#ffffff" />
-                </div>
-
-                {/* PERFORMANCE GRAPH */}
-                <div className="glass-panel p-10">
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
-                  <div className="grid grid-cols-2 gap-10">
-
-                    <div>
-                      <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
-                      <div className="flex items-end gap-2 h-40">
-                        {dayData.map((d, i) => (
-                          <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                            <span className="text-[7px] text-white/30 font-black">
-                              {d.profit > 0 ? `Rs.${d.profit.toFixed(0)}` : ''}
-                            </span>
-                            <div
-                              className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
-                              style={{
-                                height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
-                                opacity: d.profit > 0 ? 1 : 0.1
-                              }}
-                            />
-                            <span className="text-[7px] text-white/30 font-black uppercase">{d.label}</span>
-                          </div>
+                    {/* TOP METRICS */}
+                    <StaggerContainer>
+                      <div className="grid grid-cols-4 gap-6">
+                        {[
+                          { label: "Gross Valuation", value: `Rs.${grossVal.toLocaleString("en-IN")}`, accent: "#4182ff" },
+                          { label: "Net Efficiency", value: `Rs.${net.toLocaleString("en-IN")}`, accent: "#00ff88" },
+                          { label: "Tax Provision", value: `-Rs.${tax.toLocaleString("en-IN")}`, accent: "#ff3366" },
+                          { label: "Units Held", value: totalStock.toLocaleString(), accent: "#ffffff" }
+                        ].map((card, i) => (
+                          <StaggerItem key={i}>
+                            <GlassCard label={card.label} value={card.value} accent={card.accent} />
+                          </StaggerItem>
                         ))}
+                      </div>
+                    </StaggerContainer>
+
+                    {/* PERFORMANCE GRAPH */}
+                    <div className="glass-panel p-10">
+                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
+                      <div className="grid grid-cols-2 gap-10">
+                        <div>
+                          <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
+                          <div className="flex items-end gap-2 h-40">
+                            {dayData.map((d, i) => (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                <span className="text-[7px] text-white/30 font-black">
+                                  {d.profit > 0 ? `Rs.${d.profit.toFixed(0)}` : ''}
+                                </span>
+                                <div
+                                  className="w-full rounded-t-sm bg-gradient-to-t from-[#4182ff]/20 to-[#4182ff] transition-all"
+                                  style={{
+                                    height: `${Math.max((d.profit / maxDayProfit) * 100, d.profit > 0 ? 5 : 2)}%`,
+                                    opacity: d.profit > 0 ? 1 : 0.1
+                                  }}
+                                />
+                                <span className="text-[7px] text-white/30 font-black uppercase">{d.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
+                          {sortedItemProfits.length === 0 ? (
+                            <div className="flex items-center justify-center h-40">
+                              <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4 flex flex-col justify-center h-40">
+                              {sortedItemProfits.map(([name, profit], i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                  <span className="text-[8px] text-white/40 font-black uppercase w-16 truncate shrink-0">{name}</span>
+                                  <div className="flex-1 bg-white/5 rounded-full h-2">
+                                    <div
+                                      className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
+                                      style={{ width: `${(profit / maxItemProfit) * 100}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
+                                    Rs.{profit.toFixed(0)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Profit Per Item</p>
-                      {sortedItemProfits.length === 0 ? (
-                        <div className="flex items-center justify-center h-40">
-                          <p className="text-white/10 text-[9px] uppercase font-black">No sales data yet</p>
+                    {/* BOTTOM DATA */}
+                    <div className="grid grid-cols-2 gap-8">
+                      <div className="glass-panel p-10">
+                        <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
+                        <div className="space-y-6">
+                          {topFive.map((item, i) => (
+                            <div key={i} className="flex justify-between items-center group">
+                              <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
+                              <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
+                              <span className="text-[11px] font-bold text-[#4182ff]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
+                            </div>
+                          ))}
                         </div>
+                      </div>
+                      <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
+                        <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
+                        <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
+                        <p>{">"} Vault: {activeVault?.name}</p>
+                        <p>{">"} DB Sync: {items.length} assets integrated</p>
+                        <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
+                      </div>
+                    </div>
+
+                    {/* SELL HISTORY */}
+                    <div className="glass-panel p-10 pb-10">
+                      <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
+                      {sellHistory.length === 0 ? (
+                        <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
                       ) : (
-                        <div className="space-y-4 flex flex-col justify-center h-40">
-                          {sortedItemProfits.map(([name, profit], i) => (
-                            <div key={i} className="flex items-center gap-3">
-                              <span className="text-[8px] text-white/40 font-black uppercase w-16 truncate shrink-0">{name}</span>
-                              <div className="flex-1 bg-white/5 rounded-full h-2">
-                                <div
-                                  className="h-2 rounded-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] transition-all"
-                                  style={{ width: `${(profit / maxItemProfit) * 100}%` }}
-                                />
+                        <div className="space-y-4">
+                          {sellHistory.slice(0, 10).map((sale, i) => (
+                            <div key={i} className="flex justify-between items-center group border-b border-white/5 pb-4">
+                              <div>
+                                <p className="text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
+                                  {sale.productName}
+                                </p>
+                                <p className="text-[8px] text-white/20 uppercase font-black mt-1">
+                                  {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
+                                    day: 'numeric', month: 'short', year: 'numeric',
+                                    hour: '2-digit', minute: '2-digit'
+                                  })}
+                                </p>
                               </div>
-                              <span className="text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
-                                Rs.{profit.toFixed(0)}
-                              </span>
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                                    +Rs.{sale.profit?.toFixed(2)}
+                                  </p>
+                                  <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
+                                </div>
+                                <button
+                                  onClick={() => { setInvoiceSale(sale); setIsInvoiceOpen(true); }}
+                                  className="bg-white/5 border border-white/10 px-3 py-2 rounded-xl text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
+                                >
+                                  Invoice
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -411,98 +518,45 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                     </div>
 
                   </div>
-                </div>
+                </FadeIn>
+              )
+            ) : (
+              <FadeIn>
+                <div className="space-y-6">
+                  <div className="flex gap-3 flex-wrap">
+                    {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                          selectedCategory === cat
+                            ? 'bg-[#4182ff] text-white'
+                            : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
 
-                {/* BOTTOM DATA */}
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="glass-panel p-10">
-                    <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
-                    <div className="space-y-6">
-                      {topFive.map((item, i) => (
-                        <div key={i} className="flex justify-between items-center group">
-                          <span className="text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
-                          <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
-                          <span className="text-[11px] font-bold text-[#4182ff]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
-                        </div>
+                  {loadingItems ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {[...Array(6)].map((_, i) => (
+                        <SkeletonCard key={i} />
                       ))}
                     </div>
-                  </div>
-                  <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
-                    <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
-                    <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
-                    <p>{">"} Vault: {activeVault?.name}</p>
-                    <p>{">"} DB Sync: {items.length} assets integrated</p>
-                    <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
-                  </div>
-                </div>
-
-                {/* SELL HISTORY */}
-                <div className="glass-panel p-10 pb-10">
-                  <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
-                  {sellHistory.length === 0 ? (
-                    <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
                   ) : (
-                    <div className="space-y-4">
-                      {sellHistory.slice(0, 10).map((sale, i) => (
-                        <div key={i} className="flex justify-between items-center group border-b border-white/5 pb-4">
-                          <div>
-                            <p className="text-[11px] font-black uppercase text-white/70 group-hover:text-white transition-colors">
-                              {sale.productName}
-                            </p>
-                            <p className="text-[8px] text-white/20 uppercase font-black mt-1">
-                              {sale.quantity} units • {new Date(sale.soldAt).toLocaleDateString('en-IN', {
-                                day: 'numeric', month: 'short', year: 'numeric',
-                                hour: '2-digit', minute: '2-digit'
-                              })}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <p className={`text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
-                                +Rs.{sale.profit?.toFixed(2)}
-                              </p>
-                              <p className="text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
-                            </div>
-                            <button
-                              onClick={() => { setInvoiceSale(sale); setIsInvoiceOpen(true); }}
-                              className="bg-white/5 border border-white/10 px-3 py-2 rounded-xl text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
-                            >
-                              Invoice
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <InventoryContainer
+                      items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
+                      userId={userId}
+                      onDeleteAsset={handleDeleteAsset}
+                      onUpdateStock={handleUpdateStock}
+                      onEditAsset={handleEditAsset}
+                      onSellComplete={handleSellComplete}
+                    />
                   )}
                 </div>
-
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="flex gap-3 flex-wrap">
-                  {["All", ...new Set(items.map(i => i.category).filter(Boolean))].map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                        selectedCategory === cat
-                          ? 'bg-[#4182ff] text-white'
-                          : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-                <InventoryContainer
-                  items={selectedCategory === "All" ? items : items.filter(i => i.category === selectedCategory)}
-                  userId={userId}
-                  onDeleteAsset={handleDeleteAsset}
-                  onUpdateStock={handleUpdateStock}
-                  onEditAsset={handleEditAsset}
-                  onSellComplete={handleSellComplete}
-                />
-              </div>
+              </FadeIn>
             )}
           </div>
         )}
@@ -591,6 +645,20 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         }}
         userId={userId}
         vaultId={activeVault?.id}
+      />
+
+      <OnboardingModal
+        isOpen={showOnboarding}
+        userId={userId}
+        userEmail={userEmail}
+        onComplete={(newVault) => {
+          setShowOnboarding(false);
+          if (newVault) {
+            setVaults([newVault]);
+            setActiveVault(newVault);
+          }
+          fetchVaults();
+        }}
       />
     </div>
   );

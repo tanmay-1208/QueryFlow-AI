@@ -8,7 +8,7 @@ const PRESET_CATEGORIES = [
   "Jewellery", "Automotive", "Health & Beauty", "Sports",
   "Books & Stationery", "Tools & Hardware", "Toys", "Other"
 ];
-
+// 1234
 const AddAssetModal = ({ isOpen, onClose, onAdd, userId, vaultId }) => {
   const [form, setForm] = useState({ name: "", cost_price: "", price: "", stock: "", category: "" });
   const [customCategory, setCustomCategory] = useState("");

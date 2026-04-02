@@ -1,8 +1,9 @@
 import React from "react";
 import InventoryCard from "./InventoryCard";
+import { StaggerContainer, StaggerItem } from "./AnimatedPage";
 
 const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId }) => {
-  
+
   const safeItems = Array.isArray(items) ? items : [];
 
   const filteredItems = safeItems.filter((item) => {
@@ -20,20 +21,22 @@ const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDele
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          
-          {filteredItems.map((item) => (
-            <InventoryCard
-              key={item.id || Math.random()}
-              item={item}
-              userId={userId}
-              onUpdateStock={onUpdateStock}
-              onDeleteAsset={onDeleteAsset}
-              onEditAsset={onEditAsset}
-              onSellComplete={onSellComplete}
-            />
-          ))}
-        </div>
+        <StaggerContainer>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredItems.map((item) => (
+              <StaggerItem key={item.id || Math.random()}>
+                <InventoryCard
+                  item={item}
+                  userId={userId}
+                  onUpdateStock={onUpdateStock}
+                  onDeleteAsset={onDeleteAsset}
+                  onEditAsset={onEditAsset}
+                  onSellComplete={onSellComplete}
+                />
+              </StaggerItem>
+            ))}
+          </div>
+        </StaggerContainer>
       )}
     </div>
   );
