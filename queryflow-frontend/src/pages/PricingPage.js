@@ -53,3 +53,6 @@ const PricingPage = () => {
 };
 
 export default PricingPage;
+
+
+//commit"default"
