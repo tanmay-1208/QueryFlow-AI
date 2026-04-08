@@ -1,24 +1,77 @@
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+
+// A reusable 3D hover card component
+const TiltCard = ({ children, className }) => {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
+
+  const handleMouseMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    
+    // Normalize mouse position from -0.5 to 0.5
+    const mouseX = (e.clientX - rect.left) / width - 0.5;
+    const mouseY = (e.clientY - rect.top) / height - 0.5;
+    
+    x.set(mouseX);
+    y.set(mouseY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateY,
+        rotateX,
+        transformStyle: "preserve-3d",
+      }}
+      className={`relative rounded-xl transition-all duration-300 ease-out hover:z-50 ${className}`}
+    >
+      <div style={{ transform: "translateZ(50px)", transformStyle: "preserve-3d" }} className="h-full">
+        {children}
+      </div>
+    </motion.div>
+  );
+};
 
 export default function FeaturesPage() {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end start"]
   });
 
-  const rotateX = useTransform(scrollYProgress, [0, 1], [0, 15]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  // Making the scroll much more dramatic to feel the 3D effect
+  const rotateXPage = useTransform(scrollYProgress, [0, 1], [0, 45]);
+  const scalePage = useTransform(scrollYProgress, [0, 1], [1, 0.75]);
+  const yPage = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const opacityPage = useTransform(scrollYProgress, [0.5, 1], [1, 0]);
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-['Inter'] relative" style={{ perspective: "1200px" }} ref={containerRef}>
+    <div className="bg-[#050505] min-h-screen text-white font-['Inter'] relative" style={{ perspective: "1500px" }} ref={containerRef}>
       <Navbar />
       <motion.div 
         className="w-full relative origin-top z-10"
-        style={{ rotateX, scale }}
+        style={{ rotateX: rotateXPage, scale: scalePage, y: yPage, opacity: opacityPage }}
       >
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#4182ff]/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-20">
@@ -36,7 +89,7 @@ export default function FeaturesPage() {
           Track, automate, and optimize your institutional-grade assets with real-time sub-5ms indexing and robust tax provisioning.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32" style={{ perspective: "1000px" }}>
           {[
             { icon: "⚡", title: "SKU Indexing", desc: "Instantly catalog structured and unstructured financial sets dynamically. Unify diverse global accounts into a single synchronized ledger.", color: "#4182ff" },
             { icon: "🧠", title: "CFO AI Advisor", desc: "Predictive cashflow models, runway estimations, and margin improvements. Ask questions in natural language and get board-ready insights.", color: "#66dd8b" },
@@ -51,12 +104,17 @@ export default function FeaturesPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="glass p-10 hover-glow group cursor-default relative overflow-hidden"
             >
-               <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[50px] opacity-20 transition-opacity group-hover:opacity-50" style={{background: f.color}}></div>
-               <div className="text-4xl mb-6 float-element">{f.icon}</div>
-               <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-4" style={{color: f.color}}>{f.title}</h3>
-               <p className="text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+              <TiltCard className="h-full">
+              <div className="glass h-full p-10 hover-glow group cursor-default relative overflow-hidden backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300">
+                 <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[50px] opacity-20 transition-opacity group-hover:opacity-60" style={{background: f.color}}></div>
+                 <div style={{ transform: "translateZ(60px)", transformStyle: "preserve-3d" }}>
+                   <div className="text-5xl mb-8 drop-shadow-2xl">{f.icon}</div>
+                   <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-4" style={{color: f.color, textShadow: `0 0 20px ${f.color}80`}}>{f.title}</h3>
+                   <p className="text-gray-300 text-sm leading-relaxed">{f.desc}</p>
+                 </div>
+              </div>
+              </TiltCard>
             </motion.div>
           ))}
         </div>
