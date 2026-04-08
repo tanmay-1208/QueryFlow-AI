@@ -5,9 +5,10 @@ import Footer from "../components/Footer";
 
 export default function FeaturesPage() {
   return (
-    <div className="bg-[#050505] min-h-screen text-white overflow-x-hidden font-['Inter']">
+    <div className="bg-[#050505] min-h-screen text-white overflow-x-hidden font-['Inter'] relative">
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#4182ff]/10 blur-[150px] rounded-full pointer-events-none"></div>
       <Navbar />
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-40">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-20">
         
         <motion.h1 
           initial={{ opacity: 0, y: 40 }}
@@ -65,7 +66,7 @@ export default function FeaturesPage() {
                 Deep <span className="text-[#8b5cf6]">Synthesis</span>
               </h2>
               <p className="text-gray-400 text-lg leading-relaxed mb-6">
-                Our synthesis engine doesn't just read data; it understands context. When a transaction occurs, QueryFlow crosses it against localized tax laws, vendor history, and your specific budgetary constraints within 4 milliseconds.
+                Our synthesis engine doesn&apos;t just read data; it understands context. When a transaction occurs, QueryFlow crosses it against localized tax laws, vendor history, and your specific budgetary constraints within 4 milliseconds.
               </p>
               <ul className="space-y-4">
                 {["Vendor-Assigned Categorization", "Predictive Churn Alerts", "Multi-Entity Consolidation", "Smart Fraud Detection"].map((item, i) => (
@@ -85,11 +86,11 @@ export default function FeaturesPage() {
                 </span>
               </div>
               <div className="space-y-3 font-mono text-xs text-gray-400">
-                <div className="flex justify-between"><span>> INGEST TXN_8921</span> <span className="text-[#4182ff]">1.2ms</span></div>
-                <div className="flex justify-between"><span>> CLASSIFY VENDOR_AWS</span> <span className="text-[#4182ff]">0.8ms</span></div>
-                <div className="flex justify-between"><span>> CHECK BUDGET_Q3</span> <span className="text-[#4182ff]">0.5ms</span></div>
-                <div className="flex justify-between"><span>> ALLOCATE TAX_PROV</span> <span className="text-[#4182ff]">1.4ms</span></div>
-                <div className="flex justify-between font-bold text-white border-t border-white/10 pt-3"><span>> CYCLE COMPLETE</span> <span className="text-[#66dd8b]">3.9ms</span></div>
+                <div className="flex justify-between"><span>&gt; INGEST TXN_8921</span> <span className="text-[#4182ff]">1.2ms</span></div>
+                <div className="flex justify-between"><span>&gt; CLASSIFY VENDOR_AWS</span> <span className="text-[#4182ff]">0.8ms</span></div>
+                <div className="flex justify-between"><span>&gt; CHECK BUDGET_Q3</span> <span className="text-[#4182ff]">0.5ms</span></div>
+                <div className="flex justify-between"><span>&gt; ALLOCATE TAX_PROV</span> <span className="text-[#4182ff]">1.4ms</span></div>
+                <div className="flex justify-between font-bold text-white border-t border-white/10 pt-3"><span>&gt; CYCLE COMPLETE</span> <span className="text-[#66dd8b]">3.9ms</span></div>
               </div>
             </div>
           </div>

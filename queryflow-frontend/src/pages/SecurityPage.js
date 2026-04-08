@@ -75,7 +75,7 @@ const SecurityPage = () => {
         >
            <h2 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-6 text-white">Security <span className="text-[#4182ff]">Bounty Program</span></h2>
            <p className="text-gray-400 max-w-2xl mx-auto mb-10 text-lg">
-             We work with top-tier security researchers worldwide. If you identify a vulnerability in QueryFlow's infrastructure, we reward responsible disclosure with bounties up to $150,000.
+             We work with top-tier security researchers worldwide. If you identify a vulnerability in QueryFlow&apos;s infrastructure, we reward responsible disclosure with bounties up to $150,000.
            </p>
            <button className="px-10 py-4 rounded-full bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all font-black uppercase tracking-widest text-sm text-white">
              View Program Details
