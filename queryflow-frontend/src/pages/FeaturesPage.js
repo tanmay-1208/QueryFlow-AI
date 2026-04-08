@@ -1,13 +1,26 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function FeaturesPage() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  const rotateX = useTransform(scrollYProgress, [0, 1], [0, 15]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+
   return (
-    <div className="bg-[#050505] min-h-screen text-white overflow-x-hidden font-['Inter'] relative">
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#4182ff]/10 blur-[150px] rounded-full pointer-events-none"></div>
+    <div className="bg-[#050505] min-h-screen text-white font-['Inter'] relative" style={{ perspective: "1200px" }} ref={containerRef}>
       <Navbar />
+      <motion.div 
+        className="w-full relative origin-top z-10"
+        style={{ rotateX, scale }}
+      >
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#4182ff]/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-20">
         
         <motion.h1 
@@ -96,7 +109,10 @@ export default function FeaturesPage() {
           </div>
         </motion.div>
       </div>
-      <Footer />
+      </motion.div>
+      <div className="relative z-20 bg-[#050505]">
+        <Footer />
+      </div>
     </div>
   );
 }
