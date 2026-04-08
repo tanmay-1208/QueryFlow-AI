@@ -3,64 +3,45 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-const FeaturesPage = () => {
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50, rotateY: 10 },
-    visible: (i) => ({
-      opacity: 1, 
-      y: 0, 
-      rotateY: 0,
-      transition: { delay: i * 0.1, duration: 0.8, ease: "easeOut" }
-    })
-  };
-
+export default function FeaturesPage() {
   return (
-    <div className="bg-[#0e0e0e] min-h-screen text-white pt-32 md:pt-40 overflow-x-hidden">
+    <div className="bg-[#050505] min-h-screen text-white overflow-x-hidden font-['Inter']">
       <Navbar />
-      {/* 1. Adjusted mobile padding (px-6) and desktop padding (md:px-10) */}
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 pb-40">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-40">
         
-        {/* 2. RESPONSIVE TYPOGRAPHY FIX */}
         <motion.h1 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          className="text-[12vw] md:text-[9vw] font-black uppercase tracking-tighter leading-[0.85] md:leading-[0.8] mb-16 md:mb-20 italic w-full break-words"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-10 italic"
         >
           PRECISION<br/>
-          <span className="text-[#4182ff]">ARCHITECTURE</span>
+          <span className="text-gradient">ARCHITECTURE</span>
         </motion.h1>
+        <p className="text-gray-400 max-w-2xl text-lg mb-20">
+          QueryFlow integrates 50+ AI models designed exclusively for financial infrastructure. 
+          Track, automate, and optimize your institutional-grade assets with real-time sub-5ms indexing and robust tax provisioning.
+        </p>
         
-        {/* 3. The Grid (Already responsive with lg:grid-cols-3) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
-            { icon: "analytics", title: "SKU Indexing", color: "#4182ff" },
-            { icon: "psychology", title: "CFO AI Advisor", color: "#66dd8b" },
-            { icon: "security", title: "Tax Provisioning", color: "#fbbc00" }
+            { icon: "⚡", title: "SKU Indexing", desc: "Instantly catalog structured and unstructured financial sets dynamically.", color: "#4182ff" },
+            { icon: "🧠", title: "CFO AI Advisor", desc: "Predictive cashflow models, runway estimations, and margin improvements.", color: "#66dd8b" },
+            { icon: "🏦", title: "Tax Provisioning", desc: "Automate global tax liability with real-time audit-ready ledgers.", color: "#fbbc00" },
+            { icon: "🔗", title: "API Ecosystem", desc: "Integrate with Plaid, Stripe, and 500+ global financial institutions.", color: "#8b5cf6" },
+            { icon: "🛡", title: "Quantum Secure", desc: "Encrypted memory enclaves, AES-256, and zero-knowledge storage.", color: "#22d3ee" },
+            { icon: "📊", title: "Dynamic Reporting", desc: "Custom dashboards bridging compliance and strategic growth.", color: "#f472b6" }
           ].map((f, i) => (
-            <motion.div 
+            <motion.div
               key={i}
-              custom={i}
-              initial="hidden"
-              whileInView="visible"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              variants={cardVariants}
-              whileHover={{ 
-                scale: 1.05, 
-                rotateX: -5, 
-                rotateY: 5,
-                boxShadow: `0px 20px 50px rgba(0,0,0,0.5), 0px 0px 20px ${f.color}33` 
-              }}
-              className="bg-[#131313] p-10 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/5 cursor-pointer relative group flex flex-col items-start"
+              transition={{ delay: i * 0.1 }}
+              className="glass p-10 hover-glow group cursor-default"
             >
-              <span className="material-symbols-outlined mb-6 text-5xl" style={{color: f.color}}>{f.icon}</span>
-              <h3 className="text-xl md:text-2xl font-black mb-4 uppercase">{f.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">High-velocity data processing with sub-4ms latency for real-time asset tracking.</p>
-              
-              {/* Micro-interaction: revealing line on hover */}
-              <motion.div 
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1 bg-current w-0 group-hover:w-1/2 transition-all duration-500"
-                style={{color: f.color}}
-              />
+               <div className="text-4xl mb-6 float-element">{f.icon}</div>
+               <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-4" style={{color: f.color}}>{f.title}</h3>
+               <p className="text-gray-400 text-sm leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -68,6 +49,4 @@ const FeaturesPage = () => {
       <Footer />
     </div>
   );
-};
-
-export default FeaturesPage;
+}
