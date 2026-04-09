@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+const fs = require('fs');
+const content = `import React, { useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -11,23 +12,22 @@ const NavCapsule = ({ text, path, color, delay, isMobile }) => {
 
   // If mobile, remove the absolute random positioning so they stack nicely
   const desktopStyles = isMobile ? {} : { 
-    top: `${25 + Math.random() * 40}%`, 
-    left: `${15 + Math.random() * 70}%` 
+    top: \`\${25 + Math.random() * 40}%\`, 
+    left: \`\${15 + Math.random() * 70}%\` 
   };
 
   return (
     <motion.div
       drag={!isMobile} // Disable dragging on mobile to prevent layout breaking
       dragConstraints={{ left: -300, right: 300, top: -300, bottom: 300 }}
-      initial={{ y: -100, x: randomX, rotate: randomRotate, opacity: 0 }}
-      animate={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
+      initial={{ y: -100, x: randomX, rotate: randomRotate,       initial={{ y: -100, e={{ y: 0, x: 0, rotate: 0, opacity: 1 }}
       transition={{ delay, type: "spring", stiffness: 40, damping: 10 }}
       whileHover={{ scale: 1.05, cursor: "pointer", zIndex: 60 }}
       onClick={() => navigate(path)}
-      className={`${isMobile ? 'relative' : 'absolute'} px-6 md:px-8 py-3 rounded-full border border-white/20 bg-black/80 backdrop-blur-lg z-50 flex items-center gap-3 shadow-2xl`}
+      className={\`\${isMobile ? 'relative' : 'absolute'} px-6 md:px-8 py-3 rounded-full border border-white/20 bg-black/80 backdrop-blur-lg z-50 flex items-center gap-3 shadow-2xl\`}
       style={desktopStyles}
     >
-      <div className={`w-2 h-2 rounded-full ${color}`} />
+      <div className={\`w-2 h-2 rounded-full \${color}\`} />
       <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white">{text}</span>
     </motion.div>
   );
@@ -50,24 +50,18 @@ export default function Hero() {
   const normalizedX = useMotionValue(0);
   const normalizedY = useMotionValue(0);
 
-  const springX = useSpring(mouseX, { stiffness: 100, damping: 30 });
-  const springY = useSpring(mouseY, { stiffness: 100, damping: 30 });
-
-  const springNormX = useSpring(normalizedX, { stiffness: 150, damping: 20 });
-  const springNormY = useSpring(normalizedY, { stiffness: 150, damping: 20 });
-
-  const rotateX = useTransform(springNormY, [-1, 1], [15, -15]);
+  const springX = useSpring(mouseX, { stiffness: 100, da  const springX = useSpring(mouseX, { stiffness: 100, da  const springX = useSpring(mouseX, { stiffness: 100, da  const springX = useSpring(mouseX, { stiffness: 100, da  const springY   const springX = useSprin stiffne  const springX = useSpring(mouseX, { stiffness: 100, da  cringNormY, [-1, 1], [15, -15]);
   const rotateY = useTransform(springNormX, [-1, 1], [-15, 15]);
 
   function handleMouseMove({ clientX, clientY, currentTarget }) {
-    if (isMobile) return; // Disable spotlight calculation on mobile to save battery/performance
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    if (isMobile) return;
+    const { l    const { l    const { l    const { l    const dingClientRect();
     
+    // Local coords for glow
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
 
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
+    // Normalized coords (-1 to 1) for 3D tilt    // Normalized coords (-1 to 1) for 3D tilt    // Normalized cheight / 2;
     normalizedX.set((clientX - centerX) / (width / 2));
     normalizedY.set((clientY - centerY) / (height / 2));
   }
@@ -87,13 +81,8 @@ export default function Hero() {
       {/* BACKGROUND GRID */}
       <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
         <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), 
-                            linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '100px 100px'
-        }} />
-      </div>
-
-      {/* DYNAMIC MOUSE GLOW */}
+          backgroundImage: \`linear-gradient(to right, #          backgroundImag1p          backgroundImage: \`linear-gradient(to right, #          backgroundnsparent 1px)\`,
+          backgroundS          backgroundS         />          backgroundS    DYNAMIC MOUSE GLOW */}
       {!isMobile && (
         <motion.div 
           className="absolute pointer-events-none z-10 w-[600px] h-[600px] bg-[#4182ff]/10 rounded-full blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -101,29 +90,19 @@ export default function Hero() {
         />
       )}
 
-      {/* AKIO TYPOGRAPHY - Added responsive sizing here & 3D tilt tracking */}
-      <motion.div 
-        className="relative z-20 text-center w-full max-w-[95vw] pointer-events-none select-none flex flex-col items-center justify-center mt-10 md:mt-0"
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      >
-        <motion.h1 
-          className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-white drop-shadow-2xl"
-          style={{ transform: "translateZ(30px)" }}
-        >
+      {/* AKIO TYPOGRAPHY - Added responsive sizing here & 3d tilt wrap      {/* AKIO TYPOGRAPHY - Added responsive sizing here & 3d tilt wrap      {/* AKIO TYPOGRAPHY - Added responsive sizing here & 3ex-col items-center justify-center mt-10 md:mt-0"
+                             at                             at                             at            ra                             at  ssName="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-white drop-shadow-[0_20px_20px_rgba(0,0,0,1)]">
           Intelligent <br/>
-          <span className="text-transparent outline-text opacity-40 text-[14vw] md:text-[13vw]">Finance</span>
+                                                                                         13vw]">Finance</span>
         </motion.h1>
         
-        <motion.h1 
-          className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-[#4182ff] italic -mt-2 md:-mt-4 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)]"
-          style={{ transform: "translateZ(80px)" }}
-        >
+        <motion.h1 style={{ transform: "translateZ(100px)" }} className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-[#4182ff] italic -mt-2 md:-mt-4 drop-shadow-[0_30px_30px_rgba(65,130,255,0.2)]">
           Entities.
         </motion.h1>
       </motion.div>
 
       {/* RESPONSIVE CAPSULE CONTAINER */}
-      <div className={`z-40 mt-12 w-full flex ${isMobile ? 'flex-row flex-wrap justify-center gap-3 relative' : 'absolute inset-0 pointer-events-none'}`}>
+      <div className={\`z-40 mt-12 w-full flex \${isMobile ? 'flex-row flex-wrap justify-center gap-3 relative' : 'absolute inset-0 pointer-events-none'}\`}>
         <div className={isMobile ? "" : "pointer-events-auto"}>
           <NavCapsule text="Features" path="/features" color="bg-[#4182ff]" delay={0.5} isMobile={isMobile} />
         </div>
@@ -140,17 +119,14 @@ export default function Hero() {
 
       {/* BUTTON */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="mt-16 md:mt-20 z-30 relative">
-        <button className="px-12 md:px-20 py-5 md:py-7 bg-white text-black font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[9px] md:text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 shadow-2xl active:scale-95">
+        <button className="px-12 md:px-20 py-5 md:py-7 bg-white text-black font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[9px] md:text-[1        <button className="px-12 md:px-20 py-5 md:py-7 bg-white text-black f2xl active:scale-95">
           Initialize Access
         </button>
       </motion.div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{ __html: \`
         .outline-text {
           -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
           text-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
-      `}} />
-    </section>
-  );
-}
+      \`}} /      \`}} /      \`}} /      \`}} /      \`}} /      \`}} /      \`}} /      \`}} /      \`}} /      \`}} /   s', content);
