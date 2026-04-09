@@ -33,6 +33,51 @@ const NavCapsule = ({ text, path, color, delay, isMobile }) => {
   );
 };
 
+// Word animation variants
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2, // wait a bit before starting
+    },
+  },
+};
+
+const childVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 100, 
+    rotateX: 90, 
+    scale: 0.5 
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    rotateX: 0, 
+    scale: 1,
+    transition: { 
+      type: "spring", 
+      stiffness: 100, 
+      damping: 12 
+    } 
+  }
+};
+
+const financeVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1, delayChildren: 1.0 }
+  }
+};
+
+const entitiesVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1, delayChildren: 1.6 }
+  }
+};
+
 export default function Hero() {
   // Mobile Detection State
   const [isMobile, setIsMobile] = useState(false);
@@ -110,36 +155,66 @@ export default function Hero() {
           className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-white drop-shadow-2xl"
           style={{ transform: "translateZ(30px)" }}
         >
-          Intelligent <br/>
-          <span className="text-transparent outline-text opacity-40 text-[14vw] md:text-[13vw]">Finance</span>
+          <motion.span 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ display: "inline-flex", flexWrap: "wrap", justifyContent: "center" }}
+          >
+            {"Intelligent".split("").map((letter, index) => (
+              <motion.span key={index} variants={childVariants} style={{ display: "inline-block" }}>
+                {letter}
+              </motion.span>
+            ))}
+          </motion.span>
+          <br/>
+          <motion.span 
+            className="text-transparent outline-text opacity-40 text-[14vw] md:text-[13vw] inline-flex flex-wrap justify-center"
+            variants={financeVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {"Finance".split("").map((letter, index) => (
+              <motion.span key={index} variants={childVariants} style={{ display: "inline-block" }}>
+                {letter}
+              </motion.span>
+            ))}
+          </motion.span>
         </motion.h1>
         
         <motion.h1 
-          className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-[#4182ff] italic -mt-2 md:-mt-4 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)]"
+          className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-[#4182ff] italic -mt-2 md:-mt-4 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)] inline-flex flex-wrap justify-center"
           style={{ transform: "translateZ(80px)" }}
+          variants={entitiesVariants}
+          initial="hidden"
+          animate="visible"
         >
-          Entities.
+          {"Entities.".split("").map((letter, index) => (
+            <motion.span key={index} variants={childVariants} style={{ display: "inline-block" }}>
+              {letter}
+            </motion.span>
+          ))}
         </motion.h1>
       </motion.div>
 
       {/* RESPONSIVE CAPSULE CONTAINER */}
       <div className={`z-40 mt-12 w-full flex ${isMobile ? 'flex-row flex-wrap justify-center gap-3 relative' : 'absolute inset-0 pointer-events-none'}`}>
         <div className={isMobile ? "" : "pointer-events-auto"}>
-          <NavCapsule text="Features" path="/features" color="bg-[#4182ff]" delay={0.5} isMobile={isMobile} />
+          <NavCapsule text="Features" path="/features" color="bg-[#4182ff]" delay={2.5} isMobile={isMobile} />
         </div>
         <div className={isMobile ? "" : "pointer-events-auto"}>
-          <NavCapsule text="Security" path="/security" color="bg-[#66dd8b]" delay={0.6} isMobile={isMobile} />
+          <NavCapsule text="Security" path="/security" color="bg-[#66dd8b]" delay={2.6} isMobile={isMobile} />
         </div>
         <div className={isMobile ? "" : "pointer-events-auto"}>
-          <NavCapsule text="Solutions" path="/solutions" color="bg-[#fbbc00]" delay={0.7} isMobile={isMobile} />
+          <NavCapsule text="Solutions" path="/solutions" color="bg-[#fbbc00]" delay={2.7} isMobile={isMobile} />
         </div>
         <div className={isMobile ? "" : "pointer-events-auto"}>
-          <NavCapsule text="Pricing" path="/pricing" color="bg-purple-500" delay={0.8} isMobile={isMobile} />
+          <NavCapsule text="Pricing" path="/pricing" color="bg-purple-500" delay={2.8} isMobile={isMobile} />
         </div>
       </div>
 
       {/* BUTTON */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="mt-16 md:mt-20 z-30 relative">
+      <motion.div initial={{ opacity: 0, y: 50, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 3.2, type: "spring", stiffness: 200, damping: 15 }} className="mt-16 md:mt-20 z-30 relative">
         <button className="px-12 md:px-20 py-5 md:py-7 bg-white text-black font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[9px] md:text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 shadow-2xl active:scale-95">
           Initialize Access
         </button>
