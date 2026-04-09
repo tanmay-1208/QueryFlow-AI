@@ -77,13 +77,38 @@ export default function FeaturesPage() {
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-20">
         
         <motion.h1 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-10 italic"
-        >
-          PRECISION<br/>
-          <span className="text-gradient">ARCHITECTURE</span>
-        </motion.h1>
+            style={{ transformOrigin: 'bottom', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+            className="text-6xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] mb-10 italic drop-shadow-2xl"
+          >
+            <motion.div 
+               initial="hidden" animate="visible" 
+               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}
+               className="flex"
+            >
+               {"PRECISION".split('').map((l, i) => (
+                 <motion.span key={i} variants={{
+                   hidden: { opacity: 0, y: 200, rotateX: 180, scale: 0 },
+                   visible: { opacity: 1, y: 0, rotateX: 0, scale: 1, transition: { type: 'spring', stiffness: 200, damping: 10 } }
+                 }}>{l}</motion.span>
+               ))}
+            </motion.div>
+            <motion.span 
+              className="text-gradient inline-flex"
+            >
+               <motion.div 
+                  initial="hidden" animate="visible" 
+                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.5 } } }}
+                  className="flex"
+               >
+                 {"ARCHITECTURE".split('').map((l, i) => (
+                   <motion.span key={i} variants={{
+                     hidden: { opacity: 0, y: -200, rotateZ: 90, scale: 0, filter: 'blur(20px)' },
+                     visible: { opacity: 1, y: 0, rotateZ: 0, scale: 1, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 150, damping: 8 } }
+                   }}>{l}</motion.span>
+                 ))}
+               </motion.div>
+            </motion.span>
+          </motion.h1>
         <p className="text-gray-400 max-w-2xl text-lg mb-20">
           QueryFlow integrates 50+ AI models designed exclusively for financial infrastructure. 
           Track, automate, and optimize your institutional-grade assets with real-time sub-5ms indexing and robust tax provisioning.

@@ -45,23 +45,8 @@ const containerVariants = {
 };
 
 const childVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 100, 
-    rotateX: 90, 
-    scale: 0.5 
-  },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    rotateX: 0, 
-    scale: 1,
-    transition: { 
-      type: "spring", 
-      stiffness: 100, 
-      damping: 12 
-    } 
-  }
+  hidden: { opacity: 0, y: 300, z: -800, rotateX: 270, rotateY: 180, rotateZ: 90, scale: 0, filter: 'blur(20px)' },
+  visible: { opacity: 1, y: 0, z: 0, rotateX: 0, rotateY: 0, rotateZ: 0, scale: 1, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 200, damping: 8, mass: 1 } }
 };
 
 const financeVariants = {
