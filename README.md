@@ -1,3 +1,11 @@
+---
+title: Queryflow AI
+emoji: 🦀
+colorFrom: blue
+colorTo: pink
+sdk: docker
+pinned: false
+---
 # QueryFlow AI 🤖
 
 **QueryFlow AI** is a full-stack intelligent assistant application powered by OpenAI and Spring AI. It provides a conversational interface where users can ask questions and receive AI-generated responses, with all interactions persisted in a PostgreSQL database.
