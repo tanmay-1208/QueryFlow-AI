@@ -10,7 +10,7 @@ const PRESET_CATEGORIES = [
 ];
 
 const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
-  const [form, setForm] = useState({ name: "", cost_price: "", price: "", stock: "", category: "" });
+  const [form, setForm] = useState({ name: "", cost_price: "", price: "", dealer_price: "", wholesale_price: "", stock: "", category: "" });
   const [customCategory, setCustomCategory] = useState("");
   const [isCustom, setIsCustom] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,9 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
       setForm({
         name: item.name || "",
         cost_price: item.cost_price || item.costPrice || "",
-        price: item.price || "",
+        price: item.priceGroups?.RETAIL > 0 ? item.priceGroups.RETAIL : item.price || "",
+        dealer_price: item.priceGroups?.DEALER || "",
+        wholesale_price: item.priceGroups?.WHOLESALE || "",
         stock: item.stock || "",
         category: isPreset ? item.category : ""
       });
@@ -43,6 +45,11 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
       name: form.name,
       cost_price: parseFloat(form.cost_price) || 0,
       price: parseFloat(form.price) || 0,
+      priceGroups: {
+        RETAIL: parseFloat(form.price) || 0,
+        DEALER: parseFloat(form.dealer_price) || 0,
+        WHOLESALE: parseFloat(form.wholesale_price) || 0
+      },
       stock: parseInt(form.stock) || 0,
       category: finalCategory || null,
       userId: item.userId,
@@ -93,10 +100,26 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
             />
             <input
               className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
-              placeholder="Sell Price"
+              placeholder="Retail Price"
               type="number"
               value={form.price}
               onChange={e => setForm({ ...form, price: e.target.value })}
+              required
+            />
+            <input
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              placeholder="Dealer Price"
+              type="number"
+              value={form.dealer_price}
+              onChange={e => setForm({ ...form, dealer_price: e.target.value })}
+              required
+            />
+            <input
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              placeholder="Wholesale Price"
+              type="number"
+              value={form.wholesale_price}
+              onChange={e => setForm({ ...form, wholesale_price: e.target.value })}
               required
             />
           </div>
