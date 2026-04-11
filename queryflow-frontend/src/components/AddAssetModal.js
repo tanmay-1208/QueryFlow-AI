@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
+const API_BASE_URL = "https://tanmaysingh12r-queryflow-ai.hf.space";
 
 const PRESET_CATEGORIES = [
   "Electronics", "Clothing", "Food & Beverage", "Furniture",

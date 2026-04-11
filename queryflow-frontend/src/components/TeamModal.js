@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
+const API_BASE_URL = "https://tanmaysingh12r-queryflow-ai.hf.space";
 
 const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
   const [inviteCode, setInviteCode] = useState("");

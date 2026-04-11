@@ -12,7 +12,7 @@ import OnboardingModal from "../components/OnboardingModal";
 import { FadeIn, StaggerContainer, StaggerItem } from "../components/AnimatedPage";
 import { exportVaultReport } from "../utils/exportPDF";
 
-const API_BASE_URL = "https://queryflow-ai-production.up.railway.app";
+const API_BASE_URL = "https://tanmaysingh12r-queryflow-ai.hf.space";
 
 const Vault = ({ userId, userEmail, onLogout }) => {
   const [items, setItems] = useState([]);
