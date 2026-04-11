@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > queryflow-frontend/src/components/SellModal.js
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -113,3 +114,4 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
 };
 
 export default SellModal;
+INNER_EOF

@@ -36,8 +36,11 @@ public class SellHistory {
 
     @Column(name = "customer_id")
     private Long customerId;
-    @Column(name = "customer_id")
-    private Long customerId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "price_group")
+    private PriceGroup priceGroup;
+
     @Column(name = "vault_id")
     private Long vaultId;
 
