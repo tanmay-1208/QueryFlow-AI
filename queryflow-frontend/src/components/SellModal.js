@@ -14,10 +14,10 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
   
   // Resolve current selected price
   let currentPrice = item.price;
-  if (item.priceGroups) {
-    if (selectedTier === "DEALER" && item.priceGroups.DEALER !== undefined) currentPrice = item.priceGroups.DEALER;
-    else if (selectedTier === "WHOLESALE" && item.priceGroups.WHOLESALE !== undefined) currentPrice = item.priceGroups.WHOLESALE;
-    else if (item.priceGroups.RETAIL !== undefined) currentPrice = item.priceGroups.RETAIL;
+  if (item.priceGroups && Object.keys(item.priceGroups).length > 0) {
+    if (selectedTier === "DEALER" && item.priceGroups.DEALER > 0) currentPrice = item.priceGroups.DEALER;
+    else if (selectedTier === "WHOLESALE" && item.priceGroups.WHOLESALE > 0) currentPrice = item.priceGroups.WHOLESALE;
+    else if (item.priceGroups.RETAIL > 0) currentPrice = item.priceGroups.RETAIL;
   }
 
   const profitPerUnit = currentPrice - costPrice;
@@ -65,7 +65,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
             className={`p-3 rounded-2xl border text-center transition-all ${selectedTier === 'RETAIL' ? 'bg-[#4182ff]/20 border-[#4182ff] text-white' : 'bg-black/40 border-white/5 text-white/40 hover:bg-white/5'}`}
           >
             <p className="text-[7px] uppercase font-black mb-1">Retail</p>
-            <p className="text-xs font-black">${item.priceGroups?.RETAIL ?? item.price}</p>
+            <p className="text-xs font-black">${item.priceGroups?.RETAIL > 0 ? item.priceGroups.RETAIL : item.price}</p>
           </button>
           <button 
             type="button"
@@ -73,7 +73,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
             className={`p-3 rounded-2xl border text-center transition-all ${selectedTier === 'DEALER' ? 'bg-[#4182ff]/20 border-[#4182ff] text-white' : 'bg-black/40 border-white/5 text-white/40 hover:bg-white/5'}`}
           >
             <p className="text-[7px] uppercase font-black mb-1">Dealer</p>
-            <p className="text-xs font-black">${item.priceGroups?.DEALER ?? item.price}</p>
+            <p className="text-xs font-black">${item.priceGroups?.DEALER > 0 ? item.priceGroups.DEALER : item.price}</p>
           </button>
           <button 
             type="button"
@@ -81,7 +81,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
             className={`p-3 rounded-2xl border text-center transition-all ${selectedTier === 'WHOLESALE' ? 'bg-[#4182ff]/20 border-[#4182ff] text-white' : 'bg-black/40 border-white/5 text-white/40 hover:bg-white/5'}`}
           >
             <p className="text-[7px] uppercase font-black mb-1">Wholesale</p>
-            <p className="text-xs font-black">${item.priceGroups?.WHOLESALE ?? item.price}</p>
+            <p className="text-xs font-black">${item.priceGroups?.WHOLESALE > 0 ? item.priceGroups.WHOLESALE : item.price}</p>
           </button>
         </div>
 
