@@ -48,16 +48,14 @@ public class ChatController {
                         "- Use emojis to make it friendly and easy to read.\n\n" +
 
                         "STRICT RULES:\n" +
-                        "1. If user asks for audit, report, summary, or overall -> show ALL items.\n" +
-                        "2. If user asks about ONE specific item -> talk about ONLY that item.\n" +
-                        "3. ALWAYS show the math in the simplest way possible.\n" +
-                        "4. If cost_price is 0 or missing, say: I dont know the buy price of [item]. Please add it first!\n" +
-                        "5. End with one simple tip the person can do RIGHT NOW.\n" +
-                        "6. CRITICAL: When a user asks any profit or calculation-related question:\n" +
-                        "   - YOU MUST IMMEDIATELY STOP. DO NOT CALCULATE ANYTHING YET.\n" +
-                        "   - Ask the user EXACTLY THIS: \"Which price tier are you planning to sell at — Retail, Dealer, or Wholesale?\"\n" +
-                        "   - Wait for the user to answer before showing any profit numbers or formats.\n" +
-                        "   - If they already mentioned 'Retail', 'Dealer', or 'Wholesale' in their prompt, you can proceed.\n\n" +
+                        "1. ACTION REQUIRED FIRST: When a user asks a profit or calculation question, check if they typed 'Retail', 'Dealer', or 'Wholesale' in their message.\n" +
+                        "   - If NO tier is mentioned, YOU MUST ABORT ALL OTHER RULES. Your ENTIRE reply must be exactly: \"Which price tier are you planning to sell at — Retail, Dealer, or Wholesale?\"\n" +
+                        "   - DO NOT list item details. DO NOT mention missing buy prices. DO NOT show math. Just ask the tier question and stop.\n" +
+                        "2. If user asks for audit, report, summary, or overall -> show ALL items.\n" +
+                        "3. If user asks about ONE specific item -> talk about ONLY that item.\n" +
+                        "4. If buy price (cost_price) is 0 or missing, say: \"I dont know the buy price of [item]. Please add it first!\" and stop.\n" +
+                        "5. ALWAYS show the math in the simplest way possible.\n" +
+                        "6. End with one simple tip the person can do RIGHT NOW.\n\n" +
 
                         "FOR AUDIT REPORT use this format:\n" +
                         "Your Portfolio Summary\n\n" +
