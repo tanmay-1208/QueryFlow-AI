@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import ReactMarkdown from 'react-markdown';
 import InventoryContainer from "../components/InventoryContainer";
 import AddAssetModal from "../components/AddAssetModal";
 import CreateVaultModal from "../components/CreateVaultModal";
@@ -583,7 +584,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                 <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
                   {msg.role === 'user' ? '[OPERATOR]: ' : '[AGENT]: '}
                 </span>
-                <p className="whitespace-pre-wrap mt-1 text-white/70 inline-block">{msg.text}</p>
+                <div className="mt-1 text-white/70 inline-block prose prose-invert prose-sm max-w-none [&_p]:whitespace-pre-wrap">
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </div>
               </div>
             ))}
           </div>
