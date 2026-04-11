@@ -44,18 +44,35 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="mb-6 space-y-2">
+          {/* Top Row: Cost Point */}
           <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
             <span className="text-[7px] text-gray-500 block uppercase font-black mb-1">Cost Point</span>
             <span className="text-xs font-black text-gray-500 block truncate">
               Rs.{(item.costPrice || item.cost_price || 0).toLocaleString()}
             </span>
           </div>
-          <div className="bg-black/40 p-3 rounded-2xl border border-white/5">
-            <span className="text-[7px] text-gray-600 block uppercase font-black mb-1">Market Point</span>
-            <span className="text-xs font-black text-white block truncate">
-              Rs.{(item.price || 0).toLocaleString()}
-            </span>
+          
+          {/* Bottom Row: 3 Price Tiers */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-black/40 p-2 rounded-xl border border-[#4182ff]/30">
+              <span className="text-[6px] text-[#4182ff] block uppercase font-black mb-1">Retail Price</span>
+              <span className="text-[9px] font-black text-white block truncate">
+                Rs.{(item.priceGroups?.RETAIL > 0 ? item.priceGroups.RETAIL : item.price || 0).toLocaleString()}
+              </span>
+            </div>
+            <div className="bg-black/40 p-2 rounded-xl border border-purple-500/30">
+              <span className="text-[6px] text-purple-400 block uppercase font-black mb-1">Dealer Price</span>
+              <span className="text-[9px] font-black text-white block truncate">
+                Rs.{(item.priceGroups?.DEALER || 0).toLocaleString()}
+              </span>
+            </div>
+            <div className="bg-black/40 p-2 rounded-xl border border-emerald-500/30">
+              <span className="text-[6px] text-emerald-400 block uppercase font-black mb-1">Wholesale Price</span>
+              <span className="text-[9px] font-black text-white block truncate">
+                Rs.{(item.priceGroups?.WHOLESALE || 0).toLocaleString()}
+              </span>
+            </div>
           </div>
         </div>
 

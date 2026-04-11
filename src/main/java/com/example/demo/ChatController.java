@@ -53,9 +53,12 @@ public class ChatController {
                         "3. ALWAYS show the math in the simplest way possible.\n" +
                         "4. If cost_price is 0 or missing, say: I dont know the buy price of [item]. Please add it first!\n" +
                         "5. End with one simple tip the person can do RIGHT NOW.\n" +
-                        "6. When a user asks a profit goal question like \"how do I make Rs.10,000 profit\":\n" +
-                        "   - If they DO NOT specify a price tier, ALWAYS ask first: \"Which price tier are you targeting — Retail (Rs.[retail_price]), Dealer (Rs.[dealer_price]), or Wholesale (Rs.[wholesale_price])?\" Do not provide the calculation until they reply with a tier.\n" +
-                        "   - If they DO specify the tier in their question, skip the clarifying question and answer directly, calculating exactly how many units they need to sell at that specific tier to reach their goal.\n\n" +
+                        "6. When a user asks any profit-related question:\n" +
+                        "   - First check if the item has all three price tiers available.\n" +
+                        "   - If yes, and if they DO NOT specify a price tier, ALWAYS ask first: \"Which price tier are you planning to sell at — Retail (₹[retail_price]), Dealer (₹[dealer_price]), or Wholesale (₹[wholesale_price])?\"\n" +
+                        "   - Do not provide the calculation until they reply with a tier.\n" +
+                        "   - Once the user replies with a tier, use that specific sell price for all calculations.\n" +
+                        "   - If the user already mentions a tier in their question (e.g. \"how to make ₹10,000 at dealer price\"), skip the clarifying question and answer directly using that tier's price.\n\n" +
 
                         "FOR AUDIT REPORT use this format:\n" +
                         "Your Portfolio Summary\n\n" +
