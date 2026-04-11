@@ -10,7 +10,7 @@ const PRESET_CATEGORIES = [
 ];
 // 1234
 const AddAssetModal = ({ isOpen, onClose, onAdd, userId, vaultId }) => {
-  const [form, setForm] = useState({ name: "", cost_price: "", price: "", stock: "", category: "" });
+  const [form, setForm] = useState({ name: "", cost_price: "", price: "", dealer_price: "", wholesale_price: "", stock: "", category: "" });
   const [customCategory, setCustomCategory] = useState("");
   const [isCustom, setIsCustom] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,6 +27,11 @@ const AddAssetModal = ({ isOpen, onClose, onAdd, userId, vaultId }) => {
       name: form.name,
       cost_price: parseFloat(form.cost_price) || 0,
       price: parseFloat(form.price) || 0,
+      priceGroups: {
+        RETAIL: parseFloat(form.price) || 0,
+        DEALER: parseFloat(form.dealer_price) || 0,
+        WHOLESALE: parseFloat(form.wholesale_price) || 0
+      },
       stock: parseInt(form.stock) || 0,
       category: finalCategory || null,
       userId: userId,
@@ -76,9 +81,23 @@ const AddAssetModal = ({ isOpen, onClose, onAdd, userId, vaultId }) => {
             />
             <input
               className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
-              placeholder="Sell Price"
+              placeholder="Retail Price"
               type="number"
               onChange={e => setForm({ ...form, price: e.target.value })}
+              required
+            />
+            <input
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              placeholder="Dealer Price"
+              type="number"
+              onChange={e => setForm({ ...form, dealer_price: e.target.value })}
+              required
+            />
+            <input
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              placeholder="Wholesale Price"
+              type="number"
+              onChange={e => setForm({ ...form, wholesale_price: e.target.value })}
               required
             />
           </div>

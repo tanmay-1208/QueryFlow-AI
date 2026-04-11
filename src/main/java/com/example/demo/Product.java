@@ -3,6 +3,8 @@ package com.example.demo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.Map;
+import java.util.HashMap;
 
 @Entity
 @Data
@@ -16,6 +18,13 @@ public class Product {
 
     private String name;
     private Double price;
+    
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_price_groups", joinColumns = @JoinColumn(name = "product_id"))
+    @MapKeyEnumerated(EnumType.STRING)
+    @MapKeyColumn(name = "price_group")
+    @Column(name = "group_price")
+    private Map<PriceGroup, Double> priceGroups = new HashMap<>();
     private Integer stock;
     private String category;
 

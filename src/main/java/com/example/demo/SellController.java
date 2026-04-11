@@ -30,17 +30,27 @@ public class SellController {
         productRepository.save(product);
 
         double costPrice = product.getCostPrice() != null ? product.getCostPrice() : 0;
-        double profit = (product.getPrice() - costPrice) * quantity;
+        double sellPrice = product.getPrice();
+        
+        if (payload.containsKey("sellPrice") && payload.get("sellPrice") != null) {
+            sellPrice = Double.parseDouble(payload.get("sellPrice").toString());
+        }
+
+        double profit = (sellPrice - costPrice) * quantity;
 
         SellHistory history = new SellHistory();
         history.setUserId(userId);
         history.setProductId(productId);
         history.setProductName(product.getName());
         history.setQuantity(quantity);
-        history.setSellPrice(product.getPrice());
+        history.setSellPrice(sellPrice);
         history.setCostPrice(costPrice);
         history.setProfit(profit);
         history.setVaultId(vaultId);
+        
+        if (payload.containsKey("customerId") && payload.get("customerId") != null) {
+            history.setCustomerId(Long.valueOf(payload.get("customerId").toString()));
+        }
 
         return sellHistoryRepository.save(history);
     }

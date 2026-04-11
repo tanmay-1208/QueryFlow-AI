@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -11,6 +12,15 @@ public class ChatController {
 
     private final ChatClient.Builder builder;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private SellHistoryRepository sellHistoryRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public ChatController(ChatClient.Builder builder) {
         this.builder = builder;

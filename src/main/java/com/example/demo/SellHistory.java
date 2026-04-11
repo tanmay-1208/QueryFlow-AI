@@ -34,6 +34,10 @@ public class SellHistory {
 
     private Double profit;
 
+    @Column(name = "customer_id")
+    private Long customerId;
+    @Column(name = "customer_id")
+    private Long customerId;
     @Column(name = "vault_id")
     private Long vaultId;
 
