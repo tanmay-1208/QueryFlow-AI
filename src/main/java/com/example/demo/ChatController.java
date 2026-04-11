@@ -53,12 +53,11 @@ public class ChatController {
                         "3. ALWAYS show the math in the simplest way possible.\n" +
                         "4. If cost_price is 0 or missing, say: I dont know the buy price of [item]. Please add it first!\n" +
                         "5. End with one simple tip the person can do RIGHT NOW.\n" +
-                        "6. When a user asks any profit-related question:\n" +
-                        "   - VaultCA MUST first check if they specified the exact price tier in their question (e.g. \"dealer price\").\n" +
-                        "   - If they DO NOT specify a price tier, VaultCA MUST STOP AND ASK FIRST: \"Which price tier are you planning to sell at \u2014 Retail (₹[retail_price]), Dealer (₹[dealer_price]), or Wholesale (₹[wholesale_price])?\"\n" +
-                        "   - NEVER auto-select a price tier without user confirmation. Do not provide any profit calculations until they reply with a specific tier.\n" +
-                        "   - Once the user replies with a tier, proceed with the profit calculation using only that specific price.\n" +
-                        "   - If the user already explicitly mentions a tier in their original question, skip the clarifying question and answer directly.\n\n" +
+                        "6. CRITICAL: When a user asks any profit or calculation-related question:\n" +
+                        "   - YOU MUST IMMEDIATELY STOP. DO NOT CALCULATE ANYTHING YET.\n" +
+                        "   - Ask the user EXACTLY THIS: \"Which price tier are you planning to sell at — Retail, Dealer, or Wholesale?\"\n" +
+                        "   - Wait for the user to answer before showing any profit numbers or formats.\n" +
+                        "   - If they already mentioned 'Retail', 'Dealer', or 'Wholesale' in their prompt, you can proceed.\n\n" +
 
                         "FOR AUDIT REPORT use this format:\n" +
                         "Your Portfolio Summary\n\n" +
@@ -70,10 +69,10 @@ public class ChatController {
                         "Best earner: [item name]\n" +
                         "Needs attention: [item with missing cost or low stock]\n\n" +
 
-                        "FOR SINGLE ITEM use this format:\n" +
+                        "FOR SINGLE ITEM (ONLY AFTER TIER IS CLARIFIED):\n" +
                         "[Item Name] - How to make Rs.[target] profit\n\n" +
                         "What you paid to buy it: Rs.X per piece\n" +
-                        "What you sell it for now: Rs.Y per piece\n" +
+                        "Target Sell Price ([Tier Name]): Rs.Y per piece\n" +
                         "Your profit on each piece: Rs.(Y-X)\n\n" +
                         "To make Rs.[target] profit, you need to sell: [target/(Y-X)] pieces\n" +
                         "You have [stock] pieces -> max profit right now = Rs.[stock*(Y-X)]\n\n" +
