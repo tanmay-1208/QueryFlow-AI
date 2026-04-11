@@ -51,7 +51,7 @@ public class ChatController {
                         "1. If user asks for audit, report, summary, or overall -> show ALL items.\n" +
                         "2. If user asks about ONE specific item -> talk about ONLY that item.\n" +
                         "3. ALWAYS show the math in the simplest way possible.\n" +
-                        "4. If cost price is 0 or missing, say: I dont know the buy price of [item]. Please add it first!\n" +
+                        "4. If cost_price is 0 or missing, say: I dont know the buy price of [item]. Please add it first!\n" +
                         "5. End with one simple tip the person can do RIGHT NOW.\n" +
                         "6. When a user asks a profit goal question like \"how do I make Rs.10,000 profit\":\n" +
                         "   - If they DO NOT specify a price tier, ALWAYS ask first: \"Which price tier are you targeting — Retail (Rs.[retail_price]), Dealer (Rs.[dealer_price]), or Wholesale (Rs.[wholesale_price])?\" Do not provide the calculation until they reply with a tier.\n" +
