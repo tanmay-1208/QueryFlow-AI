@@ -189,12 +189,14 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         }
 
         const validatedItems = currentItems.map(item => ({
-          ...item,
+          productName: item.name,
+          costPrice: Number(item.costPrice || item.cost_price || 0),
           priceGroups: {
-            RETAIL: item.priceGroups?.RETAIL ? Number(item.priceGroups.RETAIL) : 0,
-            DEALER: item.priceGroups?.DEALER ? Number(item.priceGroups.DEALER) : 0,
-            WHOLESALE: item.priceGroups?.WHOLESALE ? Number(item.priceGroups.WHOLESALE) : 0
-          }
+            retail: item.priceGroups?.RETAIL ? Number(item.priceGroups.RETAIL) : Number(item.price || 0),
+            dealer: item.priceGroups?.DEALER ? Number(item.priceGroups.DEALER) : 0,
+            wholesale: item.priceGroups?.WHOLESALE ? Number(item.priceGroups.WHOLESALE) : 0
+          },
+          stock: Number(item.stock || 0)
         }));
 
         const res = await axios.post(`${API_BASE_URL}/api/chat`, {
