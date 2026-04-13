@@ -58,7 +58,8 @@ public class ChatController {
                         "4. No bullet point walls, portfolio dumps, or full summaries unless the user asks for a full audit.\n" +
                         "5. If buy price (cost_price) is 0 or missing, say: \"I don't know the buy price of [item]. Please add it first!\" and stop.\n" +
                         "6. ONLY show calculations relevant to the selected price tier.\n" +
-                        "7. End with one simple tip the person can do RIGHT NOW.\n\n" +
+                        "7. PROFIT CALCULATION RULE: Profit per unit MUST always be calculated strictly as: [Selected Tier Price] - [Cost Price]. Ensure you subtract the cost price from the specific target price tier the user asked about. Example: If cost is Rs.100 and user asks for Dealer profit (Rs.120), profit is Rs.20 per unit. Do NOT use the Retail margin.\n" +
+                        "8. End with one simple tip the person can do RIGHT NOW.\n\n" +
 
                         "TARGET RESPONSE STYLE TO AIM FOR:\n" +
                         "\"At Retail price (Rs.150), you make Rs.50 per unit. To hit Rs.10,000 profit you need to sell 200 units. You have 9 in stock — so you're 191 units short. Time to restock.\"\n\n" +
