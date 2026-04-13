@@ -31,10 +31,78 @@ public class ChatController {
         try {
             String userMsg = payload.getOrDefault("message", "Audit portfolio").toString();
             Object rawItems = payload.getOrDefault("items", "[]");
-            String safeItems = objectMapper.writeValueAsString(rawItems)
-    .replace("{", "(")
-    .replace("}", ")")
-    .replace("costPrice", "cost_price");
+            String lowerMsg = userMsg.toLowerCase();
+
+            // Product Name Resolution (Exact Case-Insensitive Match)
+            Product resolvedProduct = null;
+            int maxMatchLength = 0;
+            
+            // Extract valid product names for the current vault user context from rawItems
+            Set<String> validContextNames = new HashSet<>();
+            if (rawItems instanceof List) {
+                for (Object obj : (List<?>) rawItems) {
+                    if (obj instanceof Map) {
+                        Object pName = ((Map<?, ?>) obj).get("productName");
+                        if (pName != null) {
+                            validContextNames.add(pName.toString().toLowerCase());
+                        }
+                    }
+                }
+            }
+
+            for (Product p : productRepository.findAll()) {
+                if (p.getName() == null) continue;
+                String pName = p.getName().toLowerCase();
+                
+                // Only consider products that exist in the user's current vault payload
+                if (!validContextNames.contains(pName)) continue;
+
+                // Exact case-insensitive match (longest match wins to prevent "Test Item" overriding "Test Item 3")
+                if (lowerMsg.contains(pName) && pName.length() > maxMatchLength) {
+                    resolvedProduct = p;
+                    maxMatchLength = pName.length();
+                }
+            }
+
+            String safeItems;
+            boolean isAudit = lowerMsg.contains("audit") || lowerMsg.contains("report") || lowerMsg.contains("summary") || lowerMsg.contains("overall");
+
+            if (resolvedProduct != null && !isAudit) {
+                // Log the exact matched product to the backend console
+                System.out.println("Resolved Product for VaultCA context: " + resolvedProduct.getName());
+                
+                Map<String, Object> prodData = new HashMap<>();
+                prodData.put("productName", resolvedProduct.getName());
+                prodData.put("costPrice", resolvedProduct.getCostPrice() != null ? resolvedProduct.getCostPrice() : 0.0);
+                
+                Map<String, Double> pGroups = new HashMap<>();
+                double retail = 0.0;
+                if (resolvedProduct.getPriceGroups() != null && resolvedProduct.getPriceGroups().containsKey(PriceGroup.RETAIL)) {
+                    Double rVal = resolvedProduct.getPriceGroups().get(PriceGroup.RETAIL);
+                    retail = rVal != null ? rVal : 0.0;
+                } else if (resolvedProduct.getPrice() != null) {
+                    retail = resolvedProduct.getPrice();
+                }
+                
+                double dealer = resolvedProduct.getPriceGroups() != null && resolvedProduct.getPriceGroups().containsKey(PriceGroup.DEALER) && resolvedProduct.getPriceGroups().get(PriceGroup.DEALER) != null ? resolvedProduct.getPriceGroups().get(PriceGroup.DEALER) : 0.0;
+                double wholesale = resolvedProduct.getPriceGroups() != null && resolvedProduct.getPriceGroups().containsKey(PriceGroup.WHOLESALE) && resolvedProduct.getPriceGroups().get(PriceGroup.WHOLESALE) != null ? resolvedProduct.getPriceGroups().get(PriceGroup.WHOLESALE) : 0.0;
+                
+                pGroups.put("retail", retail);
+                pGroups.put("dealer", dealer);
+                pGroups.put("wholesale", wholesale);
+                
+                prodData.put("priceGroups", pGroups);
+                prodData.put("stock", resolvedProduct.getStock() != null ? resolvedProduct.getStock() : 0);
+
+                safeItems = objectMapper.writeValueAsString(Collections.singletonList(prodData))
+                        .replace("{", "(")
+                        .replace("}", ")");
+            } else {
+                safeItems = objectMapper.writeValueAsString(rawItems)
+                        .replace("{", "(")
+                        .replace("}", ")")
+                        .replace("costPrice", "cost_price");
+            }
 
             return builder.build()
                     .prompt()
