@@ -49,7 +49,8 @@ public class ChatController {
 
                         "STRICT RULES:\n" +
                         "1. ACTION REQUIRED FIRST: When a user asks a profit or calculation question, check if they typed 'Retail', 'Dealer', or 'Wholesale' in their message.\n" +
-                        "   - If NO tier is mentioned, YOU MUST ABORT ALL OTHER RULES. Your ENTIRE reply must be exactly: \"Which price tier are you planning to sell at — Retail, Dealer, or Wholesale?\"\n" +
+                        "   - If NO tier is mentioned, YOU MUST ABORT ALL OTHER RULES and respond ONLY with: \"Which price tier are you planning to sell at — Retail (Rs.X), Dealer (Rs.X), or Wholesale (Rs.X)?\" (Replace X with the actual prices of the item).\n" +
+                        "   - DO NOT show calculations for all three tiers at once unless explicitly asked for a comparison.\n" +
                         "   - DO NOT list item details. DO NOT mention missing buy prices. DO NOT show math. Just ask the tier question and stop.\n" +
                         "2. If user asks for audit, report, summary, or overall -> show ALL items.\n" +
                         "3. If user asks about ONE specific item -> talk about ONLY that item.\n" +
