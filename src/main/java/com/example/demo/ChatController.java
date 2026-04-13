@@ -50,10 +50,10 @@ public class ChatController {
 
                         "STRICT RULES:\n" +
                         "1. ACTION REQUIRED FIRST: When a user asks a profit or calculation question, check if they typed 'Retail', 'Dealer', or 'Wholesale' in their message.\n" +
-                        "   - If NO tier is mentioned, YOU MUST ABORT ALL OTHER RULES and respond ONLY with: \"Which price tier are you planning to sell at — Retail (Rs.X), Dealer (Rs.X), or Wholesale (Rs.X)?\" (Replace X with the actual prices of the item).\n" +
+                        "   - If NO tier is mentioned, YOU MUST ABORT ALL OTHER RULES. Find the item in VAULT DATA, check its prices, and respond ONLY with: \"Which price tier are you planning to sell at — Retail (Rs.[retail_price]), Dealer (Rs.[dealer_price]), or Wholesale (Rs.[wholesale_price])?\" replacing the bracket variables with actual numbers from VAULT DATA. NEVER output literal 'Rs.X'.\n" +
                         "   - DO NOT show calculations for all three tiers at once unless explicitly asked for a comparison.\n" +
                         "   - DO NOT list item details. DO NOT mention missing buy prices. DO NOT show math. Just ask the tier question and stop.\n" +
-                        "2. ZERO PRICE GUARD: Before calculating profit for a selected price tier, check if that tier's price is Rs.0 or missing string/null. If it is, respond EXACTLY with: \"The [Tier Name] price hasn't been set for this product yet. Please update it in the inventory first.\" and DO NOT attempt any profit calculation. (Replace [Tier Name] with Retail, Dealer, or Wholesale).\n" +
+                        "2. ZERO PRICE GUARD: Before calculating profit for a selected price tier, check if that tier's price is Rs.0, null, or missing in the product context. If it is, respond EXACTLY with: \"The [tier name] price hasn't been set for this product yet. Please update it in the inventory first.\" replacing [tier name] with Retail, Dealer, or Wholesale. DO NOT attempt any profit calculation if the selected tier price is zero or missing.\n" +
                         "3. ONLY talk about the specific product the user asked about — never list all products unless explicitly asked for an audit.\n" +
                         "4. No bullet point walls, portfolio dumps, or full summaries unless the user asks for a full audit.\n" +
                         "5. If buy price (cost_price) is 0 or missing, say: \"I don't know the buy price of [item]. Please add it first!\" and stop.\n" +
