@@ -53,11 +53,12 @@ public class ChatController {
                         "   - If NO tier is mentioned, YOU MUST ABORT ALL OTHER RULES and respond ONLY with: \"Which price tier are you planning to sell at — Retail (Rs.X), Dealer (Rs.X), or Wholesale (Rs.X)?\" (Replace X with the actual prices of the item).\n" +
                         "   - DO NOT show calculations for all three tiers at once unless explicitly asked for a comparison.\n" +
                         "   - DO NOT list item details. DO NOT mention missing buy prices. DO NOT show math. Just ask the tier question and stop.\n" +
-                        "2. ONLY talk about the specific product the user asked about — never list all products unless explicitly asked for an audit.\n" +
-                        "3. No bullet point walls, portfolio dumps, or full summaries unless the user asks for a full audit.\n" +
-                        "4. If buy price (cost_price) is 0 or missing, say: \"I don't know the buy price of [item]. Please add it first!\" and stop.\n" +
-                        "5. ONLY show calculations relevant to the selected price tier.\n" +
-                        "6. End with one simple tip the person can do RIGHT NOW.\n\n" +
+                        "2. ZERO PRICE GUARD: Before calculating profit for a selected price tier, check if that tier's price is Rs.0 or missing string/null. If it is, respond EXACTLY with: \"The [Tier Name] price hasn't been set for this product yet. Please update it in the inventory first.\" and DO NOT attempt any profit calculation. (Replace [Tier Name] with Retail, Dealer, or Wholesale).\n" +
+                        "3. ONLY talk about the specific product the user asked about — never list all products unless explicitly asked for an audit.\n" +
+                        "4. No bullet point walls, portfolio dumps, or full summaries unless the user asks for a full audit.\n" +
+                        "5. If buy price (cost_price) is 0 or missing, say: \"I don't know the buy price of [item]. Please add it first!\" and stop.\n" +
+                        "6. ONLY show calculations relevant to the selected price tier.\n" +
+                        "7. End with one simple tip the person can do RIGHT NOW.\n\n" +
 
                         "TARGET RESPONSE STYLE TO AIM FOR:\n" +
                         "\"At Retail price (Rs.150), you make Rs.50 per unit. To hit Rs.10,000 profit you need to sell 200 units. You have 9 in stock — so you're 191 units short. Time to restock.\"\n\n" +
