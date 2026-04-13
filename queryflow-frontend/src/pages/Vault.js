@@ -182,9 +182,24 @@ const Vault = ({ userId, userEmail, onLogout }) => {
       setAiQuery("");
       setChatLog(prev => [...prev, { role: "user", text: userMessage }]);
       try {
+        let currentItems = items;
+        if (activeVault) {
+          const resProducts = await axios.get(`${API_BASE_URL}/api/products?vaultId=${activeVault.id}`);
+          currentItems = Array.isArray(resProducts.data) ? resProducts.data : [];
+        }
+
+        const validatedItems = currentItems.map(item => ({
+          ...item,
+          priceGroups: {
+            RETAIL: item.priceGroups?.RETAIL ? Number(item.priceGroups.RETAIL) : 0,
+            DEALER: item.priceGroups?.DEALER ? Number(item.priceGroups.DEALER) : 0,
+            WHOLESALE: item.priceGroups?.WHOLESALE ? Number(item.priceGroups.WHOLESALE) : 0
+          }
+        }));
+
         const res = await axios.post(`${API_BASE_URL}/api/chat`, {
           message: userMessage,
-          items: items
+          items: validatedItems
         });
         setChatLog(prev => [...prev, { role: "agent", text: res.data }]);
       } catch (err) {
