@@ -6,7 +6,8 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter@NoArgsConstructor
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
 
