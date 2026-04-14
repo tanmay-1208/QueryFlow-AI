@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "vaults")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class VaultEntity {

@@ -1,0 +1,409 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< com.example:demo >--------------------------
+[INFO] Building demo 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.0:run (default-cli) > test-compile @ demo >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ demo ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ demo ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 25 source files with javac [debug parameters release 17] to target/classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[54,22] cannot find symbol
+  symbol:   method getName()
+  location: variable p of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[55,33] cannot find symbol
+  symbol:   method getName()
+  location: variable p of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[72,94] cannot find symbol
+  symbol:   method getName()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[75,60] cannot find symbol
+  symbol:   method getName()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[76,58] cannot find symbol
+  symbol:   method getCostPrice()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[76,99] cannot find symbol
+  symbol:   method getCostPrice()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[80,36] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[80,80] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[81,50] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[83,43] cannot find symbol
+  symbol:   method getPrice()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[84,45] cannot find symbol
+  symbol:   method getPrice()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,48] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,92] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,159] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,225] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,51] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,95] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,165] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,234] cannot find symbol
+  symbol:   method getPriceGroups()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[95,54] cannot find symbol
+  symbol:   method getStock()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[95,91] cannot find symbol
+  symbol:   method getStock()
+  location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[31,21] cannot find symbol
+  symbol:   method getPriceGroup()
+  location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[32,21] cannot find symbol
+  symbol:   method setPriceGroup(com.example.demo.PriceGroup)
+  location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[39,17] cannot find symbol
+  symbol:   method setId(java.lang.Long)
+  location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[40,21] cannot find symbol
+  symbol:   method getPriceGroup()
+  location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[41,21] cannot find symbol
+  symbol:   method setPriceGroup(com.example.demo.PriceGroup)
+  location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ProductController.java:[37,16] cannot find symbol
+  symbol:   method setId(java.lang.Long)
+  location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[29,33] cannot find symbol
+  symbol:   method getStock()
+  location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[32,35] cannot find symbol
+  symbol:   method getCostPrice()
+  location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[32,68] cannot find symbol
+  symbol:   method getCostPrice()
+  location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[33,35] cannot find symbol
+  symbol:   method getPrice()
+  location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[42,16] cannot find symbol
+  symbol:   method setUserId(java.lang.String)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[43,16] cannot find symbol
+  symbol:   method setProductId(java.lang.Long)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[44,39] cannot find symbol
+  symbol:   method getName()
+  location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[45,16] cannot find symbol
+  symbol:   method setQuantity(int)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[46,16] cannot find symbol
+  symbol:   method setSellPrice(double)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[47,16] cannot find symbol
+  symbol:   method setCostPrice(double)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[48,16] cannot find symbol
+  symbol:   method setProfit(double)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[49,16] cannot find symbol
+  symbol:   method setVaultId(java.lang.Long)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[52,20] cannot find symbol
+  symbol:   method setCustomerId(java.lang.Long)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[55,20] cannot find symbol
+  symbol:   method setPriceGroup(com.example.demo.PriceGroup)
+  location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[41,14] cannot find symbol
+  symbol:   method setUserId(java.lang.String)
+  location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[42,14] cannot find symbol
+  symbol:   method setName(java.lang.String)
+  location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[43,14] cannot find symbol
+  symbol:   method setDescription(java.lang.String)
+  location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[57,61] cannot find symbol
+  symbol:   method getName()
+  location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[58,75] cannot find symbol
+  symbol:   method getDescription()
+  location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[29,73] cannot find symbol
+  symbol:   method getInviteCode()
+  location: class com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[35,15] cannot find symbol
+  symbol:   method setVaultId(java.lang.Long)
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[36,15] cannot find symbol
+  symbol:   method setInviteCode(java.lang.String)
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[37,15] cannot find symbol
+  symbol:   method setCreatedBy(java.lang.String)
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[57,66] cannot find symbol
+  symbol:   method getVaultId()
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[63,33] cannot find symbol
+  symbol:   method getVaultId()
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[64,15] cannot find symbol
+  symbol:   method setUserId(java.lang.String)
+  location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[65,15] cannot find symbol
+  symbol:   method setUserEmail(java.lang.String)
+  location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[66,15] cannot find symbol
+  symbol:   method setRole(java.lang.String)
+  location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[67,15] cannot find symbol
+  symbol:   method setInviteCode(java.lang.String)
+  location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[71,60] cannot find symbol
+  symbol:   method getVaultId()
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[89,34] cannot find symbol
+  symbol:   method getInviteCode()
+  location: class com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[93,19] cannot find symbol
+  symbol:   method setVaultId(java.lang.Long)
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[94,19] cannot find symbol
+  symbol:   method setInviteCode(java.lang.String)
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[95,19] cannot find symbol
+  symbol:   method setCreatedBy(java.lang.String)
+  location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[116,18] invalid method reference
+  cannot find symbol
+    symbol:   method getVaultId()
+    location: class com.example.demo.VaultMember
+[INFO] 62 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.728 s
+[INFO] Finished at: 2026-04-14T09:44:09+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project demo: Compilation failure: Compilation failure: 
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[54,22] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable p of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[55,33] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable p of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[72,94] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[75,60] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[76,58] cannot find symbol
+[ERROR]   symbol:   method getCostPrice()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[76,99] cannot find symbol
+[ERROR]   symbol:   method getCostPrice()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[80,36] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[80,80] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[81,50] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[83,43] cannot find symbol
+[ERROR]   symbol:   method getPrice()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[84,45] cannot find symbol
+[ERROR]   symbol:   method getPrice()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,48] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,92] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,159] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[87,225] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,51] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,95] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,165] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[88,234] cannot find symbol
+[ERROR]   symbol:   method getPriceGroups()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[95,54] cannot find symbol
+[ERROR]   symbol:   method getStock()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ChatController.java:[95,91] cannot find symbol
+[ERROR]   symbol:   method getStock()
+[ERROR]   location: variable resolvedProduct of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[31,21] cannot find symbol
+[ERROR]   symbol:   method getPriceGroup()
+[ERROR]   location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[32,21] cannot find symbol
+[ERROR]   symbol:   method setPriceGroup(com.example.demo.PriceGroup)
+[ERROR]   location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[39,17] cannot find symbol
+[ERROR]   symbol:   method setId(java.lang.Long)
+[ERROR]   location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[40,21] cannot find symbol
+[ERROR]   symbol:   method getPriceGroup()
+[ERROR]   location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/CustomerController.java:[41,21] cannot find symbol
+[ERROR]   symbol:   method setPriceGroup(com.example.demo.PriceGroup)
+[ERROR]   location: variable customer of type com.example.demo.Customer
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/ProductController.java:[37,16] cannot find symbol
+[ERROR]   symbol:   method setId(java.lang.Long)
+[ERROR]   location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[29,33] cannot find symbol
+[ERROR]   symbol:   method getStock()
+[ERROR]   location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[32,35] cannot find symbol
+[ERROR]   symbol:   method getCostPrice()
+[ERROR]   location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[32,68] cannot find symbol
+[ERROR]   symbol:   method getCostPrice()
+[ERROR]   location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[33,35] cannot find symbol
+[ERROR]   symbol:   method getPrice()
+[ERROR]   location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[42,16] cannot find symbol
+[ERROR]   symbol:   method setUserId(java.lang.String)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[43,16] cannot find symbol
+[ERROR]   symbol:   method setProductId(java.lang.Long)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[44,39] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable product of type com.example.demo.Product
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[45,16] cannot find symbol
+[ERROR]   symbol:   method setQuantity(int)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[46,16] cannot find symbol
+[ERROR]   symbol:   method setSellPrice(double)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[47,16] cannot find symbol
+[ERROR]   symbol:   method setCostPrice(double)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[48,16] cannot find symbol
+[ERROR]   symbol:   method setProfit(double)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[49,16] cannot find symbol
+[ERROR]   symbol:   method setVaultId(java.lang.Long)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[52,20] cannot find symbol
+[ERROR]   symbol:   method setCustomerId(java.lang.Long)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/SellController.java:[55,20] cannot find symbol
+[ERROR]   symbol:   method setPriceGroup(com.example.demo.PriceGroup)
+[ERROR]   location: variable history of type com.example.demo.SellHistory
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[41,14] cannot find symbol
+[ERROR]   symbol:   method setUserId(java.lang.String)
+[ERROR]   location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[42,14] cannot find symbol
+[ERROR]   symbol:   method setName(java.lang.String)
+[ERROR]   location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[43,14] cannot find symbol
+[ERROR]   symbol:   method setDescription(java.lang.String)
+[ERROR]   location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[57,61] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultController.java:[58,75] cannot find symbol
+[ERROR]   symbol:   method getDescription()
+[ERROR]   location: variable vault of type com.example.demo.VaultEntity
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[29,73] cannot find symbol
+[ERROR]   symbol:   method getInviteCode()
+[ERROR]   location: class com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[35,15] cannot find symbol
+[ERROR]   symbol:   method setVaultId(java.lang.Long)
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[36,15] cannot find symbol
+[ERROR]   symbol:   method setInviteCode(java.lang.String)
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[37,15] cannot find symbol
+[ERROR]   symbol:   method setCreatedBy(java.lang.String)
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[57,66] cannot find symbol
+[ERROR]   symbol:   method getVaultId()
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[63,33] cannot find symbol
+[ERROR]   symbol:   method getVaultId()
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[64,15] cannot find symbol
+[ERROR]   symbol:   method setUserId(java.lang.String)
+[ERROR]   location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[65,15] cannot find symbol
+[ERROR]   symbol:   method setUserEmail(java.lang.String)
+[ERROR]   location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[66,15] cannot find symbol
+[ERROR]   symbol:   method setRole(java.lang.String)
+[ERROR]   location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[67,15] cannot find symbol
+[ERROR]   symbol:   method setInviteCode(java.lang.String)
+[ERROR]   location: variable member of type com.example.demo.VaultMember
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[71,60] cannot find symbol
+[ERROR]   symbol:   method getVaultId()
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[89,34] cannot find symbol
+[ERROR]   symbol:   method getInviteCode()
+[ERROR]   location: class com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[93,19] cannot find symbol
+[ERROR]   symbol:   method setVaultId(java.lang.Long)
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[94,19] cannot find symbol
+[ERROR]   symbol:   method setInviteCode(java.lang.String)
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[95,19] cannot find symbol
+[ERROR]   symbol:   method setCreatedBy(java.lang.String)
+[ERROR]   location: variable invite of type com.example.demo.VaultInvite
+[ERROR] /Users/mac/Downloads/demo/src/main/java/com/example/demo/VaultMemberController.java:[116,18] invalid method reference
+[ERROR]   cannot find symbol
+[ERROR]     symbol:   method getVaultId()
+[ERROR]     location: class com.example.demo.VaultMember
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 @Entity
-@Table(name = "products")
-@Data
+@Getter
+@Setter@Table(name = "products")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {

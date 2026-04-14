@@ -5,8 +5,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sell_history")
-@Data
+@Getter
+@Setter@Table(name = "sell_history")
 @NoArgsConstructor
 @AllArgsConstructor
 public class SellHistory {

@@ -5,8 +5,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "vault_members")
-@Data
+@Getter
+@Setter@Table(name = "vault_members")
 @NoArgsConstructor
 @AllArgsConstructor
 public class VaultMember {
