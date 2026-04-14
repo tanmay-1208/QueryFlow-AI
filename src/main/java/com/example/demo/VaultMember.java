@@ -5,8 +5,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Getter
-@Setter@Table(name = "vault_members")
+@Setter
+@Table(name = "vault_members")
 @NoArgsConstructor
 @AllArgsConstructor
 public class VaultMember {
@@ -37,4 +39,19 @@ public class VaultMember {
     public void prePersist() {
         this.joinedAt = LocalDateTime.now();
     }
+    
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getVaultId() { return vaultId; }
+    public void setVaultId(Long vaultId) { this.vaultId = vaultId; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    public String getInviteCode() { return inviteCode; }
+    public void setInviteCode(String inviteCode) { this.inviteCode = inviteCode; }
+    public LocalDateTime getJoinedAt() { return joinedAt; }
+    public void setJoinedAt(LocalDateTime joinedAt) { this.joinedAt = joinedAt; }
 }

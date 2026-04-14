@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter@Table(name = "vault_invites")
+@Setter
+@Table(name = "vault_invites")
 @NoArgsConstructor
 @AllArgsConstructor
 public class VaultInvite {
@@ -35,4 +36,17 @@ public class VaultInvite {
         this.createdAt = LocalDateTime.now();
         this.expiresAt = LocalDateTime.now().plusDays(7);
     }
+    
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getVaultId() { return vaultId; }
+    public void setVaultId(Long vaultId) { this.vaultId = vaultId; }
+    public String getInviteCode() { return inviteCode; }
+    public void setInviteCode(String inviteCode) { this.inviteCode = inviteCode; }
+    public String getCreatedBy() { return createdBy; }
+    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
 }
