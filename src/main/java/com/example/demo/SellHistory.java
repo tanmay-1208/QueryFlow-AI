@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter@Table(name = "sell_history")
+@Setter
+@Table(name = "sell_history")
 @NoArgsConstructor
 @AllArgsConstructor
 public class SellHistory {

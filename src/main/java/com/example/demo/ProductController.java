@@ -14,17 +14,23 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping
-    public List<Product> getProducts(
+    public ResponseEntity<?> getProducts(
         @RequestParam(required = false) String userId,
         @RequestParam(required = false) Long vaultId
     ) {
-        if (vaultId != null) {
-            return productRepository.findByVaultId(vaultId);
+        try {
+            if (vaultId != null) {
+                return ResponseEntity.ok(productRepository.findByVaultId(vaultId));
+            }
+            if (userId != null && !userId.isEmpty()) {
+                return ResponseEntity.ok(productRepository.findByUserId(userId));
+            }
+            return ResponseEntity.ok(productRepository.findAll());
+        } catch (Exception e) {
+            java.io.StringWriter sw = new java.io.StringWriter();
+            e.printStackTrace(new java.io.PrintWriter(sw));
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage() != null ? e.getMessage() : "null", "stack", sw.toString()));
         }
-        if (userId != null && !userId.isEmpty()) {
-            return productRepository.findByUserId(userId);
-        }
-        return productRepository.findAll();
     }
 
     @PostMapping

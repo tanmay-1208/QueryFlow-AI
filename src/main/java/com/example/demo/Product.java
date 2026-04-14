@@ -8,7 +8,8 @@ import java.util.HashMap;
 
 @Entity
 @Getter
-@Setter@Table(name = "products")
+@Setter
+@Table(name = "products")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {

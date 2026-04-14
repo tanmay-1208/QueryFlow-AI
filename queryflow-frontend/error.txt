@@ -1,0 +1,1 @@
+{"timestamp":"2026-04-14T11:35:20.796+00:00","status":500,"error":"Internal Server Error","path":"/api/products"}
