@@ -9,7 +9,7 @@ import java.util.HashMap;
 @Entity
 @Getter
 @Setter
-@Table(name = "products")
+@Table(name = "product")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -22,7 +22,10 @@ public class Product {
     private Double price;
     
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "product_price_groups", joinColumns = @JoinColumn(name = "product_id"))
+    @CollectionTable(
+        name = "product_price_groups", 
+        joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_product_price_group"))
+    )
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn(name = "price_group")
     @Column(name = "group_price")
