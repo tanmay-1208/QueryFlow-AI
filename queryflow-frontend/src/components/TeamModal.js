@@ -103,7 +103,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
-      <div className="bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] w-full max-w-lg shadow-2xl">
+      <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-lg shadow-2xl">
 
         <div className="flex justify-between items-center mb-8">
           <div>

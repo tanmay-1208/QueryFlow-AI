@@ -20,7 +20,7 @@ const ContactPage = () => {
           <span className="text-[#4182ff]">COMMS</span>
         </motion.h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-8 md:p-20">
           
           {/* Left Column: The Form */}
           <motion.div 

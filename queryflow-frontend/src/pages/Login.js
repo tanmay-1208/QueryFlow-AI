@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
         {/* Aesthetic Accent Line */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
         
-        <h2 className="text-5xl font-black mb-10 tracking-tighter font-['Manrope']">Access Terminal</h2>
+        <h2 className="text-3xl md:text-5xl font-black mb-10 tracking-tighter font-['Manrope']">Access Terminal</h2>
         
         <form onSubmit={handleManualLogin} className="space-y-4 mb-6">
           <input 

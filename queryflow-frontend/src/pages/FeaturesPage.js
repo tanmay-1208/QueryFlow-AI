@@ -78,7 +78,7 @@ export default function FeaturesPage() {
         
         <motion.h1 
             style={{ transformOrigin: 'bottom', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-            className="text-6xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] mb-10 italic drop-shadow-2xl"
+            className="text-4xl md:text-6xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] mb-10 italic drop-shadow-2xl"
           >
             <motion.div 
                initial="hidden" animate="visible" 
@@ -131,10 +131,10 @@ export default function FeaturesPage() {
               transition={{ delay: i * 0.1 }}
             >
               <TiltCard className="h-full">
-              <div className="glass h-full p-10 hover-glow group cursor-default relative overflow-hidden backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300">
-                 <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[50px] opacity-20 transition-opacity group-hover:opacity-60" style={{background: f.color}}></div>
+              <div className="glass h-full p-6 md:p-10 hover-glow group cursor-default relative overflow-hidden backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300">
+                 <div className="absolute -top-6 md:p-10 -right-10 w-32 h-32 rounded-full blur-[50px] opacity-20 transition-opacity group-hover:opacity-60" style={{background: f.color}}></div>
                  <div style={{ transform: "translateZ(60px)", transformStyle: "preserve-3d" }}>
-                   <div className="text-5xl mb-8 drop-shadow-2xl">{f.icon}</div>
+                   <div className="text-3xl md:text-5xl mb-8 drop-shadow-2xl">{f.icon}</div>
                    <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-4" style={{color: f.color, textShadow: `0 0 20px ${f.color}80`}}>{f.title}</h3>
                    <p className="text-gray-300 text-sm leading-relaxed">{f.desc}</p>
                  </div>
@@ -149,16 +149,16 @@ export default function FeaturesPage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="glass p-10 md:p-16 relative overflow-hidden mb-20"
+          className="glass p-6 md:p-10 md:p-8 md:p-16 relative overflow-hidden mb-20"
         >
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full" />
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-white/5 rounded-full" />
           </div>
           
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 md:p-16 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic mb-6">
+              <h2 className="text-3xl md:text-4xl md:text-3xl md:text-5xl font-black tracking-tighter uppercase italic mb-6">
                 Deep <span className="text-[#8b5cf6]">Synthesis</span>
               </h2>
               <p className="text-gray-400 text-lg leading-relaxed mb-6">

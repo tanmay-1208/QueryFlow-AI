@@ -29,10 +29,10 @@ const PricingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1, duration: 0.6 }}
               whileHover={{ y: -10 }}
-              className={`p-8 md:p-10 rounded-[2.5rem] border transition-all ${plan.featured ? 'border-[#4182ff] bg-[#131313] shadow-[0_0_30px_rgba(65,130,255,0.1)]' : 'border-white/5 bg-[#0e0e0e]'}`}
+              className={`p-8 md:p-6 md:p-10 rounded-[2.5rem] border transition-all ${plan.featured ? 'border-[#4182ff] bg-[#131313] shadow-[0_0_30px_rgba(65,130,255,0.1)]' : 'border-white/5 bg-[#0e0e0e]'}`}
             >
               <h3 className="text-lg md:text-xl font-bold mb-4 uppercase tracking-widest">{plan.name}</h3>
-              <div className="text-5xl font-black mb-6 italic">
+              <div className="text-3xl md:text-5xl font-black mb-6 italic">
                 {plan.price !== "Custom" ? `₹${plan.price}` : plan.price}
                 {plan.price !== "Custom" && <span className="text-sm text-gray-500 not-italic">/mo</span>}
               </div>

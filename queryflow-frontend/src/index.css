@@ -15,7 +15,7 @@ body {
   font-family: 'JetBrains Mono', monospace;
   background: #050505;
   color: white;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* Glassmorphism Effect */
@@ -49,7 +49,8 @@ body {
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden; /* Prevent body scroll, use container scroll */
+  overflow-x: hidden;
+  overflow-y: auto; /* Allow body scroll for mobile compatibility */
 }
 
 /* --- 3. CUSTOM SCROLLBAR (Aesthetic) --- */

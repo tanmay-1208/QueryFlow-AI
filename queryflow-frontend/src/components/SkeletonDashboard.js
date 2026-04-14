@@ -13,9 +13,9 @@ const SkeletonDashboard = () => (
     </div>
 
     {/* GRAPH */}
-    <div className="glass-panel p-10">
+    <div className="glass-panel p-6 md:p-10">
       <div className="h-3 bg-white/5 rounded w-1/4 mb-8" />
-      <div className="grid grid-cols-2 gap-10">
+      <div className="grid grid-cols-2 gap-6 md:p-10">
         <div>
           <div className="h-2 bg-white/5 rounded w-1/3 mb-6" />
           <div className="flex items-end gap-2 h-40">
@@ -45,7 +45,7 @@ const SkeletonDashboard = () => (
 
     {/* BOTTOM DATA */}
     <div className="grid grid-cols-2 gap-8">
-      <div className="glass-panel p-10">
+      <div className="glass-panel p-6 md:p-10">
         <div className="h-2 bg-white/5 rounded w-1/3 mb-8" />
         <div className="space-y-6">
           {[...Array(4)].map((_, i) => (
@@ -57,7 +57,7 @@ const SkeletonDashboard = () => (
           ))}
         </div>
       </div>
-      <div className="glass-panel p-10 space-y-4">
+      <div className="glass-panel p-6 md:p-10 space-y-4">
         <div className="h-2 bg-white/5 rounded w-1/3 mb-6" />
         {[...Array(3)].map((_, i) => (
           <div key={i} className="h-3 bg-white/5 rounded w-full" />
@@ -66,7 +66,7 @@ const SkeletonDashboard = () => (
     </div>
 
     {/* SELL HISTORY */}
-    <div className="glass-panel p-10">
+    <div className="glass-panel p-6 md:p-10">
       <div className="h-2 bg-white/5 rounded w-1/4 mb-8" />
       <div className="space-y-6">
         {[...Array(4)].map((_, i) => (

@@ -37,7 +37,7 @@ const SolutionsPage = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 pb-20"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-6 md:p-10 pb-20"
         >
           {[
             { title: "Institutional Vaults", desc: "Multi-signature corporate treasury management with automated sweeps. Safely manage liquidity across fiat and digital assets with instant sub-millisecond execution.", metric: "$4B+ Secued", color: "#4182ff" },
@@ -70,7 +70,7 @@ const SolutionsPage = () => {
           viewport={{ once: true }}
           className="pb-40"
         >
-           <h2 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-12 text-center">Industry <span className="text-gray-500">Applications</span></h2>
+           <h2 className="text-3xl md:text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-12 text-center">Industry <span className="text-gray-500">Applications</span></h2>
            
            <div className="flex flex-col gap-6">
               {[
@@ -78,7 +78,7 @@ const SolutionsPage = () => {
                 { industry: "Fintech Startups", details: "End the month-end close nightmare. Automated burn rate calculation, runaway monitoring, and seamless vendor invoice parsing.", active: false },
                 { industry: "Family Offices", details: "Multi-generational wealth tracking, estate synchronization, and comprehensive yield calculations on diverse asset classes.", active: false }
               ].map((caseItem, idx) => (
-                 <div key={idx} className={`glass p-8 md:p-10 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 cursor-pointer border ${caseItem.active ? 'border-[#4182ff]/50 bg-[#4182ff]/5' : 'border-white/5 hover:border-white/20'}`}>
+                 <div key={idx} className={`glass p-8 md:p-6 md:p-10 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 cursor-pointer border ${caseItem.active ? 'border-[#4182ff]/50 bg-[#4182ff]/5' : 'border-white/5 hover:border-white/20'}`}>
                     <div className="flex-1">
                       <h3 className="text-2xl font-black uppercase tracking-tighter mb-2 text-white">{caseItem.industry}</h3>
                       <p className="text-gray-400 text-sm md:text-base">{caseItem.details}</p>

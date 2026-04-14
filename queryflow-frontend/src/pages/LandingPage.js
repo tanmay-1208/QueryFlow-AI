@@ -114,7 +114,7 @@ function StatCard({ metric, desc, icon, delay }) {
       <div className="relative z-10">
         <div className="text-2xl mb-3">{icon}</div>
         <motion.div
-          className="text-4xl sm:text-5xl font-black mb-2 tabular-nums"
+          className="text-3xl md:text-4xl sm:text-3xl md:text-5xl font-black mb-2 tabular-nums"
           style={{
             background: "linear-gradient(135deg, #4182ff, #8b5cf6)",
             WebkitBackgroundClip: "text",
@@ -242,7 +242,7 @@ function ProcessStep({ num, title, desc, delay, color = "#4182ff" }) {
       className="relative group cursor-default"
     >
       <motion.div
-        className="absolute -top-10 -left-4 text-[80px] font-black select-none"
+        className="absolute -top-6 md:p-10 -left-4 text-[80px] font-black select-none"
         style={{ color: `${color}08`, lineHeight: 1 }}
         whileHover={{ color: `${color}18` }}
         transition={{ duration: 0.3 }}
@@ -307,7 +307,7 @@ function BenefitCard({ icon, title, desc, color, delay }) {
         style={{ background: color }} />
 
       <motion.div
-        className="text-4xl mb-4 inline-block"
+        className="text-3xl md:text-4xl mb-4 inline-block"
         animate={inView ? { rotate: [0, -5, 5, 0] } : {}}
         transition={{ delay: delay + 0.4, duration: 0.5 }}
         whileHover={{ scale: 1.2 }}
@@ -362,7 +362,7 @@ export default function LandingPage() {
         <Reveal className="mb-16 sm:mb-24 text-center">
           <div className="flex flex-col items-center gap-5">
             <SectionLabel color="#4182ff">Core Infrastructure // v4.0.26</SectionLabel>
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
+            <h2 className="text-3xl md:text-5xl sm:text-4xl md:text-6xl md:text-4xl md:text-7xl lg:text-5xl md:text-8xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
               Automate Your <br />
               <span style={{
                 WebkitTextStroke: "1.5px rgba(255,255,255,0.2)",
@@ -393,7 +393,7 @@ export default function LandingPage() {
                   <Pill color="#4182ff">Predictive AI</Pill>
                   <span className="text-base font-mono text-gray-700 tabular-nums">v4.2.1</span>
                 </div>
-                <h3 className="text-2xl sm:text-4xl font-black uppercase italic tracking-tighter mb-4">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase italic tracking-tighter mb-4">
                   Predictive Audit System
                 </h3>
                 <p className="text-gray-500 text-sm leading-relaxed max-w-md">
@@ -413,14 +413,14 @@ export default function LandingPage() {
                 </span>
               </div>
             </div>
-            <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
+            <div className="absolute -top-8 md:p-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
               style={{ background: "radial-gradient(circle, rgba(65,130,255,0.08), transparent 70%)" }} />
           </TiltCard>
 
           {/* Narrow card — 4ms Latency */}
           <TiltCard
             delay={0.2}
-            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-10 flex flex-col justify-between min-h-[260px] relative overflow-hidden"
+            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-6 md:p-10 flex flex-col justify-between min-h-[260px] relative overflow-hidden"
             style={{
               background: "linear-gradient(135deg, #4182ff 0%, #6366f1 100%)",
               boxShadow: "0 0 60px rgba(65,130,255,0.3)",
@@ -428,7 +428,7 @@ export default function LandingPage() {
           >
             <div>
               <motion.div
-                className="text-5xl sm:text-7xl font-black italic tracking-tighter text-white leading-none"
+                className="text-3xl md:text-5xl sm:text-4xl md:text-7xl font-black italic tracking-tighter text-white leading-none"
                 animate={{ scale: [1, 1.03, 1] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
@@ -452,7 +452,7 @@ export default function LandingPage() {
           {/* Security spec card */}
           <TiltCard
             delay={0.15}
-            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-10 flex flex-col justify-between min-h-[240px]"
+            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-6 md:p-10 flex flex-col justify-between min-h-[240px]"
             style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
           >
             <div>
@@ -479,7 +479,7 @@ export default function LandingPage() {
           {/* Connectivity card */}
           <TiltCard
             delay={0.2}
-            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-10 flex flex-col justify-between min-h-[240px]"
+            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-6 md:p-10 flex flex-col justify-between min-h-[240px]"
             style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
           >
             <div>
@@ -506,7 +506,7 @@ export default function LandingPage() {
           {/* AI Features card */}
           <TiltCard
             delay={0.25}
-            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-10 flex flex-col justify-between min-h-[240px]"
+            className="sm:col-span-4 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-6 md:p-10 flex flex-col justify-between min-h-[240px]"
             style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
           >
             <div>
@@ -588,7 +588,7 @@ export default function LandingPage() {
           <Reveal className="mb-16 text-center">
             <div className="flex flex-col items-center gap-5">
               <SectionLabel color="#8b5cf6">By The Numbers</SectionLabel>
-              <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
+              <h2 className="text-3xl md:text-4xl sm:text-4xl md:text-6xl md:text-4xl md:text-7xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
                 Trusted by <span style={{
                   background: "linear-gradient(135deg, #4182ff, #8b5cf6)",
                   WebkitBackgroundClip: "text",
@@ -622,7 +622,7 @@ export default function LandingPage() {
           <Reveal className="mb-16 sm:mb-24 text-center">
             <div className="flex flex-col items-center gap-5">
               <SectionLabel color="#22d3ee">Process</SectionLabel>
-              <h2 className="text-4xl sm:text-6xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
+              <h2 className="text-3xl md:text-4xl sm:text-4xl md:text-6xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
                 How It <span style={{ color: "#22d3ee" }}>Works</span>
               </h2>
               <p className="text-gray-500 text-sm sm:text-base max-w-xl leading-relaxed">
@@ -632,7 +632,7 @@ export default function LandingPage() {
           </Reveal>
 
           {/* Steps A */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-16 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8 md:p-16 mb-20">
             {[
               { num: "01", title: "Ingestion", desc: "Connect your bank APIs and digital wallets to the QueryFlow Terminal for unified data aggregation.", color: "#4182ff" },
               { num: "02", title: "Synthesis", desc: "Our proprietary AI categorises transactions and calculates real-time P&L with 99.8% precision.", color: "#8b5cf6" },
@@ -641,7 +641,7 @@ export default function LandingPage() {
           </div>
 
           {/* Steps B */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-10 sm:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 md:p-10 sm:gap-12">
             {[
               { num: "01", title: "Connect", desc: "Link bank accounts, wallets, and trading platforms. 500+ institutions supported.", color: "#4182ff" },
               { num: "02", title: "Aggregate", desc: "AI normalises data across all sources in real-time with live FX rates.", color: "#8b5cf6" },
@@ -652,7 +652,7 @@ export default function LandingPage() {
                 <ProcessStep {...s} delay={i * 0.12} />
                 {i < 3 && (
                   <motion.div
-                    className="hidden sm:block absolute -right-6 top-10 text-xl font-black"
+                    className="hidden sm:block absolute -right-6 top-6 md:p-10 text-xl font-black"
                     style={{ color: "rgba(65,130,255,0.25)" }}
                     animate={{ x: [0, 6, 0], opacity: [0.25, 0.6, 0.25] }}
                     transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
@@ -677,7 +677,7 @@ export default function LandingPage() {
           <Reveal className="mb-16 sm:mb-24 text-center">
             <div className="flex flex-col items-center gap-5">
               <SectionLabel color="#fbbc00">Why QueryFlow</SectionLabel>
-              <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
+              <h2 className="text-3xl md:text-4xl sm:text-4xl md:text-6xl md:text-4xl md:text-7xl font-black tracking-[-0.04em] italic uppercase leading-[0.85]">
                 Enterprise Features.<br />
                 <span style={{
                   background: "linear-gradient(135deg, #fbbc00, #f472b6)",
@@ -732,7 +732,7 @@ export default function LandingPage() {
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 px-5"
         >
-          <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-[-0.04em] italic uppercase leading-[0.78] mb-8">
+          <h2 className="text-4xl md:text-6xl sm:text-4xl md:text-7xl md:text-5xl md:text-8xl lg:text-9xl font-black tracking-[-0.04em] italic uppercase leading-[0.78] mb-8">
             Ready to <br />
             <span style={{
               background: "linear-gradient(135deg, #4182ff, #8b5cf6, #22d3ee)",
@@ -775,7 +775,7 @@ export default function LandingPage() {
             No Credit Card · 14-Day Free Trial · Cancel Anytime
           </p>
 
-          <div className="mt-16 flex justify-center gap-10 sm:gap-16 flex-wrap">
+          <div className="mt-16 flex justify-center gap-6 md:p-10 sm:gap-8 md:p-16 flex-wrap">
             {[
               { val: "1M+", label: "Transactions Tracked" },
               { val: "4.9/5", label: "User Rating" },

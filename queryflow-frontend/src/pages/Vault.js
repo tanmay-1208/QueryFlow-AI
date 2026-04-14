@@ -33,6 +33,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [aiQuery, setAiQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loadingItems, setLoadingItems] = useState(false);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [chatLog, setChatLog] = useState([
@@ -248,10 +249,10 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const maxItemProfit = Math.max(...sortedItemProfits.map(s => s[1]), 1);
 
   return (
-    <div className="flex h-screen bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white">
-
+    <div className="flex h-[100dvh] w-full bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white relative">
       {/* 1. SIDEBAR */}
-      <aside className="w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/40 backdrop-blur-xl shrink-0 z-20">
+      <aside className={`w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/90 md:bg-black/40 backdrop-blur-xl shrink-0 z-50 absolute md:static top-0 bottom-0 transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+        <button className="md:hidden absolute top-4 right-4 text-white/50 text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         <div>
 
           {/* VAULT SWITCHER */}
@@ -280,6 +281,8 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         key={vault.id}
                         onClick={() => {
                           setActiveVault(vault);
+                          setIsMobileMenuOpen(false);
+                          setIsMobileMenuOpen(false);
                           setIsVaultDropdownOpen(false);
                           setItems([]);
                           setSellHistory([]);
@@ -312,7 +315,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
             {["dashboard", "inventory"].map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => { setActiveTab(tab); setIsMobileMenuOpen(false); }}
                 className={`w-full text-left p-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${
                   activeTab === tab ? "bg-white/5 text-white border border-white/10" : "text-white/20 hover:text-white/50"
                 }`}
@@ -323,14 +326,14 @@ const Vault = ({ userId, userEmail, onLogout }) => {
           </nav>
 
           <button
-            onClick={() => setIsAiOpen(true)}
+            onClick={() => { setIsAiOpen(true); setIsMobileMenuOpen(false); }}
             className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#4182ff]/20 bg-[#4182ff]/5 text-[#4182ff] text-[9px] font-black uppercase tracking-widest hover:bg-[#4182ff]/10 transition-all"
           >
             <span className={`${isAiOpen ? 'text-[#00ff88]' : 'animate-pulse text-[#4182ff]'}`}>●</span> Agent_Interface
           </button>
 
           <button
-            onClick={() => setIsTeamOpen(true)}
+            onClick={() => { setIsTeamOpen(true); setIsMobileMenuOpen(false); }}
             className="mt-3 w-full flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all"
           >
             <span className="text-white/20">●</span> Team_Access
@@ -344,11 +347,16 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
       {/* 2. MAIN VIEWPORT */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
-        <header className="h-24 border-b border-white/5 flex justify-between items-center px-12 shrink-0">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 italic">
-            Terminal / {activeVault?.name || "Vault"} / {activeTab}
-          </h2>
-          <div className="flex items-center gap-6">
+        <header className="h-auto min-h-[6rem] py-4 border-b border-white/5 flex flex-col md:flex-row justify-between md:items-center px-4 md:px-12 shrink-0 gap-4 md:gap-0">
+          <div className="flex items-center gap-3">
+            <button className="md:hidden text-white/50 hover:text-white" onClick={() => setIsMobileMenuOpen(true)}>
+              ☰
+            </button>
+            <h2 className="text-[10px] break-all font-bold uppercase tracking-[0.5em] text-white/20 italic">
+              Terminal / {activeVault?.name || "Vault"} / {activeTab}
+            </h2>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap sm:gap-6 w-full md:w-auto">
             <div className="text-right">
               <p className="text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
               <p className="text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
@@ -395,7 +403,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
             </button>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-12 space-y-10 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-8 md:p-12 space-y-6 md:space-y-10 custom-scrollbar">
             {activeTab === "dashboard" ? (
               loadingDashboard ? (
                 <SkeletonDashboard />
@@ -420,9 +428,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                     </StaggerContainer>
 
                     {/* PERFORMANCE GRAPH */}
-                    <div className="glass-panel p-10">
+                    <div className="glass-panel p-6 md:p-10">
                       <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mb-8">Performance_Report_Live</p>
-                      <div className="grid grid-cols-2 gap-10">
+                      <div className="grid grid-cols-2 gap-6 md:p-10">
                         <div>
                           <p className="text-[8px] text-white/20 uppercase font-black mb-6 tracking-widest">Daily Profit — Last 7 Days</p>
                           <div className="flex items-end gap-2 h-40">
@@ -474,7 +482,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
                     {/* BOTTOM DATA */}
                     <div className="grid grid-cols-2 gap-8">
-                      <div className="glass-panel p-10">
+                      <div className="glass-panel p-6 md:p-10">
                         <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Top_Holdings</p>
                         <div className="space-y-6">
                           {topFive.map((item, i) => (
@@ -486,7 +494,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                           ))}
                         </div>
                       </div>
-                      <div className="glass-panel p-10 font-mono text-[9px] text-white/20 space-y-2">
+                      <div className="glass-panel p-6 md:p-10 font-mono text-[9px] text-white/20 space-y-2">
                         <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
                         <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
                         <p>{">"} Vault: {activeVault?.name}</p>
@@ -496,7 +504,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                     </div>
 
                     {/* SELL HISTORY */}
-                    <div className="glass-panel p-10 pb-10">
+                    <div className="glass-panel p-6 md:p-10 pb-10">
                       <p className="text-[10px] font-bold text-white/30 uppercase mb-8 tracking-widest">Recent_Sales</p>
                       {sellHistory.length === 0 ? (
                         <p className="text-white/20 text-[9px] uppercase font-black text-center py-6">No sales recorded yet</p>
@@ -582,11 +590,11 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
       {/* 3. AI AGENT DRAWER */}
       <div
-        className={`h-full bg-[#080808] border-l border-white/10 transition-all duration-500 ease-in-out overflow-hidden shrink-0 z-30 ${
-          isAiOpen ? 'w-[450px] opacity-100' : 'w-0 opacity-0 border-none'
+        className={`h-full bg-[#080808] border-l border-white/10 transition-transform duration-500 ease-in-out shrink-0 absolute md:relative right-0 flex flex-col z-[100] ${
+          isAiOpen ? 'w-full sm:w-[450px] translate-x-0 opacity-100 border-white/10 shadow-[-20px_0_50px_rgba(0,0,0,0.5)] md:shadow-none' : 'w-[450px] translate-x-full md:translate-x-0 md:w-0 opacity-0 border-none'
         }`}
       >
-        <div className="w-[450px] p-10 h-full flex flex-col">
+        <div className="w-full sm:w-[450px] p-6 sm:p-6 md:p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>

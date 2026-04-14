@@ -57,7 +57,7 @@ const AddAssetModal = ({ isOpen, onClose, onAdd, userId, vaultId }) => {
     <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <form
         onSubmit={handleSubmit}
-        className="bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl"
+        className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl"
       >
         <h2 className="text-white font-black uppercase text-center mb-8 text-xs tracking-[0.4em] italic">
           Execute_Vault_Entry

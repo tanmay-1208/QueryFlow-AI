@@ -41,7 +41,7 @@ const InvoiceModal = ({ isOpen, onClose, sale, userId }) => {
 
   return (
     <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6 overflow-y-auto">
-      <div className="bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl my-6">
+      <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl my-6">
 
         <div className="flex justify-between items-center mb-8">
           <div>
