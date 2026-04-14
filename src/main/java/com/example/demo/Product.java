@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 @Entity
+@Table(name = "products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
