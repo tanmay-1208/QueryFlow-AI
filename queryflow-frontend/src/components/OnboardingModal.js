@@ -103,7 +103,7 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               <h2 className="text-white font-black text-xl uppercase tracking-widest italic">
                 Welcome to Vault
               </h2>
-              <p className="text-white/30 text-[10px] uppercase tracking-widest leading-relaxed">
+              <p className="text-white/30 text-[14px] md:text-[10px] uppercase tracking-widest leading-relaxed">
                 Your AI-powered inventory and financial command center. Let's get you set up in 2 minutes.
               </p>
               <div className="grid grid-cols-3 gap-4 py-4">
@@ -114,17 +114,17 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
                 ].map((item, i) => (
                   <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
                     <p className="text-2xl mb-2">{item.icon}</p>
-                    <p className="text-[8px] text-white/30 uppercase font-black tracking-widest">{item.label}</p>
+                    <p className="text-[14px] md:text-[8px] text-white/30 uppercase font-black tracking-widest">{item.label}</p>
                   </div>
                 ))}
               </div>
               <button
                 onClick={() => setStep(1)}
-                className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(65,130,255,0.3)]"
+                className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase text-[14px] md:text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(65,130,255,0.3)]"
               >
                 Get Started →
               </button>
-              <p className="text-white/10 text-[8px] uppercase font-black">
+              <p className="text-white/10 text-[14px] md:text-[8px] uppercase font-black">
                 Signed in as {userEmail}
               </p>
             </div>
@@ -134,21 +134,21 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
           {step === 1 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <p className="text-white/20 text-[9px] uppercase font-black tracking-widest mb-2">Step 1 of 3</p>
+                <p className="text-white/20 text-[14px] md:text-[9px] uppercase font-black tracking-widest mb-2">Step 1 of 3</p>
                 <h2 className="text-white font-black text-lg uppercase tracking-widest">Name Your Vault</h2>
-                <p className="text-white/20 text-[9px] uppercase tracking-widest mt-2">
+                <p className="text-white/20 text-[14px] md:text-[9px] uppercase tracking-widest mt-2">
                   A vault is like a workspace for your business
                 </p>
               </div>
 
               {error && (
                 <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-                  <p className="text-red-400 text-[9px] font-black uppercase text-center">{error}</p>
+                  <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
                 </div>
               )}
 
               <input
-                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-[#4182ff] transition-all text-[11px] font-bold uppercase text-center tracking-widest"
+                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[11px] font-bold uppercase text-center tracking-widest"
                 placeholder="e.g. My Electronics Store"
                 value={vaultName}
                 onChange={e => setVaultName(e.target.value)}
@@ -161,7 +161,7 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
                   <button
                     key={name}
                     onClick={() => setVaultName(name)}
-                    className="bg-white/5 border border-white/5 px-3 py-2 rounded-xl text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
+                    className="bg-white/5 border border-white/5 px-3 py-2 rounded-xl text-[14px] md:text-[8px] font-black uppercase text-white/30 hover:text-white hover:border-white/20 transition-all"
                   >
                     {name}
                   </button>
@@ -171,7 +171,7 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               <button
                 onClick={handleCreateVault}
                 disabled={loading || !vaultName.trim()}
-                className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase text-[14px] md:text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create Vault →"}
               </button>
@@ -182,21 +182,21 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
           {step === 2 && (
             <div className="space-y-5">
               <div className="text-center mb-6">
-                <p className="text-white/20 text-[9px] uppercase font-black tracking-widest mb-2">Step 2 of 3</p>
+                <p className="text-white/20 text-[14px] md:text-[9px] uppercase font-black tracking-widest mb-2">Step 2 of 3</p>
                 <h2 className="text-white font-black text-lg uppercase tracking-widest">Add Your First Item</h2>
-                <p className="text-white/20 text-[9px] uppercase tracking-widest mt-2">
+                <p className="text-white/20 text-[14px] md:text-[9px] uppercase tracking-widest mt-2">
                   Add one product to get started
                 </p>
               </div>
 
               {error && (
                 <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-                  <p className="text-red-400 text-[9px] font-black uppercase text-center">{error}</p>
+                  <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
                 </div>
               )}
 
               <input
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
                 placeholder="Item Name *"
                 value={itemForm.name}
                 onChange={e => setItemForm({ ...itemForm, name: e.target.value })}
@@ -204,14 +204,14 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <input
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
+                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
                   placeholder="Buy Price (Rs.)"
                   type="number"
                   value={itemForm.cost_price}
                   onChange={e => setItemForm({ ...itemForm, cost_price: e.target.value })}
                 />
                 <input
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
+                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
                   placeholder="Sell Price (Rs.) *"
                   type="number"
                   value={itemForm.price}
@@ -220,7 +220,7 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               </div>
 
               <input
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
+                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
                 placeholder="Stock Quantity *"
                 type="number"
                 value={itemForm.stock}
@@ -230,14 +230,14 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               <button
                 onClick={handleAddItem}
                 disabled={loading || !itemForm.name || !itemForm.price || !itemForm.stock}
-                className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                className="w-full bg-[#4182ff] p-4 rounded-2xl font-black uppercase text-[14px] md:text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
               >
                 {loading ? "Adding..." : "Add Item →"}
               </button>
 
               <button
                 onClick={handleSkipItem}
-                className="w-full text-white/20 text-[9px] font-black uppercase tracking-widest hover:text-white/40 transition-all"
+                className="w-full text-white/20 text-[14px] md:text-[9px] font-black uppercase tracking-widest hover:text-white/40 transition-all"
               >
                 Skip for now
               </button>
@@ -253,11 +253,11 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               <h2 className="text-white font-black text-xl uppercase tracking-widest">
                 You're All Set!
               </h2>
-              <p className="text-white/30 text-[10px] uppercase tracking-widest leading-relaxed">
+              <p className="text-white/30 text-[14px] md:text-[10px] uppercase tracking-widest leading-relaxed">
                 {createdVault?.name} is ready. Start tracking your inventory and profits.
               </p>
               <div className="bg-white/5 border border-white/5 rounded-2xl p-6 text-left space-y-3">
-                <p className="text-white/20 text-[8px] uppercase font-black tracking-widest mb-4">What you can do now:</p>
+                <p className="text-white/20 text-[14px] md:text-[8px] uppercase font-black tracking-widest mb-4">What you can do now:</p>
                 {[
                   "Add more items to your inventory",
                   "Ask the AI agent for profit advice",
@@ -266,13 +266,13 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
                 ].map((tip, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <span className="text-[#4182ff] text-xs">→</span>
-                    <p className="text-white/50 text-[9px] uppercase font-black">{tip}</p>
+                    <p className="text-white/50 text-[14px] md:text-[9px] uppercase font-black">{tip}</p>
                   </div>
                 ))}
               </div>
               <button
                 onClick={handleDone}
-                className="w-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] p-4 rounded-2xl font-black uppercase text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(65,130,255,0.2)]"
+                className="w-full bg-gradient-to-r from-[#4182ff] to-[#00ff88] p-4 rounded-2xl font-black uppercase text-[14px] md:text-[10px] text-white tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(65,130,255,0.2)]"
               >
                 Enter Vault →
               </button>

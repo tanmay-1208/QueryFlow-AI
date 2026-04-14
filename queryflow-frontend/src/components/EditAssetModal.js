@@ -76,13 +76,13 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
         <h2 className="text-white font-black uppercase text-center mb-2 text-xs tracking-[0.4em] italic">
           Modify_Vault_Entry
         </h2>
-        <p className="text-white/20 text-[9px] text-center uppercase tracking-widest mb-8">
+        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8">
           Editing: {item?.name}
         </p>
 
         <div className="space-y-4">
           <input
-            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
             placeholder="Asset Name"
             value={form.name}
             onChange={e => setForm({ ...form, name: e.target.value })}
@@ -91,7 +91,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <input
-              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
               placeholder="Buy Price"
               type="number"
               value={form.cost_price}
@@ -99,7 +99,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               required
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
               placeholder="Retail Price"
               type="number"
               value={form.price}
@@ -107,7 +107,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               required
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
               placeholder="Dealer Price"
               type="number"
               value={form.dealer_price}
@@ -115,7 +115,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               required
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
               placeholder="Wholesale Price"
               type="number"
               value={form.wholesale_price}
@@ -125,7 +125,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
           </div>
 
           <input
-            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
             placeholder="Inventory Units"
             type="number"
             value={form.stock}
@@ -137,7 +137,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
           {!isCustom ? (
             <div className="flex gap-2">
               <select
-                className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+                className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
                 value={form.category}
                 onChange={e => setForm({ ...form, category: e.target.value })}
                 style={{ background: '#1a1a1a' }}
@@ -150,7 +150,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               <button
                 type="button"
                 onClick={() => setIsCustom(true)}
-                className="bg-white/5 border border-white/5 px-4 rounded-xl text-white/40 hover:text-white text-[9px] font-black uppercase transition-all"
+                className="bg-white/5 border border-white/5 px-4 rounded-xl text-white/40 hover:text-white text-[14px] md:text-[9px] font-black uppercase transition-all"
               >
                 Custom
               </button>
@@ -158,7 +158,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
           ) : (
             <div className="flex gap-2">
               <input
-                className="flex-1 bg-white/5 border border-[#4182ff]/50 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase"
+                className="flex-1 bg-white/5 border border-[#4182ff]/50 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
                 placeholder="Type custom category..."
                 value={customCategory}
                 onChange={e => setCustomCategory(e.target.value)}
@@ -166,7 +166,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               <button
                 type="button"
                 onClick={() => setIsCustom(false)}
-                className="bg-white/5 border border-white/5 px-4 rounded-xl text-white/40 hover:text-white text-[9px] font-black uppercase transition-all"
+                className="bg-white/5 border border-white/5 px-4 rounded-xl text-white/40 hover:text-white text-[14px] md:text-[9px] font-black uppercase transition-all"
               >
                 Preset
               </button>
@@ -177,14 +177,14 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
+              className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[14px] md:text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
             >
               [ Cancel ]
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-[#4182ff] p-4 rounded-xl font-black uppercase text-[9px] text-white shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110 active:scale-95 transition-all"
+              className="flex-1 bg-[#4182ff] p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-white shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110 active:scale-95 transition-all"
             >
               {loading ? "Updating..." : "Save Changes"}
             </button>

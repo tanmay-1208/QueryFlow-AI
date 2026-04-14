@@ -110,13 +110,13 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             <h2 className="text-white font-black uppercase text-xs tracking-[0.4em] italic">
               Team_Access
             </h2>
-            <p className="text-white/20 text-[9px] uppercase tracking-widest mt-1">
+            <p className="text-white/20 text-[14px] md:text-[9px] uppercase tracking-widest mt-1">
               {activeVault?.name}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-white/20 hover:text-white text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase"
+            className="text-white/20 hover:text-white text-[14px] md:text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase"
           >
             Close
           </button>
@@ -128,7 +128,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             <button
               key={section}
               onClick={() => { setActiveSection(section); setMessage(""); setError(""); }}
-              className={`flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+              className={`flex-1 py-2 rounded-xl text-[14px] md:text-[9px] font-black uppercase tracking-widest transition-all ${
                 activeSection === section
                   ? 'bg-[#4182ff] text-white'
                   : 'bg-white/5 text-white/30 hover:text-white border border-white/5'
@@ -142,29 +142,29 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
         {/* MESSAGE / ERROR */}
         {message && (
           <div className="bg-[#00ff88]/10 border border-[#00ff88]/20 rounded-xl p-3 mb-6">
-            <p className="text-[#00ff88] text-[9px] font-black uppercase text-center">{message}</p>
+            <p className="text-[#00ff88] text-[14px] md:text-[9px] font-black uppercase text-center">{message}</p>
           </div>
         )}
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 mb-6">
-            <p className="text-red-400 text-[9px] font-black uppercase text-center">{error}</p>
+            <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
           </div>
         )}
 
         {/* MEMBERS TAB */}
         {activeSection === "members" && (
           <div className="space-y-4">
-            <p className="text-[8px] text-white/20 uppercase font-black tracking-widest mb-4">
+            <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-4">
               {members.length} member{members.length !== 1 ? 's' : ''} in this vault
             </p>
 
             {/* Owner */}
             <div className="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
               <div>
-                <p className="text-[10px] font-black text-white uppercase">You</p>
-                <p className="text-[8px] text-white/20 uppercase font-black mt-1">{userEmail}</p>
+                <p className="text-[14px] md:text-[10px] font-black text-white uppercase">You</p>
+                <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black mt-1">{userEmail}</p>
               </div>
-              <span className="bg-[#4182ff]/10 text-[#4182ff] text-[7px] font-black px-2 py-1 rounded-full uppercase tracking-widest border border-[#4182ff]/20">
+              <span className="bg-[#4182ff]/10 text-[#4182ff] text-[14px] md:text-[7px] font-black px-2 py-1 rounded-full uppercase tracking-widest border border-[#4182ff]/20">
                 Owner
               </span>
             </div>
@@ -172,21 +172,21 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             {members.map(member => (
               <div key={member.id} className="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
                 <div>
-                  <p className="text-[10px] font-black text-white/70 uppercase">
+                  <p className="text-[14px] md:text-[10px] font-black text-white/70 uppercase">
                     {member.userEmail || member.userId.slice(0, 12) + "..."}
                   </p>
-                  <p className="text-[8px] text-white/20 uppercase font-black mt-1">
+                  <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black mt-1">
                     Joined {new Date(member.joinedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="bg-white/5 text-white/30 text-[7px] font-black px-2 py-1 rounded-full uppercase tracking-widest">
+                  <span className="bg-white/5 text-white/30 text-[14px] md:text-[7px] font-black px-2 py-1 rounded-full uppercase tracking-widest">
                     Member
                   </span>
                   {member.userId !== userId && (
                     <button
                       onClick={() => handleRemoveMember(member.id, member.userId)}
-                      className="text-red-500/40 hover:text-red-500 text-[9px] font-black uppercase transition-all"
+                      className="text-red-500/40 hover:text-red-500 text-[14px] md:text-[9px] font-black uppercase transition-all"
                     >
                       Remove
                     </button>
@@ -196,7 +196,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             ))}
 
             {members.length === 0 && (
-              <p className="text-white/10 text-[9px] uppercase font-black text-center py-6">
+              <p className="text-white/10 text-[14px] md:text-[9px] uppercase font-black text-center py-6">
                 No team members yet. Invite someone!
               </p>
             )}
@@ -208,7 +208,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
           <div className="space-y-6">
             {/* Invite Code */}
             <div>
-              <p className="text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Invite Code</p>
+              <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Invite Code</p>
               <div className="flex gap-3">
                 <div className="flex-1 bg-black/40 border border-white/10 p-4 rounded-xl">
                   <p className="text-[#4182ff] font-black text-sm tracking-widest text-center">
@@ -217,7 +217,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
                 </div>
                 <button
                   onClick={handleCopyCode}
-                  className={`px-4 rounded-xl font-black uppercase text-[9px] transition-all ${
+                  className={`px-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] transition-all ${
                     copied
                       ? 'bg-[#00ff88]/20 text-[#00ff88] border border-[#00ff88]/20'
                       : 'bg-white/5 text-white/50 hover:text-white border border-white/10'
@@ -226,17 +226,17 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
                   {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
-              <p className="text-white/10 text-[8px] uppercase font-black mt-2">
+              <p className="text-white/10 text-[14px] md:text-[8px] uppercase font-black mt-2">
                 Share this code with your team. Expires in 7 days.
               </p>
             </div>
 
             {/* Email Invite */}
             <div>
-              <p className="text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Send Email Invite</p>
+              <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Send Email Invite</p>
               <div className="flex gap-3">
                 <input
-                  className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold"
+                  className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
                   placeholder="Enter email address..."
                   type="email"
                   value={emailInput}
@@ -245,7 +245,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
                 <button
                   onClick={handleSendEmail}
                   disabled={loading}
-                  className="bg-[#4182ff] px-6 rounded-xl font-black uppercase text-[9px] text-white hover:brightness-110 transition-all disabled:opacity-50"
+                  className="bg-[#4182ff] px-6 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-white hover:brightness-110 transition-all disabled:opacity-50"
                 >
                   {loading ? "..." : "Send"}
                 </button>
@@ -257,11 +257,11 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
         {/* JOIN TAB */}
         {activeSection === "join" && (
           <div className="space-y-6">
-            <p className="text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">
+            <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">
               Enter Invite Code
             </p>
             <input
-              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[10px] font-bold uppercase text-center tracking-widest"
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase text-center tracking-widest"
               placeholder="VAULT-XXXXXXXX"
               value={joinCode}
               onChange={e => setJoinCode(e.target.value)}
@@ -269,11 +269,11 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             <button
               onClick={handleJoinVault}
               disabled={loading || !joinCode.trim()}
-              className="w-full bg-[#4182ff] p-4 rounded-xl font-black uppercase text-[9px] text-white shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+              className="w-full bg-[#4182ff] p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-white shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
             >
               {loading ? "Joining..." : "Join Vault"}
             </button>
-            <p className="text-white/10 text-[8px] uppercase font-black text-center">
+            <p className="text-white/10 text-[14px] md:text-[8px] uppercase font-black text-center">
               Ask your vault owner for the invite code
             </p>
           </div>

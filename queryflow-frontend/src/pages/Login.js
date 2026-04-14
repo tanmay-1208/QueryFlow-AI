@@ -61,7 +61,7 @@ const Login = ({ onLogin }) => {
         {/* Divider */}
         <div className="relative flex items-center gap-4 mb-6">
           <div className="flex-1 h-[1px] bg-white/5"></div>
-          <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">OR</span>
+          <span className="text-[14px] md:text-[10px] text-gray-600 font-bold uppercase tracking-widest">OR</span>
           <div className="flex-1 h-[1px] bg-white/5"></div>
         </div>
 

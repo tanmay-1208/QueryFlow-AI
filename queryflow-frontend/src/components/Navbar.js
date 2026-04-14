@@ -50,7 +50,7 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:text-[#4182ff] ${
+                className={`text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:text-[#4182ff] ${
                   location.pathname === link.path ? "text-[#4182ff]" : "text-gray-400"
                 }`}
               >
@@ -64,7 +64,7 @@ export default function Navbar() {
             {/* Sign In — hidden on small screens */}
             <Link
               to="/login"
-              className="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-[#4182ff] transition-colors"
+              className="hidden sm:block text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-[#4182ff] transition-colors"
             >
               Sign In
             </Link>
@@ -74,7 +74,7 @@ export default function Navbar() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-[#4182ff] text-white px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(65,130,255,0.3)] hover:shadow-[0_0_30px_rgba(65,130,255,0.5)] transition-all"
+                className="bg-[#4182ff] text-white px-6 py-2.5 rounded-full text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(65,130,255,0.3)] hover:shadow-[0_0_30px_rgba(65,130,255,0.5)] transition-all"
               >
                 Deploy Node
               </motion.button>
@@ -147,7 +147,7 @@ export default function Navbar() {
                   >
                     <Link
                       to={link.path}
-                      className={`flex items-center px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all ${
+                      className={`flex items-center px-4 py-3 rounded-xl text-[14px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all ${
                         location.pathname === link.path
                           ? "bg-[#4182ff]/10 text-[#4182ff]"
                           : "text-gray-400 hover:bg-white/5 hover:text-white"
@@ -164,7 +164,7 @@ export default function Navbar() {
                 <Link to="/login" onClick={() => setMenuOpen(false)}>
                   <motion.button
                     whileTap={{ scale: 0.97 }}
-                    className="w-full bg-[#4182ff] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(65,130,255,0.3)]"
+                    className="w-full bg-[#4182ff] text-white py-4 rounded-2xl text-[14px] md:text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(65,130,255,0.3)]"
                   >
                     Deploy Node
                   </motion.button>
@@ -172,7 +172,7 @@ export default function Navbar() {
                 <Link
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="text-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors py-2"
+                  className="text-center text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors py-2"
                 >
                   Sign In
                 </Link>

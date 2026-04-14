@@ -32,7 +32,7 @@ export default function Footer() {
         {/* --- TOP SECTION: LIVE SYSTEM FEED --- */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-24">
           <div className="w-full md:w-auto">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-[#4182ff] mb-6">
+            <h4 className="text-[14px] md:text-[10px] font-black uppercase tracking-[0.5em] text-[#4182ff] mb-6">
               Live System Status
             </h4>
             {/* The scrolling marquee container */}
@@ -40,7 +40,7 @@ export default function Footer() {
               <div className="flex gap-12 animate-marquee whitespace-nowrap">
                 {/* Double the array to make the loop seamless */}
                 {[...systemLogs, ...systemLogs].map((log, i) => (
-                  <span key={i} className="text-[9px] font-mono text-gray-500 tracking-tighter">
+                  <span key={i} className="text-[14px] md:text-[9px] font-mono text-gray-500 tracking-tighter">
                     [{log}]
                   </span>
                 ))}
@@ -56,7 +56,7 @@ export default function Footer() {
             >
               Terminal <span className="text-[#4182ff]">Active</span>
             </motion.p>
-            <p className="font-mono text-[10px] md:text-xs text-gray-600 mt-4 tracking-[0.3em] uppercase">
+            <p className="font-mono text-[14px] md:text-[10px] md:text-xs text-gray-600 mt-4 tracking-[0.3em] uppercase">
               {time} // BHARTHIA_NODE_PRIMARY
             </p>
           </div>
@@ -66,18 +66,18 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 border-t border-white/5 pt-12">
           {/* Column 1 */}
           <div className="flex flex-col gap-3">
-            <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Navigation</span>
-            <Link to="/features" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Features</Link>
-            <Link to="/solutions" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Solutions</Link>
-            <Link to="/pricing" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Pricing</Link>
+            <span className="text-[14px] md:text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Navigation</span>
+            <Link to="/features" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Features</Link>
+            <Link to="/solutions" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Solutions</Link>
+            <Link to="/pricing" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Pricing</Link>
           </div>
 
           {/* Column 2 */}
           <div className="flex flex-col gap-3">
-            <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Security</span>
-            <Link to="/security" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Vault Protocol</Link>
-            <Link to="/contact" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Secure Comms</Link>
-            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic mt-2">Source Code</a>
+            <span className="text-[14px] md:text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Security</span>
+            <Link to="/security" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Vault Protocol</Link>
+            <Link to="/contact" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Secure Comms</Link>
+            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic mt-2">Source Code</a>
           </div>
 
           {/* Column 3 & 4: Copyright & Branding */}
@@ -86,7 +86,7 @@ export default function Footer() {
                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">
                  Query<span className="text-[#4182ff]">Flow</span>
                </h2>
-               <p className="text-[9px] font-black text-gray-700 uppercase tracking-[0.5em] leading-relaxed">
+               <p className="text-[14px] md:text-[9px] font-black text-gray-700 uppercase tracking-[0.5em] leading-relaxed">
                  © 2026 // Institutional Fiscal Synthesis <br/> 
                  All Rights Reserved
                </p>

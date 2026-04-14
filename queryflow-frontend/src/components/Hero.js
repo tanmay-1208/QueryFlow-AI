@@ -28,7 +28,7 @@ const NavCapsule = ({ text, path, color, delay, isMobile }) => {
       style={desktopStyles}
     >
       <div className={`w-2 h-2 rounded-full ${color}`} />
-      <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white">{text}</span>
+      <span className="text-[14px] md:text-[9px] md:text-[14px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white">{text}</span>
     </motion.div>
   );
 };
@@ -200,7 +200,7 @@ export default function Hero() {
 
       {/* BUTTON */}
       <motion.div initial={{ opacity: 0, y: 50, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 3.2, type: "spring", stiffness: 200, damping: 15 }} className="mt-16 md:mt-20 z-30 relative">
-        <button className="px-12 md:px-20 py-5 md:py-7 bg-white text-black font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[9px] md:text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 shadow-2xl active:scale-95">
+        <button className="px-12 md:px-20 py-5 md:py-7 bg-white text-black font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[14px] md:text-[9px] md:text-[14px] md:text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 shadow-2xl active:scale-95">
           Initialize Access
         </button>
       </motion.div>

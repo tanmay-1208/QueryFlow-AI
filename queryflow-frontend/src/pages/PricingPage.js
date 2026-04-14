@@ -39,7 +39,7 @@ const PricingPage = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`w-full py-4 rounded-xl font-black uppercase text-[10px] md:text-xs tracking-[0.2em] transition-all ${plan.featured ? 'bg-[#4182ff] text-white' : 'bg-white text-black hover:bg-gray-200'}`}
+                className={`w-full py-4 rounded-xl font-black uppercase text-[14px] md:text-[10px] md:text-xs tracking-[0.2em] transition-all ${plan.featured ? 'bg-[#4182ff] text-white' : 'bg-white text-black hover:bg-gray-200'}`}
               >
                 Deploy Node
               </motion.button>

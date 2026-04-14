@@ -79,7 +79,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
               : 'bg-black/40 border-white/5 text-white/40 hover:bg-white/5 cursor-pointer'
         }`}
       >
-        <p className="text-[10px] font-black tracking-widest">[ {label}: ₹{price} ]</p>
+        <p className="text-[14px] md:text-[10px] font-black tracking-widest">[ {label}: ₹{price} ]</p>
       </button>
     );
   };
@@ -91,7 +91,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
         <h2 className="text-white font-black uppercase text-center mb-2 text-xs tracking-[0.4em] italic">
           Execute_Sale
         </h2>
-        <p className="text-white/20 text-[9px] text-center uppercase tracking-widest mb-8">
+        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8">
           Selling: {item?.name}
         </p>
 
@@ -104,7 +104,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
 
         {/* QUANTITY INPUT */}
         <div className="mb-6">
-          <p className="text-[8px] text-white/30 uppercase font-black mb-3 tracking-widest">Quantity to Sell</p>
+          <p className="text-[14px] md:text-[8px] text-white/30 uppercase font-black mb-3 tracking-widest">Quantity to Sell</p>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setQuantity(q => Math.max(1, q - 1))}
@@ -127,7 +127,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
               +
             </button>
           </div>
-          <p className="text-[8px] text-white/20 uppercase font-black mt-2 text-center">
+          <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black mt-2 text-center">
             {item.stock} units available
           </p>
         </div>
@@ -135,12 +135,12 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
         {/* TOTAL SUMMARY */}
         <div className="bg-black/60 p-5 rounded-2xl border border-white/5 mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[9px] text-white/30 uppercase font-black">Total Revenue</span>
-            <span className="text-[11px] font-black text-white">₹{totalRevenue.toFixed(2)}</span>
+            <span className="text-[14px] md:text-[9px] text-white/30 uppercase font-black">Total Revenue</span>
+            <span className="text-[14px] md:text-[11px] font-black text-white">₹{totalRevenue.toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[9px] text-white/30 uppercase font-black">Total Profit</span>
-            <span className={`text-[11px] font-black ${totalProfit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+            <span className="text-[14px] md:text-[9px] text-white/30 uppercase font-black">Total Profit</span>
+            <span className={`text-[14px] md:text-[11px] font-black ${totalProfit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
               ₹{totalProfit.toFixed(2)}
             </span>
           </div>
@@ -150,14 +150,14 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
+            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[14px] md:text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
           >
             [ Cancel ]
           </button>
           <button
             onClick={handleSell}
             disabled={loading || quantity > item.stock || currentPrice <= 0}
-            className="flex-1 bg-[#00ff88] p-4 rounded-xl font-black uppercase text-[9px] text-black shadow-[0_0_20px_rgba(0,255,136,0.2)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+            className="flex-1 bg-[#00ff88] p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-black shadow-[0_0_20px_rgba(0,255,136,0.2)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
           >
             {loading ? "Processing..." : `Sell ${quantity} Units`}
           </button>

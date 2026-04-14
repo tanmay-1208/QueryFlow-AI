@@ -37,26 +37,26 @@ const ContactPage = () => {
             <form action="https://formspree.io/f/mpqoljwe" method="POST" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col">
-                  <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Operator Name</label>
+                  <label className="text-[14px] md:text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Operator Name</label>
                   <input type="text" name="name" required className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="John Doe" />
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Entity / Node</label>
+                  <label className="text-[14px] md:text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Entity / Node</label>
                   <input type="text" name="entity" className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="Company Name" />
                 </div>
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Secure Relay (Email)</label>
+                <label className="text-[14px] md:text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Secure Relay (Email)</label>
                 <input type="email" name="email" required className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors" placeholder="operator@entity.com" />
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Encrypted Payload (Message)</label>
+                <label className="text-[14px] md:text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2 font-black">Encrypted Payload (Message)</label>
                 <textarea rows="5" name="message" required className="bg-[#080808] border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#4182ff]/50 transition-colors resize-none" placeholder="State your requirements..." />
               </div>
 
-              <button type="submit" className="w-full mt-4 px-8 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 rounded-xl">
+              <button type="submit" className="w-full mt-4 px-8 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-[14px] md:text-[10px] hover:bg-[#4182ff] hover:text-white transition-all duration-500 rounded-xl">
                 Transmit Payload
               </button>
             </form>
