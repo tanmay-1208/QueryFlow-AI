@@ -32,7 +32,7 @@ export default function Navbar() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-[1200px] bg-black/40 backdrop-blur-xl border border-white/10 py-3 px-5 sm:px-8 rounded-full flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+          className="w-full max-w-[1200px] bg-[#0D1117]/80 border border-[#C9A84C]/15 backdrop-blur-xl border border-white/10 py-3 px-5 sm:px-8 rounded-full flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
         >
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
@@ -40,7 +40,7 @@ export default function Navbar() {
               <div className="-rotate-45 group-hover:-rotate-90 transition-transform duration-500 text-white font-black text-xs">Q</div>
             </div>
             <span className="font-black text-xl tracking-tighter uppercase text-white">
-              Query<span className="text-[#4182ff]">Flow</span>
+              Query<span className="text-[#C9A84C]">Flow</span>
             </span>
           </Link>
 
@@ -50,8 +50,8 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:text-[#4182ff] ${
-                  location.pathname === link.path ? "text-[#4182ff]" : "text-gray-400"
+                className={`text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:text-[#C9A84C] ${
+                  location.pathname === link.path ? "text-[#C9A84C]" : "text-gray-400"
                 }`}
               >
                 {link.name}
@@ -64,7 +64,7 @@ export default function Navbar() {
             {/* Sign In — hidden on small screens */}
             <Link
               to="/login"
-              className="hidden sm:block text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-[#4182ff] transition-colors"
+              className="hidden sm:block text-[14px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-[#C9A84C] transition-colors"
             >
               Sign In
             </Link>
@@ -117,13 +117,13 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 220 }}
-              className="fixed top-0 right-0 bottom-0 z-[201] w-72 bg-[#0e0e0e] border-l border-white/10 flex flex-col"
+              className="fixed top-0 right-0 bottom-0 z-[201] w-72 bg-[#080A0F] border-l border-white/10 flex flex-col"
               style={{ paddingTop: "env(safe-area-inset-top, 0px)", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
             >
               {/* Drawer Header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
                 <span className="font-black text-lg tracking-tighter uppercase text-white">
-                  Query<span className="text-[#4182ff]">Flow</span>
+                  Query<span className="text-[#C9A84C]">Flow</span>
                 </span>
                 <button
                   onClick={() => setMenuOpen(false)}
@@ -149,7 +149,7 @@ export default function Navbar() {
                       to={link.path}
                       className={`flex items-center px-4 py-3 rounded-xl text-[14px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all ${
                         location.pathname === link.path
-                          ? "bg-[#4182ff]/10 text-[#4182ff]"
+                          ? "bg-[#C9A84C]/10 text-[#C9A84C]"
                           : "text-gray-400 hover:bg-white/5 hover:text-white"
                       }`}
                     >

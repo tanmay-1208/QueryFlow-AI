@@ -33,7 +33,7 @@ const CreateVaultModal = ({ isOpen, onClose, onCreated, userId, vaultCount }) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+    <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <form
         onSubmit={handleSubmit}
         className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl"
@@ -46,21 +46,21 @@ const CreateVaultModal = ({ isOpen, onClose, onCreated, userId, vaultCount }) =>
         </p>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
+          <div className="bg-[#E05555]/10 border border-[#E05555]/20 rounded-xl p-4 mb-6">
             <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
           </div>
         )}
 
         <div className="space-y-4">
           <input
-            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
+            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase"
             placeholder="Vault Name (e.g. Electronics Store)"
             value={name}
             onChange={e => setName(e.target.value)}
             required
           />
           <input
-            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
             placeholder="Description (optional)"
             value={description}
             onChange={e => setDescription(e.target.value)}

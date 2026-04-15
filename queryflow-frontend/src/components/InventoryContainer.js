@@ -14,7 +14,7 @@ const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDele
   return (
     <div className="animate-in fade-in duration-500">
       {filteredItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-[#131313] rounded-[3rem] border border-white/5 border-dashed">
+        <div className="flex flex-col items-center justify-center py-20 bg-[#0D1117] rounded-[3rem] border border-white/5 border-dashed">
           <span className="material-symbols-outlined text-gray-800 text-3xl md:text-5xl mb-4">inventory_2</span>
           <p className="text-gray-600 font-black text-[14px] md:text-[10px] uppercase tracking-[0.3em]">
             No Active Assets Found in Vault

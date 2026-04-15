@@ -102,7 +102,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+    <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-lg shadow-2xl">
 
         <div className="flex justify-between items-center mb-8">
@@ -141,12 +141,12 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
 
         {/* MESSAGE / ERROR */}
         {message && (
-          <div className="bg-[#00ff88]/10 border border-[#00ff88]/20 rounded-xl p-3 mb-6">
-            <p className="text-[#00ff88] text-[14px] md:text-[9px] font-black uppercase text-center">{message}</p>
+          <div className="bg-[#2ECC8A]/10 border border-[#00ff88]/20 rounded-xl p-3 mb-6">
+            <p className="text-[#2ECC8A] text-[14px] md:text-[9px] font-black uppercase text-center">{message}</p>
           </div>
         )}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 mb-6">
+          <div className="bg-[#E05555]/10 border border-[#E05555]/20 rounded-xl p-3 mb-6">
             <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
           </div>
         )}
@@ -159,18 +159,18 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             </p>
 
             {/* Owner */}
-            <div className="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
+            <div className="flex justify-between items-center bg-[#0D1117]/80 border border-[#C9A84C]/15 p-4 rounded-2xl border border-white/5">
               <div>
                 <p className="text-[14px] md:text-[10px] font-black text-white uppercase">You</p>
                 <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black mt-1">{userEmail}</p>
               </div>
-              <span className="bg-[#4182ff]/10 text-[#4182ff] text-[14px] md:text-[7px] font-black px-2 py-1 rounded-full uppercase tracking-widest border border-[#4182ff]/20">
+              <span className="bg-[#C9A84C]/10 text-[#C9A84C] text-[14px] md:text-[7px] font-black px-2 py-1 rounded-full uppercase tracking-widest border border-[#C9A84C]/20">
                 Owner
               </span>
             </div>
 
             {members.map(member => (
-              <div key={member.id} className="flex justify-between items-center bg-black/40 p-4 rounded-2xl border border-white/5">
+              <div key={member.id} className="flex justify-between items-center bg-[#0D1117]/80 border border-[#C9A84C]/15 p-4 rounded-2xl border border-white/5">
                 <div>
                   <p className="text-[14px] md:text-[10px] font-black text-white/70 uppercase">
                     {member.userEmail || member.userId.slice(0, 12) + "..."}
@@ -186,7 +186,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
                   {member.userId !== userId && (
                     <button
                       onClick={() => handleRemoveMember(member.id, member.userId)}
-                      className="text-red-500/40 hover:text-red-500 text-[14px] md:text-[9px] font-black uppercase transition-all"
+                      className="text-[#E05555]/40 hover:text-[#E05555] text-[14px] md:text-[9px] font-black uppercase transition-all"
                     >
                       Remove
                     </button>
@@ -210,8 +210,8 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
             <div>
               <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Invite Code</p>
               <div className="flex gap-3">
-                <div className="flex-1 bg-black/40 border border-white/10 p-4 rounded-xl">
-                  <p className="text-[#4182ff] font-black text-sm tracking-widest text-center">
+                <div className="flex-1 bg-[#0D1117]/80 border border-[#C9A84C]/15 border border-white/10 p-4 rounded-xl">
+                  <p className="text-[#C9A84C] font-black text-sm tracking-widest text-center">
                     {inviteCode || "Generating..."}
                   </p>
                 </div>
@@ -219,7 +219,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
                   onClick={handleCopyCode}
                   className={`px-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] transition-all ${
                     copied
-                      ? 'bg-[#00ff88]/20 text-[#00ff88] border border-[#00ff88]/20'
+                      ? 'bg-[#00ff88]/20 text-[#2ECC8A] border border-[#00ff88]/20'
                       : 'bg-white/5 text-white/50 hover:text-white border border-white/10'
                   }`}
                 >
@@ -236,7 +236,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
               <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Send Email Invite</p>
               <div className="flex gap-3">
                 <input
-                  className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+                  className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
                   placeholder="Enter email address..."
                   type="email"
                   value={emailInput}
@@ -261,7 +261,7 @@ const TeamModal = ({ isOpen, onClose, activeVault, userId, userEmail }) => {
               Enter Invite Code
             </p>
             <input
-              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase text-center tracking-widest"
+              className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase text-center tracking-widest"
               placeholder="VAULT-XXXXXXXX"
               value={joinCode}
               onChange={e => setJoinCode(e.target.value)}

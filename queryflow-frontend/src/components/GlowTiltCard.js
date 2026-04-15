@@ -53,7 +53,7 @@ export function GlowTiltCard({ children, className, glowColor = "#4182ff" }) {
         transformStyle: "preserve-3d",
       }}
       className={cn(
-        "relative rounded-2xl transition-all duration-300 ease-out hover:z-50 bg-[#131313]/50 border border-white/5 group",
+        "relative rounded-2xl transition-all duration-300 ease-out hover:z-50 bg-[#0D1117]/50 border border-white/5 group",
         className
       )}
     >

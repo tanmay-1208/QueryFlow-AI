@@ -40,7 +40,7 @@ const InvoiceModal = ({ isOpen, onClose, sale, userId }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6 overflow-y-auto">
+    <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6 overflow-y-auto">
       <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl my-6">
 
         <div className="flex justify-between items-center mb-8">
@@ -62,17 +62,17 @@ const InvoiceModal = ({ isOpen, onClose, sale, userId }) => {
 
         {/* SALE SUMMARY */}
         <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
+          <div className="bg-[#0D1117]/80 border border-[#C9A84C]/15 p-4 rounded-2xl border border-white/5 text-center">
             <p className="text-[14px] md:text-[7px] text-gray-500 uppercase font-black mb-1">Quantity</p>
             <p className="text-sm font-black text-white">{sale.quantity}</p>
           </div>
-          <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
+          <div className="bg-[#0D1117]/80 border border-[#C9A84C]/15 p-4 rounded-2xl border border-white/5 text-center">
             <p className="text-[14px] md:text-[7px] text-gray-500 uppercase font-black mb-1">Sell Price</p>
             <p className="text-sm font-black text-white">₹{sale.sellPrice?.toLocaleString("en-IN")}</p>
           </div>
-          <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
+          <div className="bg-[#0D1117]/80 border border-[#C9A84C]/15 p-4 rounded-2xl border border-white/5 text-center">
             <p className="text-[14px] md:text-[7px] text-gray-500 uppercase font-black mb-1">Profit</p>
-            <p className="text-sm font-black text-[#00ff88]">₹{sale.profit?.toLocaleString("en-IN")}</p>
+            <p className="text-sm font-black text-[#2ECC8A]">₹{sale.profit?.toLocaleString("en-IN")}</p>
           </div>
         </div>
 
@@ -84,31 +84,31 @@ const InvoiceModal = ({ isOpen, onClose, sale, userId }) => {
               Your Business Info
             </p>
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Business Name *"
               value={seller.businessName}
               onChange={e => setSeller({ ...seller, businessName: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Address"
               value={seller.address}
               onChange={e => setSeller({ ...seller, address: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Phone Number"
               value={seller.phone}
               onChange={e => setSeller({ ...seller, phone: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="GSTIN (optional)"
               value={seller.gstin}
               onChange={e => setSeller({ ...seller, gstin: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Bank Details (optional)"
               value={seller.bankDetails}
               onChange={e => setSeller({ ...seller, bankDetails: e.target.value })}
@@ -121,25 +121,25 @@ const InvoiceModal = ({ isOpen, onClose, sale, userId }) => {
               Buyer Info
             </p>
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Buyer Name *"
               value={buyer.name}
               onChange={e => setBuyer({ ...buyer, name: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Buyer Address"
               value={buyer.address}
               onChange={e => setBuyer({ ...buyer, address: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Buyer Phone"
               value={buyer.phone}
               onChange={e => setBuyer({ ...buyer, phone: e.target.value })}
             />
             <input
-              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+              className="w-full bg-white/5 border border-white/5 p-3 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
               placeholder="Buyer GSTIN (optional)"
               value={buyer.gstin}
               onChange={e => setBuyer({ ...buyer, gstin: e.target.value })}

@@ -145,7 +145,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+    <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
 
         {/* HEADER */}
@@ -169,13 +169,13 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
         {/* DOWNLOAD TEMPLATE */}
         <button
           onClick={handleDownloadTemplate}
-          className="w-full flex items-center justify-between bg-[#4182ff]/5 border border-[#4182ff]/20 p-4 rounded-2xl mb-6 hover:bg-[#4182ff]/10 transition-all group"
+          className="w-full flex items-center justify-between bg-[#4182ff]/5 border border-[#C9A84C]/20 p-4 rounded-2xl mb-6 hover:bg-[#C9A84C]/10 transition-all group"
         >
           <div className="text-left">
-            <p className="text-[#4182ff] text-[14px] md:text-[10px] font-black uppercase tracking-widest">Download Template</p>
+            <p className="text-[#C9A84C] text-[14px] md:text-[10px] font-black uppercase tracking-widest">Download Template</p>
             <p className="text-white/20 text-[14px] md:text-[8px] uppercase font-black mt-1">QueryFlow_Import_Template.csv</p>
           </div>
-          <span className="text-[#4182ff] text-[14px] md:text-[9px] font-black uppercase group-hover:scale-110 transition-all">↓ Download</span>
+          <span className="text-[#C9A84C] text-[14px] md:text-[9px] font-black uppercase group-hover:scale-110 transition-all">↓ Download</span>
         </button>
 
         {/* IMPORT MODE */}
@@ -186,7 +186,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
               onClick={() => setImportMode("add")}
               className={`p-4 rounded-2xl border text-left transition-all ${
                 importMode === "add"
-                  ? "bg-[#00ff88]/10 border-[#00ff88]/30 text-[#00ff88]"
+                  ? "bg-[#2ECC8A]/10 border-[#00ff88]/30 text-[#2ECC8A]"
                   : "bg-white/5 border-white/5 text-white/30 hover:text-white"
               }`}
             >
@@ -197,7 +197,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
               onClick={() => setImportMode("replace")}
               className={`p-4 rounded-2xl border text-left transition-all ${
                 importMode === "replace"
-                  ? "bg-red-500/10 border-red-500/30 text-red-400"
+                  ? "bg-[#E05555]/10 border-[#E05555]/30 text-red-400"
                   : "bg-white/5 border-white/5 text-white/30 hover:text-white"
               }`}
             >
@@ -209,7 +209,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
 
         {/* FILE UPLOAD */}
         <div
-          className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center mb-6 hover:border-[#4182ff]/30 transition-all cursor-pointer"
+          className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center mb-6 hover:border-[#C9A84C]/30 transition-all cursor-pointer"
           onClick={() => fileRef.current?.click()}
         >
           <input
@@ -221,7 +221,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
           />
           {file ? (
             <div>
-              <p className="text-[#00ff88] text-[14px] md:text-[10px] font-black uppercase">{file.name}</p>
+              <p className="text-[#2ECC8A] text-[14px] md:text-[10px] font-black uppercase">{file.name}</p>
               <p className="text-white/20 text-[14px] md:text-[8px] uppercase font-black mt-1">
                 {preview.length} items ready to import
               </p>
@@ -236,7 +236,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
 
         {/* ERRORS */}
         {errors.length > 0 && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-6">
+          <div className="bg-[#E05555]/10 border border-[#E05555]/20 rounded-2xl p-4 mb-6">
             <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase mb-2">Errors Found:</p>
             {errors.map((err, i) => (
               <p key={i} className="text-red-400/70 text-[14px] md:text-[8px] font-black">{err}</p>
@@ -248,10 +248,10 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
         {result && (
           <div className={`rounded-2xl p-4 mb-6 border ${
             result.success
-              ? "bg-[#00ff88]/10 border-[#00ff88]/20"
-              : "bg-red-500/10 border-red-500/20"
+              ? "bg-[#2ECC8A]/10 border-[#00ff88]/20"
+              : "bg-[#E05555]/10 border-[#E05555]/20"
           }`}>
-            <p className={`text-[14px] md:text-[10px] font-black uppercase ${result.success ? "text-[#00ff88]" : "text-red-400"}`}>
+            <p className={`text-[14px] md:text-[10px] font-black uppercase ${result.success ? "text-[#2ECC8A]" : "text-red-400"}`}>
               {result.success ? `Successfully imported ${result.count} items!` : result.message}
             </p>
           </div>
@@ -263,7 +263,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
             <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">
               Preview — {preview.length} items
             </p>
-            <div className="bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
+            <div className="bg-[#0D1117]/80 border border-[#C9A84C]/15 rounded-2xl border border-white/5 overflow-hidden">
               <div className="grid grid-cols-5 gap-2 p-3 border-b border-white/5">
                 {["Name", "Buy Price", "Sell Price", "Stock", "Category"].map(h => (
                   <p key={h} className="text-[14px] md:text-[7px] text-white/30 uppercase font-black">{h}</p>
@@ -275,7 +275,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
                     <p className="text-[14px] md:text-[9px] text-white font-black uppercase truncate">{item.name}</p>
                     <p className="text-[14px] md:text-[9px] text-gray-400 font-black">Rs.{item.costPrice}</p>
                     <p className="text-[14px] md:text-[9px] text-white font-black">Rs.{item.price}</p>
-                    <p className="text-[14px] md:text-[9px] text-[#4182ff] font-black">{item.stock}</p>
+                    <p className="text-[14px] md:text-[9px] text-[#C9A84C] font-black">{item.stock}</p>
                     <p className="text-[14px] md:text-[9px] text-white/40 font-black truncate">{item.category || "-"}</p>
                   </div>
                 ))}
@@ -303,7 +303,7 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
               disabled={loading || preview.length === 0 || errors.length > 0}
               className={`flex-1 p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-white transition-all disabled:opacity-50 ${
                 importMode === "replace"
-                  ? "bg-red-500 shadow-[0_0_20px_rgba(255,50,50,0.2)] hover:brightness-110"
+                  ? "bg-[#E05555] shadow-[0_0_20px_rgba(255,50,50,0.2)] hover:brightness-110"
                   : "bg-[#4182ff] shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110"
               }`}
             >

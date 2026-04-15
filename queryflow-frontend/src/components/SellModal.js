@@ -75,8 +75,8 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
           disabled 
             ? 'bg-black/20 border-white/5 text-white/10 cursor-not-allowed' 
             : isActive 
-              ? 'bg-[#4182ff]/20 border-[#4182ff] text-white' 
-              : 'bg-black/40 border-white/5 text-white/40 hover:bg-white/5 cursor-pointer'
+              ? 'bg-[#4182ff]/20 border-[#C9A84C] text-white' 
+              : 'bg-[#0D1117]/80 border border-[#C9A84C]/15 border-white/5 text-white/40 hover:bg-white/5 cursor-pointer'
         }`}
       >
         <p className="text-[14px] md:text-[10px] font-black tracking-widest">[ {label}: ₹{price} ]</p>
@@ -85,7 +85,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+    <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl">
 
         <h2 className="text-white font-black uppercase text-center mb-2 text-xs tracking-[0.4em] italic">
@@ -118,7 +118,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
               max={item.stock}
               value={quantity}
               onChange={e => setQuantity(Math.min(item.stock, Math.max(1, parseInt(e.target.value) || 1)))}
-              className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl text-white text-center font-black text-lg outline-none focus:border-[#4182ff] transition-all"
+              className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl text-white text-center font-black text-lg outline-none focus:border-[#C9A84C] transition-all"
             />
             <button
               onClick={() => setQuantity(q => Math.min(item.stock, q + 1))}
@@ -140,7 +140,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-[14px] md:text-[9px] text-white/30 uppercase font-black">Total Profit</span>
-            <span className={`text-[14px] md:text-[11px] font-black ${totalProfit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+            <span className={`text-[14px] md:text-[11px] font-black ${totalProfit >= 0 ? 'text-[#2ECC8A]' : 'text-[#E05555]'}`}>
               ₹{totalProfit.toFixed(2)}
             </span>
           </div>

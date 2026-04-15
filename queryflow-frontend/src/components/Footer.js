@@ -32,7 +32,7 @@ export default function Footer() {
         {/* --- TOP SECTION: LIVE SYSTEM FEED --- */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-24">
           <div className="w-full md:w-auto">
-            <h4 className="text-[14px] md:text-[10px] font-black uppercase tracking-[0.5em] text-[#4182ff] mb-6">
+            <h4 className="text-[14px] md:text-[10px] font-black uppercase tracking-[0.5em] text-[#C9A84C] mb-6">
               Live System Status
             </h4>
             {/* The scrolling marquee container */}
@@ -54,7 +54,7 @@ export default function Footer() {
               whileInView={{ opacity: 1 }}
               className="text-[6vw] md:text-[4vw] font-black tracking-tighter text-white leading-none uppercase italic"
             >
-              Terminal <span className="text-[#4182ff]">Active</span>
+              Terminal <span className="text-[#C9A84C]">Active</span>
             </motion.p>
             <p className="font-mono text-[14px] md:text-[10px] md:text-xs text-gray-600 mt-4 tracking-[0.3em] uppercase">
               {time} // BHARTHIA_NODE_PRIMARY
@@ -67,24 +67,24 @@ export default function Footer() {
           {/* Column 1 */}
           <div className="flex flex-col gap-3">
             <span className="text-[14px] md:text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Navigation</span>
-            <Link to="/features" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Features</Link>
-            <Link to="/solutions" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Solutions</Link>
-            <Link to="/pricing" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Pricing</Link>
+            <Link to="/features" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#C9A84C] transition-colors tracking-widest italic">Features</Link>
+            <Link to="/solutions" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#C9A84C] transition-colors tracking-widest italic">Solutions</Link>
+            <Link to="/pricing" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#C9A84C] transition-colors tracking-widest italic">Pricing</Link>
           </div>
 
           {/* Column 2 */}
           <div className="flex flex-col gap-3">
             <span className="text-[14px] md:text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] mb-4">Security</span>
-            <Link to="/security" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Vault Protocol</Link>
-            <Link to="/contact" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic">Secure Comms</Link>
-            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#4182ff] transition-colors tracking-widest italic mt-2">Source Code</a>
+            <Link to="/security" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#C9A84C] transition-colors tracking-widest italic">Vault Protocol</Link>
+            <Link to="/contact" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#C9A84C] transition-colors tracking-widest italic">Secure Comms</Link>
+            <a href="https://github.com/tanmay-1208" target="_blank" rel="noreferrer" className="text-[14px] md:text-[11px] uppercase font-black text-white hover:text-[#C9A84C] transition-colors tracking-widest italic mt-2">Source Code</a>
           </div>
 
           {/* Column 3 & 4: Copyright & Branding */}
           <div className="col-span-2 flex flex-col md:items-end justify-end">
             <div className="text-right">
                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">
-                 Query<span className="text-[#4182ff]">Flow</span>
+                 Query<span className="text-[#C9A84C]">Flow</span>
                </h2>
                <p className="text-[14px] md:text-[9px] font-black text-gray-700 uppercase tracking-[0.5em] leading-relaxed">
                  © 2026 // Institutional Fiscal Synthesis <br/> 

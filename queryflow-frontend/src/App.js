@@ -90,7 +90,7 @@ export default function App() {
 
   if (isInitialLoading) {
     return (
-      <div className="h-[100dvh] w-full bg-[#080808] flex items-center justify-center text-[#4182ff] font-black animate-pulse uppercase text-[14px] md:text-[10px] tracking-[0.5em]">
+      <div className="h-[100dvh] w-full bg-[#080808] flex items-center justify-center text-[#C9A84C] font-black animate-pulse uppercase text-[14px] md:text-[10px] tracking-[0.5em]">
         Authenticating Node...
       </div>
     );

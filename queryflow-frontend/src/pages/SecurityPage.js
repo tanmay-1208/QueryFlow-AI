@@ -9,7 +9,7 @@ const SecurityPage = () => {
   const yHeader = useTransform(scrollY, [0, 500], [0, -100]);
 
   return (
-    <div className="bg-[#0e0e0e] min-h-screen text-white pt-32 md:pt-40 relative overflow-hidden">
+    <div className="bg-[#080A0F] min-h-screen text-white pt-32 md:pt-40 relative overflow-hidden">
       <Navbar />
 
       {/* Scanning Reveal Line */}
@@ -25,7 +25,7 @@ const SecurityPage = () => {
           className="text-[13vw] md:text-[9vw] leading-[0.85] md:leading-[0.8] font-black tracking-tighter mb-16 md:mb-20 italic w-full break-words"
         >
           FORTRESS<br/>
-          <span className="text-[#00ff88]">ENCRYPTION</span>
+          <span className="text-[#2ECC8A]">ENCRYPTION</span>
         </motion.h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-6 md:p-10 mb-24">
@@ -38,7 +38,7 @@ const SecurityPage = () => {
               initial={{ opacity: 0, x: i === 0 ? -100 : 100 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, type: "spring" }}
-              className="p-6 md:p-10 md:p-8 md:p-16 bg-[#131313]/50 border border-white/5 backdrop-blur-xl rounded-[2.5rem] md:rounded-[4rem] group"
+              className="p-6 md:p-10 md:p-8 md:p-16 bg-[#0D1117]/50 border border-white/5 backdrop-blur-xl rounded-[2.5rem] md:rounded-[4rem] group"
             >
               <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-8`} style={{backgroundColor: `${item.color}20`}}>
                 <div className={`w-3 h-3 rounded-full animate-ping`} style={{backgroundColor: item.color}} />
@@ -73,7 +73,7 @@ const SecurityPage = () => {
           viewport={{ once: true }}
           className="glass p-6 md:p-10 md:p-8 md:p-16 text-center hover-glow rounded-[3rem]"
         >
-           <h2 className="text-3xl md:text-4xl md:text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-6 text-white">Security <span className="text-[#4182ff]">Bounty Program</span></h2>
+           <h2 className="text-3xl md:text-4xl md:text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-6 text-white">Security <span className="text-[#C9A84C]">Bounty Program</span></h2>
            <p className="text-gray-400 max-w-2xl mx-auto mb-10 text-lg">
              We work with top-tier security researchers worldwide. If you identify a vulnerability in QueryFlow&apos;s infrastructure, we reward responsible disclosure with bounties up to $150,000.
            </p>

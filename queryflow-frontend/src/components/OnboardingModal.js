@@ -97,8 +97,8 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
           {/* STEP 0 — WELCOME */}
           {step === 0 && (
             <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-[#4182ff]/10 border border-[#4182ff]/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-[#4182ff] text-2xl font-black italic">V</span>
+              <div className="w-16 h-16 bg-[#C9A84C]/10 border border-[#C9A84C]/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <span className="text-[#C9A84C] text-2xl font-black italic">V</span>
               </div>
               <h2 className="text-white font-black text-xl uppercase tracking-widest italic">
                 Welcome to Vault
@@ -142,13 +142,13 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               </div>
 
               {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                <div className="bg-[#E05555]/10 border border-[#E05555]/20 rounded-xl p-3">
                   <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
                 </div>
               )}
 
               <input
-                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[11px] font-bold uppercase text-center tracking-widest"
+                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[11px] font-bold uppercase text-center tracking-widest"
                 placeholder="e.g. My Electronics Store"
                 value={vaultName}
                 onChange={e => setVaultName(e.target.value)}
@@ -190,13 +190,13 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               </div>
 
               {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                <div className="bg-[#E05555]/10 border border-[#E05555]/20 rounded-xl p-3">
                   <p className="text-red-400 text-[14px] md:text-[9px] font-black uppercase text-center">{error}</p>
                 </div>
               )}
 
               <input
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold uppercase"
+                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase"
                 placeholder="Item Name *"
                 value={itemForm.name}
                 onChange={e => setItemForm({ ...itemForm, name: e.target.value })}
@@ -204,14 +204,14 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <input
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
                   placeholder="Buy Price (Rs.)"
                   type="number"
                   value={itemForm.cost_price}
                   onChange={e => setItemForm({ ...itemForm, cost_price: e.target.value })}
                 />
                 <input
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
                   placeholder="Sell Price (Rs.) *"
                   type="number"
                   value={itemForm.price}
@@ -220,7 +220,7 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
               </div>
 
               <input
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#4182ff] transition-all text-[14px] md:text-[10px] font-bold"
+                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold"
                 placeholder="Stock Quantity *"
                 type="number"
                 value={itemForm.stock}
@@ -247,8 +247,8 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
           {/* STEP 3 — DONE */}
           {step === 3 && (
             <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-[#00ff88]/10 border border-[#00ff88]/20 rounded-3xl flex items-center justify-center mx-auto">
-                <span className="text-[#00ff88] text-3xl">✓</span>
+              <div className="w-16 h-16 bg-[#2ECC8A]/10 border border-[#00ff88]/20 rounded-3xl flex items-center justify-center mx-auto">
+                <span className="text-[#2ECC8A] text-3xl">✓</span>
               </div>
               <h2 className="text-white font-black text-xl uppercase tracking-widest">
                 You're All Set!
@@ -265,7 +265,7 @@ const OnboardingModal = ({ isOpen, userId, userEmail, onComplete }) => {
                   "Generate invoices for every sale"
                 ].map((tip, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <span className="text-[#4182ff] text-xs">→</span>
+                    <span className="text-[#C9A84C] text-xs">→</span>
                     <p className="text-white/50 text-[14px] md:text-[9px] uppercase font-black">{tip}</p>
                   </div>
                 ))}

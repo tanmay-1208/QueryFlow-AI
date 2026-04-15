@@ -15,7 +15,7 @@ const SolutionsPage = () => {
   };
 
   return (
-    <div className="bg-[#0e0e0e] min-h-screen text-white pt-32 md:pt-40 overflow-x-hidden">
+    <div className="bg-[#080A0F] min-h-screen text-white pt-32 md:pt-40 overflow-x-hidden">
       <Navbar />
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <motion.div 
@@ -25,7 +25,7 @@ const SolutionsPage = () => {
           className="mb-16 md:mb-20"
         >
           <h1 className="text-[14vw] md:text-[9vw] leading-[0.85] md:leading-[0.8] font-black uppercase italic tracking-tighter w-full break-words">
-            Enterprise <br className="block md:hidden" /><span className="text-[#4182ff]">Nodes</span>
+            Enterprise <br className="block md:hidden" /><span className="text-[#C9A84C]">Nodes</span>
           </h1>
           <p className="text-gray-500 mt-6 md:mt-4 max-w-xl text-sm md:text-base">
             Scaled solutions for high-net-worth entities and digital asset managers.
@@ -49,7 +49,7 @@ const SolutionsPage = () => {
               key={i}
               variants={itemVariants}
               whileHover={{ scale: 1.02, backgroundColor: "#1a1a1a" }}
-              className="p-8 md:p-12 bg-[#131313] border border-white/5 rounded-[2rem] md:rounded-[3rem] transition-all cursor-pointer group relative overflow-hidden"
+              className="p-8 md:p-12 bg-[#0D1117] border border-white/5 rounded-[2rem] md:rounded-[3rem] transition-all cursor-pointer group relative overflow-hidden"
             >
               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500" style={{backgroundColor: solution.color}}></div>
               <div className="flex justify-between items-start mb-8 gap-4">
@@ -78,14 +78,14 @@ const SolutionsPage = () => {
                 { industry: "Fintech Startups", details: "End the month-end close nightmare. Automated burn rate calculation, runaway monitoring, and seamless vendor invoice parsing.", active: false },
                 { industry: "Family Offices", details: "Multi-generational wealth tracking, estate synchronization, and comprehensive yield calculations on diverse asset classes.", active: false }
               ].map((caseItem, idx) => (
-                 <div key={idx} className={`glass p-8 md:p-6 md:p-10 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 cursor-pointer border ${caseItem.active ? 'border-[#4182ff]/50 bg-[#4182ff]/5' : 'border-white/5 hover:border-white/20'}`}>
+                 <div key={idx} className={`glass p-8 md:p-6 md:p-10 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 cursor-pointer border ${caseItem.active ? 'border-[#C9A84C]/50 bg-[#4182ff]/5' : 'border-white/5 hover:border-white/20'}`}>
                     <div className="flex-1">
                       <h3 className="text-2xl font-black uppercase tracking-tighter mb-2 text-white">{caseItem.industry}</h3>
                       <p className="text-gray-400 text-sm md:text-base">{caseItem.details}</p>
                     </div>
                     <div className="hidden md:block">
-                       <div className={`w-12 h-12 rounded-full flex items-center justify-center border ${caseItem.active ? 'border-[#4182ff] bg-[#4182ff]/20' : 'border-white/10 bg-black/50'}`}>
-                          <span className={caseItem.active ? "text-[#4182ff]" : "text-gray-500"}>→</span>
+                       <div className={`w-12 h-12 rounded-full flex items-center justify-center border ${caseItem.active ? 'border-[#C9A84C] bg-[#4182ff]/20' : 'border-white/10 bg-black/50'}`}>
+                          <span className={caseItem.active ? "text-[#C9A84C]" : "text-gray-500"}>→</span>
                        </div>
                     </div>
                  </div>

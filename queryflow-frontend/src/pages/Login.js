@@ -31,8 +31,8 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e] flex items-center justify-center p-4 text-white font-['Inter']">
-      <div className="max-w-md w-full bg-[#1c1b1b] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
+    <div className="min-h-screen bg-[#080A0F] flex items-center justify-center p-4 text-white font-['Inter']">
+      <div className="max-w-md w-full bg-[#0D1117] p-12 rounded-[4rem] border border-white/5 text-center shadow-2xl relative overflow-hidden">
         {/* Aesthetic Accent Line */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc7ff] to-[#66dd8b]"></div>
         

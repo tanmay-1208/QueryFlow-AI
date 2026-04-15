@@ -67,13 +67,13 @@ export default function FeaturesPage() {
   const opacityPage = useTransform(scrollYProgress, [0.5, 1], [1, 0]);
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-['Inter'] relative" style={{ perspective: "1500px" }} ref={containerRef}>
+    <div className="bg-[#080A0F] min-h-screen text-white font-['Inter'] relative" style={{ perspective: "1500px" }} ref={containerRef}>
       <Navbar />
       <motion.div 
         className="w-full relative origin-top z-10"
         style={{ rotateX: rotateXPage, scale: scalePage, y: yPage, opacity: opacityPage }}
       >
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#4182ff]/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#C9A84C]/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-40 pb-20">
         
         <motion.h1 
@@ -182,10 +182,10 @@ export default function FeaturesPage() {
                 </span>
               </div>
               <div className="space-y-3 font-mono text-xs text-gray-400">
-                <div className="flex justify-between"><span>&gt; INGEST TXN_8921</span> <span className="text-[#4182ff]">1.2ms</span></div>
-                <div className="flex justify-between"><span>&gt; CLASSIFY VENDOR_AWS</span> <span className="text-[#4182ff]">0.8ms</span></div>
-                <div className="flex justify-between"><span>&gt; CHECK BUDGET_Q3</span> <span className="text-[#4182ff]">0.5ms</span></div>
-                <div className="flex justify-between"><span>&gt; ALLOCATE TAX_PROV</span> <span className="text-[#4182ff]">1.4ms</span></div>
+                <div className="flex justify-between"><span>&gt; INGEST TXN_8921</span> <span className="text-[#C9A84C]">1.2ms</span></div>
+                <div className="flex justify-between"><span>&gt; CLASSIFY VENDOR_AWS</span> <span className="text-[#C9A84C]">0.8ms</span></div>
+                <div className="flex justify-between"><span>&gt; CHECK BUDGET_Q3</span> <span className="text-[#C9A84C]">0.5ms</span></div>
+                <div className="flex justify-between"><span>&gt; ALLOCATE TAX_PROV</span> <span className="text-[#C9A84C]">1.4ms</span></div>
                 <div className="flex justify-between font-bold text-white border-t border-white/10 pt-3"><span>&gt; CYCLE COMPLETE</span> <span className="text-[#66dd8b]">3.9ms</span></div>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function FeaturesPage() {
         </motion.div>
       </div>
       </motion.div>
-      <div className="relative z-20 bg-[#050505]">
+      <div className="relative z-20 bg-[#080A0F]">
         <Footer />
       </div>
     </div>

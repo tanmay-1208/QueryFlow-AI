@@ -126,7 +126,7 @@ export default function Hero() {
       {/* DYNAMIC MOUSE GLOW */}
       {!isMobile && (
         <motion.div 
-          className="absolute pointer-events-none z-10 w-[600px] h-[600px] bg-[#4182ff]/10 rounded-full blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute pointer-events-none z-10 w-[600px] h-[600px] bg-[#C9A84C]/10 rounded-full blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           style={{ left: springX, top: springY, translateX: "-50%", translateY: "-50%" }}
         />
       )}
@@ -168,7 +168,7 @@ export default function Hero() {
         </motion.h1>
         
         <motion.h1 
-          className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-[#4182ff] italic -mt-2 md:-mt-4 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)] inline-flex flex-wrap justify-center"
+          className="text-[16vw] md:text-[13vw] font-black leading-[0.9] md:leading-[0.75] tracking-tighter uppercase text-[#C9A84C] italic -mt-2 md:-mt-4 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)] inline-flex flex-wrap justify-center"
           style={{ transform: "translateZ(80px)" }}
           variants={entitiesVariants}
           initial="hidden"

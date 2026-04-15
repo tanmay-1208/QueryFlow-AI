@@ -249,9 +249,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const maxItemProfit = Math.max(...sortedItemProfits.map(s => s[1]), 1);
 
   return (
-    <div className="flex h-[100dvh] w-full bg-[#050505] font-['JetBrains_Mono'] overflow-hidden text-white relative">
+    <div className="flex h-[100dvh] w-full bg-[#080A0F] font-['JetBrains_Mono'] overflow-hidden text-white relative">
       {/* 1. SIDEBAR */}
-      <aside className={`w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-black/90 md:bg-black/40 backdrop-blur-xl shrink-0 z-50 absolute md:static top-0 bottom-0 transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+      <aside className={`w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-[#080A0F]/95 md:bg-[#0D1117]/80 border border-[#C9A84C]/15 backdrop-blur-xl shrink-0 z-50 absolute md:static top-0 bottom-0 transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <button className="md:hidden absolute top-4 right-4 text-white/50 text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         <div>
 
@@ -267,7 +267,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
-                    <span className="font-black text-sm italic tracking-widest uppercase text-[#4182ff] truncate">
+                    <span className="font-black text-sm italic tracking-widest uppercase text-[#C9A84C] truncate">
                       {activeVault?.name || "Vault.v5"}
                     </span>
                   </div>
@@ -289,7 +289,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         }}
                         className={`w-full text-left px-4 py-3 text-[14px] md:text-[9px] font-black uppercase tracking-widest transition-all ${
                           activeVault?.id === vault.id
-                            ? 'bg-[#4182ff]/10 text-[#4182ff]'
+                            ? 'bg-[#C9A84C]/10 text-[#C9A84C]'
                             : 'text-white/40 hover:text-white hover:bg-white/5'
                         }`}
                       >
@@ -301,7 +301,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                         setIsVaultDropdownOpen(false);
                         setIsCreateVaultOpen(true);
                       }}
-                      className="w-full text-left px-4 py-3 text-[14px] md:text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-[#4182ff] border-t border-white/5 transition-all"
+                      className="w-full text-left px-4 py-3 text-[14px] md:text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-[#C9A84C] border-t border-white/5 transition-all"
                     >
                       + New Vault
                     </button>
@@ -327,9 +327,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
           <button
             onClick={() => { setIsAiOpen(true); setIsMobileMenuOpen(false); }}
-            className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#4182ff]/20 bg-[#4182ff]/5 text-[#4182ff] text-[14px] md:text-[9px] font-black uppercase tracking-widest hover:bg-[#4182ff]/10 transition-all"
+            className="mt-10 w-full flex items-center gap-3 p-4 rounded-xl border border-[#C9A84C]/20 bg-[#4182ff]/5 text-[#C9A84C] text-[14px] md:text-[9px] font-black uppercase tracking-widest hover:bg-[#C9A84C]/10 transition-all"
           >
-            <span className={`${isAiOpen ? 'text-[#00ff88]' : 'animate-pulse text-[#4182ff]'}`}>●</span> Agent_Interface
+            <span className={`${isAiOpen ? 'text-[#2ECC8A]' : 'animate-pulse text-[#C9A84C]'}`}>●</span> Agent_Interface
           </button>
 
           <button
@@ -340,13 +340,13 @@ const Vault = ({ userId, userEmail, onLogout }) => {
           </button>
         </div>
 
-        <button onClick={onLogout} className="text-red-900/40 text-[14px] md:text-[9px] font-bold uppercase hover:text-red-500 transition-colors tracking-widest">
+        <button onClick={onLogout} className="text-red-900/40 text-[14px] md:text-[9px] font-bold uppercase hover:text-[#E05555] transition-colors tracking-widest">
           [ Terminate ]
         </button>
       </aside>
 
       {/* 2. MAIN VIEWPORT */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#050505] relative transition-all duration-500 ease-in-out">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#080A0F] relative transition-all duration-500 ease-in-out">
         <header className="h-auto min-h-[6rem] py-4 border-b border-white/5 flex flex-col md:flex-row justify-between md:items-center px-4 md:px-12 shrink-0 gap-4 md:gap-0">
           <div className="flex items-center gap-3">
             <button className="md:hidden text-white/50 hover:text-white" onClick={() => setIsMobileMenuOpen(true)}>
@@ -359,7 +359,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
           <div className="flex items-center gap-3 flex-wrap sm:gap-6 w-full md:w-auto">
             <div className="text-right">
               <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
-              <p className="text-[14px] md:text-[10px] text-[#00ff88] font-mono">0x{userId?.slice(0, 8)}</p>
+              <p className="text-[14px] md:text-[10px] text-[#2ECC8A] font-mono">0x{userId?.slice(0, 8)}</p>
             </div>
 
             {activeTab === "dashboard" && (
@@ -469,7 +469,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                                       style={{ width: `${(profit / maxItemProfit) * 100}%` }}
                                     />
                                   </div>
-                                  <span className="text-[14px] md:text-[8px] text-[#00ff88] font-black w-14 text-right shrink-0">
+                                  <span className="text-[14px] md:text-[8px] text-[#2ECC8A] font-black w-14 text-right shrink-0">
                                     Rs.{profit.toFixed(0)}
                                   </span>
                                 </div>
@@ -489,14 +489,14 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                             <div key={i} className="flex justify-between items-center group">
                               <span className="text-[14px] md:text-[11px] font-bold uppercase text-white/70 group-hover:text-white transition-colors">{item.name}</span>
                               <div className="flex-1 mx-4 border-b border-white/5 border-dashed" />
-                              <span className="text-[14px] md:text-[11px] font-bold text-[#4182ff]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
+                              <span className="text-[14px] md:text-[11px] font-bold text-[#C9A84C]">Rs.{(item.price * item.stock).toLocaleString("en-IN")}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                       <div className="glass-panel p-6 md:p-10 font-mono text-[14px] md:text-[9px] text-white/20 space-y-2">
                         <p className="text-white/40 mb-6 font-bold uppercase tracking-widest">[ System_Logs ]</p>
-                        <p className="text-[#00ff88]">{">"} Handshake: Session_Active</p>
+                        <p className="text-[#2ECC8A]">{">"} Handshake: Session_Active</p>
                         <p>{">"} Vault: {activeVault?.name}</p>
                         <p>{">"} DB Sync: {items.length} assets integrated</p>
                         <p className="text-[#ff3366] animate-pulse">{">"} Real-time Valuation Engine: Active</p>
@@ -525,7 +525,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                               </div>
                               <div className="flex items-center gap-4">
                                 <div className="text-right">
-                                  <p className={`text-[14px] md:text-[11px] font-black ${sale.profit >= 0 ? 'text-[#00ff88]' : 'text-red-500'}`}>
+                                  <p className={`text-[14px] md:text-[11px] font-black ${sale.profit >= 0 ? 'text-[#2ECC8A]' : 'text-[#E05555]'}`}>
                                     +Rs.{sale.profit?.toFixed(2)}
                                   </p>
                                   <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black mt-1">profit</p>
@@ -597,7 +597,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         <div className="w-full sm:w-[450px] p-6 sm:p-6 md:p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <h3 className="text-[#4182ff] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
+              <h3 className="text-[#C9A84C] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
               <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
             </div>
             <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[14px] md:text-[10px] font-bold border border-white/10 px-3 py-2 min-h-[44px] md:min-h-0 rounded-md transition-all uppercase">Close</button>
@@ -606,7 +606,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
           <div className="flex-1 font-mono text-[14px] md:text-[10px] leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
             {chatLog.map((msg, i) => (
               <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
-                <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#4182ff]' : 'text-[#00ff88]'}`}>
+                <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#C9A84C]' : 'text-[#2ECC8A]'}`}>
                   {msg.role === 'user' ? '[OPERATOR]: ' : '[AGENT]: '}
                 </span>
                 <div className="mt-1 text-white/70 inline-block prose prose-invert prose-sm max-w-none [&_p]:whitespace-pre-wrap">
@@ -618,13 +618,13 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
           <div className="mt-8 relative">
             <input
-              className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[14px] md:text-[11px] text-white outline-none focus:border-[#4182ff] transition-all pr-12 font-bold"
+              className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[14px] md:text-[11px] text-white outline-none focus:border-[#C9A84C] transition-all pr-12 font-bold"
               placeholder="Execute command (e.g., Audit Portfolio)..."
               value={aiQuery}
               onChange={(e) => setAiQuery(e.target.value)}
               onKeyDown={handleAiSubmit}
             />
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#4182ff] font-bold text-lg opacity-50">↵</div>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#C9A84C] font-bold text-lg opacity-50">↵</div>
           </div>
         </div>
       </div>
