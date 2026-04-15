@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-deep: #080A0F;
+  --bg-surface: #0D1117;
+  --accent-gold: #C9A84C;
+  --accent-blue: #4A9EFF;
+  --success: #2ECC8A;
+  --danger: #E05555;
+  --glass-bg: rgba(13, 17, 23, 0.95);
+  --glass-border: rgba(201, 168, 76, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Mono', monospace;
+  background-color: var(--bg-deep);
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+h1, h2, h3, h4, h5, h6, .font-syne {
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Typography styles for labels */
+.label-muted {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6a7382;
+}
+
+.nav-link {
+  font-family: 'Syne', sans-serif;
+  text-transform: uppercase;
+  color: #8b90a0;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--accent-gold);
+}
+
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--accent-gold);
+}
+
+/* Sidebar styling overrides */
+aside {
+  background: linear-gradient(to right, #080A0F, #0A0D12) !important;
+}
+
+/* Buttons */
+.gold-outline-btn {
+  font-family: 'Syne', sans-serif;
+  transitio  transitio  transitio  transitioe-btn:hover {
+}
+
+.gold-solid-bt.gold-solid-bt.gold-r(.gold-solid-bt.gold-solnt;
+  color: #080A0F !important;
+  font-family: 'Syne', sans-ser  font-family: 'Syne', sans-ser   n  font-family: 'Syd-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Card Styles */
+.luxury-card {
+  transition: all 0.2s  transition: all 0.
+.luxury-card:hover {
+  transform: translateY(-2px);
+  b  b  b  b  b  b  b  b  b  b  b  b  b 0.5);
+}
+
+.luxury-dashboard-card {
+}
+
+.lu.lu.lu.lu.lurd.lu.lu.lu.lu.lurd.rder-left: 2px solid var(--accent-gold) .lu.lu.lu.lu.lurd.lu.lu.lu.lu.lurd.rder-left: 2pxsh.lu.lu.lu.lu.lurd.lu.lu.lu.lu.lurd.);
+}
+  
+/* Numbers */
+.data-value {
+  fo  fo  fo  foDM Mono', monospace;
+  color: var(--accent-blu  color: var(--accent-blu  color: var(--accent-bo', m  color: var(--accent-blu  color: var(--accent-blu  color: vay-  color: var(--accent-blu --b  color: var(--accent-blu  color: var(--accent-blu  color: var(--accent-bo', m  color: var(--
+@keyframes pulse-red {
+  0% { opac  0% { opac  0% ad  0% { opac  gb  0% { opac  0% { opac  0% ad  0% { opac   box-shadow: 0 0 0 6px rgba(224, 85, 85, 0); }
+  100%   100%   100%   100%   100%   100%   100%22  100%   100%   100
+}
+
+/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pvar(-/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pvar(-/* Pu/* Pu/* Pu/* nsform: scale(1); box/*hadow: 0 0 0/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* P0% /* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pvar(-/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* Pu/* , /* Pu/* Pu/* Pu/* Pu/dius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold);
+}
