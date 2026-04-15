@@ -71,18 +71,19 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
     <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
       <form
         onSubmit={handleSubmit}
-        className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl"
+        className="bg-[#0D1117] border border-[#C9A84C]/20 p-6 md:p-10 rounded-2xl w-full max-w-md shadow-[0_8px_32px_rgba(0,0,0,0.8)] relative overflow-hidden"
       >
-        <h2 className="text-white font-black uppercase text-center mb-2 text-xs tracking-[0.4em] italic">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"></div>
+        <h2 className="text-[#C9A84C] font-syne font-bold uppercase text-center mb-2 text-sm tracking-[0.3em]">
           Modify_Vault_Entry
         </h2>
-        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8">
+        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8 font-dm">
           Editing: {item?.name}
         </p>
 
         <div className="space-y-4">
           <input
-            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase"
+            className="w-full bg-[#080A0F] border border-[#C9A84C]/20 p-4 rounded-xl text-[#C9A84C] outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-dm uppercase shadow-inner placeholder:text-[#C9A84C]/30"
             placeholder="Asset Name"
             value={form.name}
             onChange={e => setForm({ ...form, name: e.target.value })}
@@ -125,7 +126,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
           </div>
 
           <input
-            className="w-full bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase"
+            className="w-full bg-[#080A0F] border border-[#C9A84C]/20 p-4 rounded-xl text-[#C9A84C] outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-dm uppercase shadow-inner placeholder:text-[#C9A84C]/30"
             placeholder="Inventory Units"
             type="number"
             value={form.stock}
@@ -137,10 +138,10 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
           {!isCustom ? (
             <div className="flex gap-2">
               <select
-                className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase"
+                className="flex-1 bg-[#080A0F] border border-[#C9A84C]/20 p-4 rounded-xl text-[#C9A84C] outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-dm uppercase shadow-inner"
                 value={form.category}
                 onChange={e => setForm({ ...form, category: e.target.value })}
-                style={{ background: '#1a1a1a' }}
+                style={{ background: '#080A0F' }}
               >
                 <option value="">Select Category</option>
                 {PRESET_CATEGORIES.map(cat => (
@@ -150,7 +151,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               <button
                 type="button"
                 onClick={() => setIsCustom(true)}
-                className="bg-white/5 border border-white/5 px-4 rounded-xl text-white/40 hover:text-white text-[14px] md:text-[9px] font-black uppercase transition-all"
+                className="bg-transparent border border-[#C9A84C]/20 px-4 rounded-xl text-[#C9A84C]/60 hover:text-[#C9A84C] text-[14px] md:text-[9px] font-syne font-bold uppercase transition-all"
               >
                 Custom
               </button>
@@ -158,7 +159,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
           ) : (
             <div className="flex gap-2">
               <input
-                className="flex-1 bg-white/5 border border-[#C9A84C]/50 p-4 rounded-xl text-white outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-bold uppercase"
+                className="flex-1 bg-[#080A0F] border border-[#C9A84C]/20 p-4 rounded-xl text-[#C9A84C] outline-none focus:border-[#C9A84C] transition-all text-[14px] md:text-[10px] font-dm uppercase shadow-inner placeholder:text-[#C9A84C]/30"
                 placeholder="Type custom category..."
                 value={customCategory}
                 onChange={e => setCustomCategory(e.target.value)}
@@ -166,7 +167,7 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
               <button
                 type="button"
                 onClick={() => setIsCustom(false)}
-                className="bg-white/5 border border-white/5 px-4 rounded-xl text-white/40 hover:text-white text-[14px] md:text-[9px] font-black uppercase transition-all"
+                className="bg-transparent border border-[#C9A84C]/20 px-4 rounded-xl text-[#C9A84C]/60 hover:text-[#C9A84C] text-[14px] md:text-[9px] font-syne font-bold uppercase transition-all"
               >
                 Preset
               </button>
@@ -177,14 +178,14 @@ const EditAssetModal = ({ isOpen, onClose, onUpdate, item }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[14px] md:text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
+              className="flex-1 bg-transparent border border-white/10 p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] text-white/40 hover:bg-white/5 hover:text-white transition-all duration-200"
             >
-              [ Cancel ]
+              Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-[#4182ff] p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-white shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110 active:scale-95 transition-all"
+              className="flex-1 bg-[#C9A84C] p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] text-[#080A0F] shadow-[0_0_15px_rgba(201,168,76,0.3)] hover:brightness-110 active:scale-95 transition-all duration-200 disabled:opacity-50"
             >
               {loading ? "Updating..." : "Save Changes"}
             </button>

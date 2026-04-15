@@ -249,9 +249,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const maxItemProfit = Math.max(...sortedItemProfits.map(s => s[1]), 1);
 
   return (
-    <div className="flex h-[100dvh] w-full bg-[#080A0F] font-['JetBrains_Mono'] overflow-hidden text-white relative">
+    <div className="flex h-[100dvh] w-full bg-[#080A0F] font-dm overflow-hidden text-white relative">
       {/* 1. SIDEBAR */}
-      <aside className={`w-64 border-r border-white/5 p-8 flex flex-col justify-between bg-[#080A0F]/95 md:bg-[#0D1117]/80 border border-[#C9A84C]/15 backdrop-blur-xl shrink-0 z-50 absolute md:static top-0 bottom-0 transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+      <aside className={`w-64 border-l-2 border-l-[#C9A84C] border-r border-[#C9A84C]/15 p-8 flex flex-col justify-between bg-gradient-to-r from-[#080A0F] to-[#0A0D12] backdrop-blur-xl shrink-0 z-50 absolute md:static top-0 bottom-0 transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <button className="md:hidden absolute top-4 right-4 text-white/50 text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         <div>
 
@@ -266,8 +266,8 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                   className="w-full flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-white/5 transition-all"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-[#4182ff] rounded-full shadow-[0_0_10px_#4182ff]" />
-                    <span className="font-black text-sm italic tracking-widest uppercase text-[#C9A84C] truncate">
+                    <div className="w-2 h-2 bg-[#C9A84C] rounded-full shadow-[0_0_10px_#C9A84C]" />
+                    <span className="font-syne font-bold text-sm tracking-widest uppercase text-[#C9A84C] truncate">
                       {activeVault?.name || "Vault.v5"}
                     </span>
                   </div>
@@ -316,11 +316,12 @@ const Vault = ({ userId, userEmail, onLogout }) => {
               <button
                 key={tab}
                 onClick={() => { setActiveTab(tab); setIsMobileMenuOpen(false); }}
-                className={`w-full text-left p-4 rounded-xl text-[14px] md:text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${
-                  activeTab === tab ? "bg-white/5 text-white border border-white/10" : "text-white/20 hover:text-white/50"
+                className={`group relative w-full text-left p-4 pr-0 rounded-xl text-[14px] md:text-[10px] font-bold uppercase tracking-[0.3em] font-syne transition-all duration-200 hover:translate-x-2 ${
+                  activeTab === tab ? "text-[#C9A84C]" : "text-white/20 hover:text-[#C9A84C]/80"
                 }`}
               >
-                {tab}
+                {activeTab === tab && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />}
+                <span className={activeTab === tab ? "ml-4" : "ml-2 group-hover:ml-4 transition-all"}>{tab}</span>
               </button>
             ))}
           </nav>
@@ -352,20 +353,23 @@ const Vault = ({ userId, userEmail, onLogout }) => {
             <button className="md:hidden text-white/50 hover:text-white" onClick={() => setIsMobileMenuOpen(true)}>
               ☰
             </button>
-            <h2 className="text-[14px] md:text-[10px] break-all font-bold uppercase tracking-[0.5em] text-white/20 italic">
-              Terminal / {activeVault?.name || "Vault"} / {activeTab}
+            <h2 className="text-[14px] md:text-[10px] break-all font-bold uppercase tracking-[0.3em] text-[#C9A84C] font-syne">
+              Terminal / <span className="text-white/50 px-1">{activeVault?.name || "Vault"}</span> / <span className="text-white px-1">{activeTab}</span>
             </h2>
           </div>
           <div className="flex items-center gap-3 flex-wrap sm:gap-6 w-full md:w-auto">
             <div className="text-right">
-              <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-bold">Node_Status</p>
-              <p className="text-[14px] md:text-[10px] text-[#2ECC8A] font-mono">0x{userId?.slice(0, 8)}</p>
+              <p className="text-[14px] md:text-[8px] text-[#C9A84C]/50 uppercase font-bold tracking-widest font-syne">Node_Status</p>
+              <p className="flex items-center justify-end gap-2 text-[14px] md:text-[10px] text-[#2ECC8A] font-dm">
+                <span className="w-2 h-2 rounded-full bg-[#2ECC8A] animate-pulse"></span>
+                0x{userId?.slice(0, 8)}
+              </p>
             </div>
 
             {activeTab === "dashboard" && (
               <button
                 onClick={handleExportPDF}
-                className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[14px] md:text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
+                className="flex items-center gap-2 bg-transparent border border-[#C9A84C]/30 px-4 py-2 rounded-xl text-[14px] md:text-[9px] font-bold uppercase tracking-widest text-[#C9A84C] hover:bg-[#C9A84C]/10 hover:border-[#C9A84C] transition-all duration-200 hover:-translate-y-[2px]"
               >
                 <span className="material-symbols-outlined text-sm">download</span>
                 Export PDF
@@ -376,7 +380,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsCSVImportOpen(true)}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[14px] md:text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:border-white/20 transition-all"
+                  className="flex items-center gap-2 bg-transparent border border-[#C9A84C]/30 px-4 py-2 rounded-xl text-[14px] md:text-[9px] font-bold uppercase tracking-widest text-[#C9A84C] hover:bg-[#C9A84C]/10 hover:border-[#C9A84C] transition-all duration-200 hover:-translate-y-[2px]"
                 >
                   CSV Import
                 </button>
@@ -597,34 +601,39 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         <div className="w-full sm:w-[450px] p-6 sm:p-6 md:p-10 h-full flex flex-col">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <h3 className="text-[#C9A84C] font-black text-xs uppercase tracking-[0.2em] italic">QueryFlow_Agent</h3>
-              <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-bold mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
+              <h3 className="text-[#C9A84C] font-syne font-bold text-sm uppercase tracking-[0.2em]">QueryFlow_Agent</h3>
+              <p className="text-[14px] md:text-[8px] text-[#C9A84C]/50 uppercase font-dm mt-1 tracking-widest">Autonomous_CA_Unit_v5.0</p>
             </div>
-            <button onClick={() => setIsAiOpen(false)} className="text-white/20 hover:text-white text-[14px] md:text-[10px] font-bold border border-white/10 px-3 py-2 min-h-[44px] md:min-h-0 rounded-md transition-all uppercase">Close</button>
+            <button onClick={() => setIsAiOpen(false)} className="text-[#C9A84C]/50 hover:text-[#C9A84C] text-[14px] md:text-[10px] font-bold border border-[#C9A84C]/20 hover:bg-[#C9A84C]/10 px-3 py-2 min-h-[44px] md:min-h-0 rounded-md transition-all uppercase">Close</button>
           </div>
 
           <div className="flex-1 font-mono text-[14px] md:text-[10px] leading-relaxed bg-black/60 p-6 rounded-3xl border border-white/5 overflow-y-auto custom-scrollbar shadow-inner space-y-4">
             {chatLog.map((msg, i) => (
-              <div key={i} className={`${msg.role === 'user' ? 'text-right' : 'text-left'} animate-in fade-in duration-500`}>
-                <span className={`font-black uppercase tracking-tighter ${msg.role === 'user' ? 'text-[#C9A84C]' : 'text-[#2ECC8A]'}`}>
-                  {msg.role === 'user' ? '[OPERATOR]: ' : '[AGENT]: '}
+              <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in duration-500`}>
+                <span className={`text-[10px] font-syne uppercase tracking-widest mb-1 ${msg.role === 'user' ? 'text-[#C9A84C]' : 'text-[#4A9EFF]'}`}>
+                  {msg.role === 'user' ? 'Operator' : 'Agent'}
                 </span>
-                <div className="mt-1 text-white/70 inline-block prose prose-invert prose-sm max-w-none [&_p]:whitespace-pre-wrap">
+                <div className={`p-4 rounded-xl inline-block prose prose-invert prose-sm max-w-[85%] [&_p]:whitespace-pre-wrap font-dm ${msg.role === 'user' ? 'bg-[#C9A84C]/10 border border-[#C9A84C]/20 text-[#C9A84C]' : 'bg-[#080A0F] border border-white/5 text-white/80'}`}>
                   <ReactMarkdown>{msg.text}</ReactMarkdown>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 relative">
+          <div className="mt-8 relative flex items-center">
             <input
-              className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-[14px] md:text-[11px] text-white outline-none focus:border-[#C9A84C] transition-all pr-12 font-bold"
-              placeholder="Execute command (e.g., Audit Portfolio)..."
+              className="w-full bg-transparent border-0 border-b border-[#C9A84C]/30 p-4 pb-2 text-[14px] md:text-[11px] text-[#C9A84C] outline-none focus:border-[#C9A84C] transition-all pr-12 font-dm placeholder:text-[#C9A84C]/30"
+              placeholder="Enter directive..."
               value={aiQuery}
               onChange={(e) => setAiQuery(e.target.value)}
               onKeyDown={handleAiSubmit}
             />
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-[#C9A84C] font-bold text-lg opacity-50">↵</div>
+            <button
+               onClick={() => handleAiSubmit({key: "Enter"})}
+               className="absolute right-2 text-[#C9A84C]/50 hover:text-[#C9A84C] material-symbols-outlined transition-all hover:scale-110"
+            >
+              send
+            </button>
           </div>
         </div>
       </div>
@@ -693,10 +702,11 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 };
 
 const GlassCard = ({ label, value, accent }) => (
-  <div className="glass-panel p-8 group hover:bg-white/[0.05] transition-all relative overflow-hidden">
-    <div className="absolute top-0 left-0 w-1 h-full transition-all group-hover:w-2" style={{ backgroundColor: accent }} />
-    <p className="text-[14px] md:text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-3">{label}</p>
-    <p className="text-xl font-black tracking-tighter truncate" style={{ color: value.includes('-') ? '#ff3366' : 'white' }}>{value}</p>
+  <div className="bg-[#0D1117] border-l-2 border-white/5 p-8 group hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(201,168,76,0.1)] transition-all duration-300 relative overflow-hidden" style={{ borderLeftColor: accent }}>
+    <p className="text-[14px] md:text-[10px] font-syne font-bold text-white/50 uppercase tracking-[0.2em] mb-3">{label}</p>
+    <p className="text-2xl font-dm text-white truncate drop-shadow-md group-hover:drop-shadow-[0_0_8px_rgba(201,168,76,0.5)] transition-all" style={{ color: value.includes('-') ? '#E05555' : undefined }}>
+      {value}
+    </p>
   </div>
 );
 

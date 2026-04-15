@@ -146,21 +146,23 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
 
   return (
     <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
-      <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0D1117] border border-[#C9A84C]/20 p-6 md:p-10 rounded-2xl w-full max-w-2xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] max-h-[90vh] overflow-y-auto relative">
+
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"></div>
 
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 relative">
           <div>
-            <h2 className="text-white font-black uppercase text-xs tracking-[0.4em] italic">
+            <h2 className="text-[#C9A84C] font-syne font-bold uppercase text-sm tracking-[0.3em]">
               CSV_Bulk_Import
             </h2>
-            <p className="text-white/20 text-[14px] md:text-[9px] uppercase tracking-widest mt-1">
+            <p className="text-white/20 text-[14px] md:text-[9px] uppercase tracking-widest mt-1 font-dm">
               Import multiple items at once
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-white/20 hover:text-white text-[14px] md:text-[10px] font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase"
+            className="text-white/40 hover:text-white text-[14px] md:text-[10px] font-syne font-bold border border-white/10 px-3 py-1 rounded-md transition-all uppercase"
           >
             Close
           </button>
@@ -180,29 +182,29 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
 
         {/* IMPORT MODE */}
         <div className="mb-6">
-          <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-black tracking-widest mb-3">Import Mode</p>
+          <p className="text-[14px] md:text-[8px] text-white/20 uppercase font-syne font-bold tracking-widest mb-3">Import Mode</p>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setImportMode("add")}
-              className={`p-4 rounded-2xl border text-left transition-all ${
+              className={`p-4 rounded-xl border text-left transition-all duration-200 ${
                 importMode === "add"
-                  ? "bg-[#2ECC8A]/10 border-[#00ff88]/30 text-[#2ECC8A]"
-                  : "bg-white/5 border-white/5 text-white/30 hover:text-white"
+                  ? "bg-[#C9A84C]/10 border-[#C9A84C] text-[#C9A84C] shadow-[0_0_15px_rgba(201,168,76,0.1)]"
+                  : "bg-transparent border-white/10 text-white/30 hover:text-white hover:border-white/20"
               }`}
             >
-              <p className="text-[14px] md:text-[10px] font-black uppercase">Add to Existing</p>
-              <p className="text-[14px] md:text-[8px] mt-1 opacity-60">Keep current items, add new ones</p>
+              <p className="text-[14px] md:text-[10px] font-syne font-bold uppercase tracking-widest">Add to Existing</p>
+              <p className="text-[14px] md:text-[8px] mt-1 opacity-60 font-dm">Keep current items, add new ones</p>
             </button>
             <button
               onClick={() => setImportMode("replace")}
-              className={`p-4 rounded-2xl border text-left transition-all ${
+              className={`p-4 rounded-xl border text-left transition-all duration-200 ${
                 importMode === "replace"
-                  ? "bg-[#E05555]/10 border-[#E05555]/30 text-red-400"
-                  : "bg-white/5 border-white/5 text-white/30 hover:text-white"
+                  ? "bg-[#E05555]/10 border-[#E05555] text-[#E05555] shadow-[0_0_15px_rgba(224,85,85,0.1)]"
+                  : "bg-transparent border-white/10 text-white/30 hover:text-white hover:border-white/20"
               }`}
             >
-              <p className="text-[14px] md:text-[10px] font-black uppercase">Replace All</p>
-              <p className="text-[14px] md:text-[8px] mt-1 opacity-60">Delete current items, import fresh</p>
+              <p className="text-[14px] md:text-[10px] font-syne font-bold uppercase tracking-widest">Replace All</p>
+              <p className="text-[14px] md:text-[8px] mt-1 opacity-60 font-dm">Delete current items, import fresh</p>
             </button>
           </div>
         </div>
@@ -293,32 +295,32 @@ const CSVImportModal = ({ isOpen, onClose, onImportComplete, userId, vaultId }) 
         <div className="flex gap-4">
           <button
             onClick={result ? handleReset : onClose}
-            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[14px] md:text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
+            className="flex-1 bg-transparent border border-white/10 p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] text-white/40 hover:bg-white/5 hover:text-white transition-all duration-200"
           >
-            {result?.success ? "Import More" : "[ Cancel ]"}
+            {result?.success ? "Import More" : "Cancel"}
           </button>
           {!result && (
             <button
               onClick={handleImport}
-              disabled={loading || preview.length === 0 || errors.length > 0}
-              className={`flex-1 p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-white transition-all disabled:opacity-50 ${
+               disabled={loading || preview.length === 0 || errors.length > 0}
+               className={`flex-1 p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] transition-all duration-200 disabled:opacity-50 ${
                 importMode === "replace"
-                  ? "bg-[#E05555] shadow-[0_0_20px_rgba(255,50,50,0.2)] hover:brightness-110"
-                  : "bg-[#4182ff] shadow-[0_0_20px_rgba(65,130,255,0.2)] hover:brightness-110"
+                  ? "bg-[#E05555] text-white shadow-[0_0_15px_rgba(224,85,85,0.3)] hover:brightness-110"
+                  : "bg-[#C9A84C] text-[#080A0F] shadow-[0_0_15px_rgba(201,168,76,0.3)] hover:brightness-110"
               }`}
             >
               {loading
                 ? "Importing..."
                 : importMode === "replace"
-                  ? `Replace & Import ${preview.length} Items`
-                  : `Import ${preview.length} Items`
+                  ? `Replace & Import ${preview.length}`
+                  : `Import ${preview.length}`
               }
             </button>
           )}
           {result?.success && (
             <button
               onClick={onClose}
-              className="flex-1 bg-[#00ff88] p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-black hover:brightness-110 transition-all"
+              className="flex-1 bg-[#C9A84C] p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] text-[#080A0F] hover:brightness-110 transition-all duration-200 shadow-[0_0_15px_rgba(201,168,76,0.3)]"
             >
               Done
             </button>

@@ -71,27 +71,29 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
         title={disabled ? "Price not set" : `Sell at ${label} price`}
         disabled={disabled}
         onClick={() => setSelectedTier(tier)}
-        className={`p-3 rounded-2xl border text-center transition-all ${
+        className={`p-3 rounded-xl border text-center transition-all duration-200 ${
           disabled 
-            ? 'bg-black/20 border-white/5 text-white/10 cursor-not-allowed' 
+            ? 'bg-transparent border-white/5 text-white/10 cursor-not-allowed' 
             : isActive 
-              ? 'bg-[#4182ff]/20 border-[#C9A84C] text-white' 
-              : 'bg-[#0D1117]/80 border border-[#C9A84C]/15 border-white/5 text-white/40 hover:bg-white/5 cursor-pointer'
+              ? 'bg-[#C9A84C]/5 border-[#C9A84C] text-[#C9A84C] shadow-[0_0_15px_rgba(201,168,76,0.1)]' 
+              : 'bg-transparent border-[#C9A84C]/20 text-white/40 hover:border-[#C9A84C]/50 hover:text-white cursor-pointer'
         }`}
       >
-        <p className="text-[14px] md:text-[10px] font-black tracking-widest">[ {label}: ₹{price} ]</p>
+        <p className="text-[14px] md:text-[10px] font-syne font-bold tracking-widest">[ {label}: ₹{price} ]</p>
       </button>
     );
   };
 
   return (
     <div className="fixed inset-0 bg-[#080A0F]/95 backdrop-blur-md flex items-center justify-center z-[100] p-6">
-      <div className="bg-[#0f0f0f] border border-white/10 p-6 md:p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl">
+      <div className="bg-[#0D1117] border border-[#C9A84C]/20 p-6 md:p-10 rounded-2xl w-full max-w-md shadow-[0_8px_32px_rgba(0,0,0,0.8)] relative overflow-hidden">
+        
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C9A84C]/50 to-transparent"></div>
 
-        <h2 className="text-white font-black uppercase text-center mb-2 text-xs tracking-[0.4em] italic">
+        <h2 className="text-[#C9A84C] font-syne font-bold uppercase text-center mb-2 text-sm tracking-[0.3em]">
           Execute_Sale
         </h2>
-        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8">
+        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8 font-dm">
           Selling: {item?.name}
         </p>
 
@@ -108,7 +110,7 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setQuantity(q => Math.max(1, q - 1))}
-              className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-white font-black text-lg hover:bg-white/10 transition-all"
+              className="w-12 h-12 bg-[#080A0F] border border-[#C9A84C]/20 rounded-xl text-[#C9A84C] font-dm text-lg hover:bg-[#C9A84C]/10 transition-all"
             >
               -
             </button>
@@ -118,11 +120,11 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
               max={item.stock}
               value={quantity}
               onChange={e => setQuantity(Math.min(item.stock, Math.max(1, parseInt(e.target.value) || 1)))}
-              className="flex-1 bg-white/5 border border-white/10 p-4 rounded-xl text-white text-center font-black text-lg outline-none focus:border-[#C9A84C] transition-all"
+              className="flex-1 bg-[#080A0F] border border-[#C9A84C]/20 p-4 rounded-xl text-[#C9A84C] text-center font-dm text-lg outline-none focus:border-[#C9A84C] shadow-inner transition-all"
             />
             <button
               onClick={() => setQuantity(q => Math.min(item.stock, q + 1))}
-              className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-white font-black text-lg hover:bg-white/10 transition-all"
+              className="w-12 h-12 bg-[#080A0F] border border-[#C9A84C]/20 rounded-xl text-[#C9A84C] font-dm text-lg hover:bg-[#C9A84C]/10 transition-all"
             >
               +
             </button>
@@ -150,16 +152,16 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 bg-white/5 border border-white/5 p-4 rounded-xl font-bold uppercase text-[14px] md:text-[9px] text-white/30 hover:bg-white/10 hover:text-white transition-all"
+            className="flex-1 bg-transparent border border-white/10 p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] text-white/40 hover:bg-white/5 hover:text-white transition-all duration-200"
           >
-            [ Cancel ]
+            Cancel
           </button>
           <button
             onClick={handleSell}
             disabled={loading || quantity > item.stock || currentPrice <= 0}
-            className="flex-1 bg-[#00ff88] p-4 rounded-xl font-black uppercase text-[14px] md:text-[9px] text-black shadow-[0_0_20px_rgba(0,255,136,0.2)] hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+            className="flex-1 bg-[#C9A84C] p-4 rounded-xl font-syne font-bold uppercase text-[14px] md:text-[10px] tracking-[0.2em] text-[#080A0F] shadow-[0_0_15px_rgba(201,168,76,0.3)] hover:brightness-110 active:scale-95 transition-all duration-200 disabled:opacity-50"
           >
-            {loading ? "Processing..." : `Sell ${quantity} Units`}
+            {loading ? "Processing..." : `Sell ${quantity}`}
           </button>
         </div>
       </div>
