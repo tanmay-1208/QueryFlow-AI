@@ -38,6 +38,9 @@ public class SellHistory {
     @Column(name = "customer_id")
     private Long customerId;
 
+    @Column(name = "customer_name")
+    private String customerName;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "price_group")
     private PriceGroup priceGroup;
@@ -71,6 +74,8 @@ public class SellHistory {
     public void setProfit(Double profit) { this.profit = profit; }
     public Long getCustomerId() { return customerId; }
     public void setCustomerId(Long customerId) { this.customerId = customerId; }
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
     public PriceGroup getPriceGroup() { return priceGroup; }
     public void setPriceGroup(PriceGroup priceGroup) { this.priceGroup = priceGroup; }
     public Long getVaultId() { return vaultId; }

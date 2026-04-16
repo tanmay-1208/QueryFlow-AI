@@ -10,6 +10,7 @@ import CSVImportModal from "../components/CSVImportModal";
 import SkeletonCard from "../components/SkeletonCard";
 import SkeletonDashboard from "../components/SkeletonDashboard";
 import OnboardingModal from "../components/OnboardingModal";
+import CustomerModal from "../components/CustomerModal";
 import { FadeIn, StaggerContainer, StaggerItem } from "../components/AnimatedPage";
 import { exportVaultReport } from "../utils/exportPDF";
 
@@ -18,6 +19,7 @@ const API_BASE_URL = "https://tanmaysingh12r-queryflow-ai.hf.space";
 const Vault = ({ userId, userEmail, onLogout }) => {
   const [items, setItems] = useState([]);
   const [sellHistory, setSellHistory] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [vaults, setVaults] = useState([]);
   const [activeVault, setActiveVault] = useState(null);
   const [isVaultDropdownOpen, setIsVaultDropdownOpen] = useState(false);
@@ -29,10 +31,13 @@ const Vault = ({ userId, userEmail, onLogout }) => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loadingItems, setLoadingItems] = useState(false);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
@@ -96,6 +101,19 @@ const Vault = ({ userId, userEmail, onLogout }) => {
     }
   }, [userId, activeVault]);
 
+  const fetchCustomers = useCallback(async () => {
+    if (!activeVault) return;
+    setLoadingCustomers(true);
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/customers?vaultId=${activeVault.id}`);
+      setCustomers(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Customer Fetch Error:", err);
+    } finally {
+      setLoadingCustomers(false);
+    }
+  }, [activeVault]);
+
   const fetchSellHistory = useCallback(async () => {
     if (!userId || !activeVault) return;
     setLoadingDashboard(true);
@@ -117,8 +135,9 @@ const Vault = ({ userId, userEmail, onLogout }) => {
     if (activeVault) {
       fetchItems();
       fetchSellHistory();
+      fetchCustomers();
     }
-  }, [activeVault, fetchItems, fetchSellHistory]);
+  }, [activeVault, fetchItems, fetchSellHistory, fetchCustomers]);
 
   // --- HANDLERS ---
   const handleOnAdd = (newAsset) => {
@@ -202,7 +221,8 @@ const Vault = ({ userId, userEmail, onLogout }) => {
 
         const res = await axios.post(`${API_BASE_URL}/api/chat`, {
           message: userMessage,
-          items: validatedItems
+          items: validatedItems,
+          sales: sellHistory.slice(0, 50)
         });
         setChatLog(prev => [...prev, { role: "agent", text: res.data }]);
       } catch (err) {
@@ -312,7 +332,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
           </div>
 
           <nav className="space-y-3">
-            {["dashboard", "inventory"].map((tab) => (
+            {["dashboard", "inventory", "customers"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => { setActiveTab(tab); setIsMobileMenuOpen(false); }}
@@ -389,6 +409,17 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                   className="bg-[#4182ff] w-12 h-12 rounded-full shadow-[0_0_20px_#4182ff66] hover:scale-105 active:scale-95 transition-all text-xl font-bold"
                 >
                   +
+                </button>
+              </div>
+            )}
+            
+            {activeTab === "customers" && (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => { setEditingCustomer(null); setIsCustomerModalOpen(true); }}
+                  className="flex items-center gap-2 bg-[#C9A84C] px-6 py-2 rounded-xl text-[14px] md:text-[10px] font-bold uppercase tracking-widest text-[#080A0F] hover:brightness-110 shadow-[0_0_15px_rgba(201,168,76,0.3)] transition-all duration-200 hover:-translate-y-[2px]"
+                >
+                  + Add Customer
                 </button>
               </div>
             )}
@@ -583,7 +614,71 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                       onUpdateStock={handleUpdateStock}
                       onEditAsset={handleEditAsset}
                       onSellComplete={handleSellComplete}
+                      customers={customers}
                     />
+                  )}
+                </div>
+              </FadeIn>
+            ) : (
+              <FadeIn>
+                <div className="space-y-6">
+                  {loadingCustomers ? (
+                    <SkeletonDashboard />
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {customers.map((c, i) => (
+                        <div key={i} className="glass-panel p-6 border-l-4 group" style={{ borderLeftColor: c.priceGroup === 'RETAIL' ? '#4182ff' : c.priceGroup === 'DEALER' ? '#C9A84C' : '#ffffff' }}>
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="text-white font-syne font-bold uppercase tracking-widest truncate max-w-[200px]">{c.name}</h3>
+                              <p className="text-white/40 text-[10px] font-dm tracking-widest mt-1">ID: 0x{c.id}</p>
+                            </div>
+                            <span className={`px-2 py-1 rounded text-[8px] font-bold uppercase tracking-widest ${
+                              c.priceGroup === 'RETAIL' ? 'bg-[#4182ff]/20 text-[#4182ff]' :
+                              c.priceGroup === 'DEALER' ? 'bg-[#C9A84C]/20 text-[#C9A84C]' : 'bg-white/10 text-white/50'
+                            }`}>
+                              [{c.priceGroup}]
+                            </span>
+                          </div>
+                          
+                          <div className="mb-6">
+                            <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">Contact Line</p>
+                            <p className="text-[#2ECC8A] font-mono text-[12px]">{c.phone || "UNSPECIFIED"}</p>
+                          </div>
+                          
+                          <div className="flex gap-3 justify-end border-t border-white/5 pt-4">
+                            <button
+                              onClick={() => { setEditingCustomer(c); setIsCustomerModalOpen(true); }}
+                              className="text-white/30 hover:text-white uppercase font-bold text-[9px] tracking-widest border border-white/5 px-4 py-2 hover:bg-white/5 rounded transition-all"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await axios.delete(`${API_BASE_URL}/api/customers/${c.id}`);
+                                  setCustomers(prev => prev.filter(cust => cust.id !== c.id));
+                                } catch (err) { alert("Failed to delete"); }
+                              }}
+                              className="text-[#E05555]/50 hover:text-[#E05555] uppercase font-bold text-[9px] tracking-widest border border-[#E05555]/10 px-4 py-2 hover:bg-[#E05555]/10 rounded transition-all"
+                            >
+                              Purge
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {customers.length === 0 && (
+                        <div className="col-span-full py-20 text-center glass-panel w-full border-dashed border-white/20">
+                          <p className="text-white/20 uppercase font-black tracking-widest mb-4">No Identities Found</p>
+                          <button
+                            onClick={() => { setEditingCustomer(null); setIsCustomerModalOpen(true); }}
+                            className="bg-white/5 text-white/60 hover:text-white border border-white/10 px-6 py-2 uppercase font-black text-[10px] tracking-widest hover:bg-white/10 rounded transition-all"
+                          >
+                            Register First Identity
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </FadeIn>
@@ -645,6 +740,20 @@ const Vault = ({ userId, userEmail, onLogout }) => {
         onAdd={handleOnAdd}
         userId={userId}
         vaultId={activeVault?.id}
+      />
+
+      <CustomerModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        vaultId={activeVault?.id}
+        existingCustomer={editingCustomer}
+        onCustomerSaved={(cust) => {
+          if (editingCustomer) {
+            setCustomers(prev => prev.map(c => c.id === cust.id ? cust : c));
+          } else {
+            setCustomers(prev => [...prev, cust]);
+          }
+        }}
       />
 
       <CreateVaultModal

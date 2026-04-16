@@ -2,7 +2,7 @@ import React from "react";
 import InventoryCard from "./InventoryCard";
 import { StaggerContainer, StaggerItem } from "./AnimatedPage";
 
-const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId }) => {
+const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId, customers }) => {
 
   const safeItems = Array.isArray(items) ? items : [];
 
@@ -32,6 +32,7 @@ const InventoryContainer = ({ items = [], searchTerm = "", onUpdateStock, onDele
                   onDeleteAsset={onDeleteAsset}
                   onEditAsset={onEditAsset}
                   onSellComplete={onSellComplete}
+                  customers={customers}
                 />
               </StaggerItem>
             ))}

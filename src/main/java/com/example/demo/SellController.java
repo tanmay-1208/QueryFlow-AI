@@ -51,6 +51,9 @@ public class SellController {
         if (payload.containsKey("customerId") && payload.get("customerId") != null) {
             history.setCustomerId(Long.valueOf(payload.get("customerId").toString()));
         }
+        if (payload.containsKey("customerName") && payload.get("customerName") != null) {
+            history.setCustomerName(payload.get("customerName").toString());
+        }
         if (payload.containsKey("priceGroup") && payload.get("priceGroup") != null) {
             history.setPriceGroup(PriceGroup.valueOf(payload.get("priceGroup").toString().toUpperCase()));
         }

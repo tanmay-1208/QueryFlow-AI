@@ -104,6 +104,11 @@ public class ChatController {
                         .replace("costPrice", "cost_price");
             }
 
+            Object rawSales = payload.getOrDefault("sales", "[]");
+            String safeSales = objectMapper.writeValueAsString(rawSales)
+                    .replace("{", "(")
+                    .replace("}", ")");
+
             return builder.build()
                     .prompt()
                     .system(s -> s.text(
@@ -142,7 +147,8 @@ public class ChatController {
                         "Best earner: [item name]\n" +
                         "Needs attention: [item with missing cost or low stock]\n\n" +
 
-                        "VAULT DATA (this is the user inventory):\n" + safeItems
+                        "VAULT DATA (this is the user inventory):\n" + safeItems + "\n\n" +
+                        "RECENT SALES HISTORY AND CUSTOMERS:\n" + safeSales
                     ))
                     .user(userMsg)
                     .call()

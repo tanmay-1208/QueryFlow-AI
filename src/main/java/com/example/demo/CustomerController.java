@@ -14,14 +14,10 @@ public class CustomerController {
 
     @GetMapping
     public List<Customer> getCustomers(
-        @RequestParam(required = false) String userId,
         @RequestParam(required = false) Long vaultId
     ) {
         if (vaultId != null) {
             return customerRepository.findByVaultId(vaultId);
-        }
-        if (userId != null && !userId.isEmpty()) {
-            return customerRepository.findByUserId(userId);
         }
         return customerRepository.findAll();
     }

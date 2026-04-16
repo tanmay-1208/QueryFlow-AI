@@ -3,7 +3,7 @@ import EditAssetModal from "./EditAssetModal";
 import SellModal from "./SellModal";
 import { ScaleIn } from "./AnimatedPage";
 
-const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId }) => {
+const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSellComplete, userId, customers }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSellOpen, setIsSellOpen] = useState(false);
   const isLowStock = (item.stock || 0) <= 5;
@@ -115,6 +115,7 @@ const InventoryCard = ({ item, onUpdateStock, onDeleteAsset, onEditAsset, onSell
         item={item}
         userId={userId}
         onSellComplete={onSellComplete}
+        customers={customers}
       />
     </ScaleIn>
   );

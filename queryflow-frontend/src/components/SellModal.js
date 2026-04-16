@@ -3,13 +3,14 @@ import axios from "axios";
 
 const API_BASE_URL = "https://tanmaysingh12r-queryflow-ai.hf.space";
 
-const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
+const SellModal = ({ isOpen, onClose, item, userId, onSellComplete, customers = [] }) => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selectedTier, setSelectedTier] = useState("RETAIL");
+  const [selectedCustomerId, setSelectedCustomerId] = useState("");
 
   useEffect(() => {
-    if (item) {
+    if (item && !selectedCustomerId) {
       const retailPrice = item.priceGroups?.RETAIL || item.price || 0;
       const dealerPrice = item.priceGroups?.DEALER || 0;
       const wholesalePrice = item.priceGroups?.WHOLESALE || 0;
@@ -18,7 +19,14 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
       else if (dealerPrice > 0) setSelectedTier("DEALER");
       else if (wholesalePrice > 0) setSelectedTier("WHOLESALE");
     }
-  }, [item]);
+  }, [item, selectedCustomerId]);
+  
+  useEffect(() => {
+    if (!isOpen) { 
+      setSelectedCustomerId("");
+      setQuantity(1);
+    }
+  }, [isOpen]);
 
   if (!isOpen || !item) return null;
 
@@ -44,14 +52,24 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
     if (quantity <= 0 || quantity > item.stock) return;
     setLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/sell`, {
+      const payload = {
         productId: item.id,
         userId: userId,
         quantity: quantity,
         vaultId: item.vaultId,
         sellPrice: currentPrice,
         priceGroup: selectedTier
-      });
+      };
+
+      if (selectedCustomerId) {
+        payload.customerId = selectedCustomerId;
+        const cust = customers.find(c => String(c.id) === String(selectedCustomerId));
+        if (cust) {
+          payload.customerName = cust.name;
+        }
+      }
+
+      const res = await axios.post(`${API_BASE_URL}/api/sell`, payload);
       onSellComplete(res.data);
       onClose();
     } catch (err) {
@@ -93,9 +111,37 @@ const SellModal = ({ isOpen, onClose, item, userId, onSellComplete }) => {
         <h2 className="text-[#C9A84C] font-syne font-bold uppercase text-center mb-2 text-sm tracking-[0.3em]">
           Execute_Sale
         </h2>
-        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-8 font-dm">
+        <p className="text-white/20 text-[14px] md:text-[9px] text-center uppercase tracking-widest mb-6 font-dm">
           Selling: {item?.name}
         </p>
+
+        {/* CUSTOMER SELECTOR */}
+        <div className="mb-6">
+          <p className="text-[14px] md:text-[8px] text-white/30 uppercase font-black mb-2 tracking-widest flex justify-between">
+            <span>Customer (Optional)</span>
+          </p>
+          <select
+            value={selectedCustomerId}
+            onChange={(e) => {
+              const cid = e.target.value;
+              setSelectedCustomerId(cid);
+              if (cid !== "") {
+                const cust = customers.find(c => String(c.id) === String(cid));
+                if (cust && cust.priceGroup) {
+                  setSelectedTier(cust.priceGroup);
+                }
+              }
+            }}
+            className="w-full bg-[#080A0F] border border-[#C9A84C]/20 p-4 rounded-xl text-[#C9A84C] font-dm text-sm outline-none focus:border-[#C9A84C] shadow-inner transition-all appearance-none cursor-pointer"
+          >
+            <option value="">-- None --</option>
+            {customers.map((c, i) => (
+              <option key={i} value={c.id}>
+                {c.name} ({c.phone || 'No Contact'})
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* PRICE TIERS */}
         <div className="flex flex-col gap-2 mb-6">
