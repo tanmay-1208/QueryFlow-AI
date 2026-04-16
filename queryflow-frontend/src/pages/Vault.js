@@ -581,7 +581,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                   </div>
                 </FadeIn>
               )
-            ) : (
+            ) : activeTab === "inventory" ? (
               <FadeIn>
                 <div className="space-y-6">
                   <div className="flex gap-3 flex-wrap">
@@ -619,7 +619,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                   )}
                 </div>
               </FadeIn>
-            ) : (
+            ) : activeTab === "customers" ? (
               <FadeIn>
                 <div className="space-y-6">
                   {loadingCustomers ? (
@@ -682,7 +682,7 @@ const Vault = ({ userId, userEmail, onLogout }) => {
                   )}
                 </div>
               </FadeIn>
-            )}
+            ) : null}
           </div>
         )}
       </main>
