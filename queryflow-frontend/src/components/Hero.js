@@ -125,7 +125,7 @@ export default function Hero() {
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
         <motion.h1 
-          className="text-5xl sm:text-7xl md:text-[100px] lg:text-[120px] font-black leading-none tracking-tighter uppercase text-white drop-shadow-2xl"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-[90px] xl:text-[110px] font-black leading-none tracking-tighter uppercase text-white drop-shadow-2xl"
           style={{ transform: "translateZ(30px)" }}
         >
           <motion.span 
@@ -142,7 +142,7 @@ export default function Hero() {
           </motion.span>
           <br/>
           <motion.span 
-            className="text-transparent outline-text opacity-40 text-5xl sm:text-7xl md:text-[100px] lg:text-[120px] inline-flex flex-wrap justify-center mt-2"
+            className="text-transparent outline-text opacity-40 text-4xl sm:text-6xl md:text-7xl lg:text-[90px] xl:text-[110px] inline-flex flex-wrap justify-center mt-2"
             variants={financeVariants}
             initial="hidden"
             animate="visible"
@@ -156,7 +156,7 @@ export default function Hero() {
         </motion.h1>
         
         <motion.h1 
-          className="text-5xl sm:text-7xl md:text-[100px] lg:text-[120px] font-black leading-none tracking-tighter uppercase text-[#C9A84C] italic mt-2 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)] inline-flex flex-wrap justify-center"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-[90px] xl:text-[110px] font-black leading-none tracking-tighter uppercase text-[#C9A84C] italic mt-2 drop-shadow-[0_15px_30px_rgba(65,130,255,0.3)] inline-flex flex-wrap justify-center"
           style={{ transform: "translateZ(80px)" }}
           variants={entitiesVariants}
           initial="hidden"
