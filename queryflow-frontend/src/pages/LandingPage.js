@@ -330,7 +330,7 @@ export default function LandingPage() {
   return (
     <div
       className="text-white overflow-x-hidden"
-      style={{ background: "#030308", fontFamily: "'Inter', sans-serif" }}
+      style={{ background: "#030308" }}
     >
       <Navbar />
       <Hero />
